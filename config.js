@@ -16,6 +16,14 @@ module.exports = {
       updates: {
         method: 'GET',
         path: '/api/member/updates'
+      },
+      publishUpdate: {
+        method: 'PUT',
+        path: '/api/member/updates/:uuid/status/published'
+      },
+      archiveUpdate: {
+        method: 'PUT',
+        path: '/api/member/updates/:uuid/status/archived'
       }
     }
   },
