@@ -15,7 +15,7 @@ module.exports = {
       },
       updates: {
         method: 'GET',
-        path: '/api/member/updates'
+        path: '/api/member/updates?size=20'
       },
       publishUpdate: {
         method: 'PUT',
@@ -24,6 +24,18 @@ module.exports = {
       archiveUpdate: {
         method: 'PUT',
         path: '/api/member/updates/:uuid/status/archived'
+      },
+      createPackage: {
+        method: 'POST',
+        path: '/api/member/packages'
+      },
+      createUpdate: {
+        method: 'POST',
+        path: '/api/member/updates'
+      },
+      getChannels: {
+        method: 'GET',
+        path: '/api/member/channels'
       }
     }
   },

@@ -1,2 +1,2 @@
-const UpdateCommand = require('./commands/UpdateCommand');
-new UpdateCommand().render();
+const UpdatesCommand = require('./commands/UpdatesCommand');
+new UpdatesCommand().render();

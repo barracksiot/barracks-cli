@@ -1,6 +1,6 @@
 const BarracksCommand = require('./BarracksCommand');
 
-class UpdateCommand extends BarracksCommand {
+class UpdatesCommand extends BarracksCommand {
 
   execute() {
     return this.getAuthenticationToken().then(token => {
@@ -10,4 +10,4 @@ class UpdateCommand extends BarracksCommand {
 
 }
 
-module.exports = UpdateCommand;
+module.exports = UpdatesCommand;
