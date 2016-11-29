@@ -1,5 +1,14 @@
 const BarracksCommand = require('./BarracksCommand');
 
+function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
 class CreateUpdateCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -16,7 +25,8 @@ class CreateUpdateCommand extends BarracksCommand {
     return program.title && program.title != true
       && program.channel && program.channel != true
       && program.versionId && program.versionId != true
-      && program.package && program.package != true;
+      && program.package && program.package != true
+      && (!program.properties || isJsonString(program.properties));
   }
 
   execute(program) {
@@ -36,7 +46,7 @@ class CreateUpdateCommand extends BarracksCommand {
         name: program.title,
         description: program.description,
         channelId: channel.id,
-        additionalProperties: program.properties,
+        additionalProperties: JSON.parse(program.properties || '{}'),
         packageId: createdPackage.id
       });
     });

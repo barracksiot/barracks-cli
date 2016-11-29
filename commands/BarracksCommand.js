@@ -10,7 +10,7 @@ class BarracksCommand {
 
   constructor() {
     this.configureCommand(program)
-      .option('--json', 'Display result in json format')
+      .option('--json', 'Format result in json')
       .parse(process.argv);
     this.userConfiguration = new UserConfiguration(config.userConfig);
     this.barracks = new Barracks(config.barracks);
@@ -91,7 +91,7 @@ class BarracksCommand {
         prettyRenderer(result);
       }
     } else {
-      console.error('Mandatory arguments are missing. Use the help command for more information.');
+      console.error('Mandatory arguments are missing. Use --help for more information.');
     }
   }
 
