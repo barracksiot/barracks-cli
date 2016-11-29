@@ -42,6 +42,11 @@ $ barracks-cli login --email myaccount@barracks.io --password <ACCOUNT_PASSWORD>
 Authentication successful
 ```
 
+After that, you can use any of the other commands:
+```{r, engine='bash', count_lines}
+$ barracks-cli create-update --title "My Update" --channel Production --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
+```
+
 ## Features
 
 Currently, the following features are available through the CLI:
