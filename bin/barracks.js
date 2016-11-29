@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const pjson = require('./package.json');
+const pjson = require('../package.json');
  
 program
   .version(pjson.version)

@@ -7,9 +7,9 @@ The Command Line Interface tool to interact with the [Barracks](https://barracks
 
 At any moment, if you want to know what you can do with the CLI or if you need any help about a specific command, you can use the *help* command:
 ```{r, engine='bash', count_lines}
-$ barracks-cli help
+$ barracks help
 
-  Usage: barracks-cli [options] [command]
+  Usage: barracks [options] [command]
 
 
   Commands:
@@ -31,20 +31,20 @@ $ barracks-cli help
 
 You need to login to Barracks before using any other command:
 ```{r, engine='bash', count_lines}
-$ barracks-cli login
+$ barracks login
 email: myaccount@barracks.io
 password:
 Authentication successful
 ```
 
 ```{r, engine='bash', count_lines}
-$ barracks-cli login --email myaccount@barracks.io --password <ACCOUNT_PASSWORD>
+$ barracks login --email myaccount@barracks.io --password <ACCOUNT_PASSWORD>
 Authentication successful
 ```
 
 After that, you can use any of the other commands:
 ```{r, engine='bash', count_lines}
-$ barracks-cli create-update --title "My Update" --channel Production --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
+$ barracks create-update --title "My Update" --channel Production --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
 ```
 
 ## Features
