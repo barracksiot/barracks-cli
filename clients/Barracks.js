@@ -10,7 +10,6 @@ function sendEndpointRequest(barracks, endpoint, options) {
   return sendRequest(barracks, barracks.options.endpoints[endpoint].method, requestUri, options);
 }
 
-
 function sendRequest(barracks, method, uri, options) {
   return request(Object.assign({}, {
     method: method,

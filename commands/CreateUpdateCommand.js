@@ -1,3 +1,4 @@
+const fs = require('fs');
 const BarracksCommand = require('./BarracksCommand');
 
 function isJsonString(str) {
@@ -7,6 +8,15 @@ function isJsonString(str) {
     return false;
   }
   return true;
+}
+
+function fileExists(path) {
+  try {
+    fs.accessSync(path, fs.F_OK);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 class CreateUpdateCommand extends BarracksCommand {
@@ -22,11 +32,11 @@ class CreateUpdateCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return program.title && program.title != true
+    return !!(program.title && program.title != true
       && program.channel && program.channel != true
       && program.versionId && program.versionId != true
-      && program.package && program.package != true
-      && (!program.properties || isJsonString(program.properties));
+      && program.package && fileExists(program.package)
+      && (!program.properties || isJsonString(program.properties)));
   }
 
   execute(program) {
