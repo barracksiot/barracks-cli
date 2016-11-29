@@ -10,5 +10,6 @@ program
   .command('updates', 'List updates')
   .command('create-update', 'Create a new update')
   .command('publish', 'Publish an update')
+//  .command('schedule', 'Publish an update')
   .command('archive', 'Archive an update')
   .parse(process.argv);

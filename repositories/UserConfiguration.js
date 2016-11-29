@@ -37,7 +37,7 @@ class UserConfiguration {
         config.token = token;
         return this.writeUserConfiguration(config);
       }).then(() => {
-        resolve();
+        resolve(token);
       }).catch(err => {
         reject(err);
       });

@@ -1,12 +1,5 @@
 const BarracksCommand = require('./BarracksCommand');
 
-function validateMandatoryOptions(program) {
-  return program.title && program.title != true
-    && program.channel && program.channel != true
-    && program.versionId && program.versionId != true
-    && program.package && program.package != true;
-}
-
 class CreateUpdateCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -19,12 +12,16 @@ class CreateUpdateCommand extends BarracksCommand {
       .option('--properties [json]', '(Optionnal) The custom data you want to associate with the update (must be a valid JSON)');
   }
 
+  validateCommand(program) {
+    return program.title && program.title != true
+      && program.channel && program.channel != true
+      && program.versionId && program.versionId != true
+      && program.package && program.package != true;
+  }
+
   execute(program) {
-    if (!validateMandatoryOptions(program)) {
-      return Promise.reject('Mandatory arguments are missing. You can use the help command for more information.');
-    }
-    var channel;
-    var token;
+    let channel;
+    let token;
     return this.getAuthenticationToken().then(authToken => {
       token = authToken;
       return this.barracks.getChannelByName(token, program.channel);

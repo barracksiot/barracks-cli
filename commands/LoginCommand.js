@@ -1,33 +1,24 @@
 const read = require('read');
 const BarracksCommand = require('./BarracksCommand');
 
+function validateAuthenticationOptions(program) {
+  return program.username && program.username != true
+    && program.password && program.password != true;
+}
+
 class LoginCommand extends BarracksCommand {
 
-  execute() {
-    return new Promise((resolve, reject) => {
-      read({ prompt: 'E-mail: ' }, (err, email) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(email);
-        }
-      });
-    }).then(email => {
-      return new Promise((resolve, reject) => {
-        read({ prompt: 'Password: ', silent: true }, (err, password) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({ email, password });
-          }
-        });
-      });
-    }).then(credentials => {
-      return this.barracks.authenticate(credentials.email, credentials.password)
-    }).then(token => {
-      return this.saveAuthenticationToken(token);
+  configureCommand(program) {
+    return program
+      .option('--email [email]', '(Optionnal) The e-mail of the account. Must be used with --password.')
+      .option('--password [password]', '(Optionnal) The password of the account. Must be used with --email.');
+  }
+
+  execute(program) {
+    return this.requestUserAuthentication().then(credentials => {
+      return this.authenticate(credentials.email, credentials.password);
     }).then(() => {
-      console.log('Authentication successful');
+      return Promise.resolve('Authentication successful');
     });
   }
 

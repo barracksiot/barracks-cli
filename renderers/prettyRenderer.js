@@ -6,7 +6,7 @@ function write(content) {
 
 module.exports = promise => {
   promise.then(result => {
-    if (result.constructor.name === 'PageableStream') {
+    if (result && result.constructor.name === 'PageableStream') {
       result.onPageReceived(page => {
         write(page);
       });
@@ -14,6 +14,6 @@ module.exports = promise => {
       write(result);
     }
   }).catch(err => {
-    console.log(err);
+    console.error(err);
   });
 };
