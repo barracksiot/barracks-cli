@@ -1,12 +1,13 @@
 const mockStdin = require('mock-stdin');
 const chai = require('chai');
-const spies = require('chai-spies');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 const ArchiveCommand = require('./ArchiveCommand');
 
 chai.use(chaiAsPromised);
-chai.use(spies);
+chai.use(sinonChai);
 
 
 describe('ArchiveCommand', () => {
@@ -35,6 +36,17 @@ describe('ArchiveCommand', () => {
       userDefault: true 
     } 
   };
+  const account = {
+    firstName: 'John',
+    lastName: 'Doe',
+    company: 'Plop and Cie',
+    phone: '1234567890',
+    id: '57c068',
+    email: 'john@doe.com',
+    apiKey: 'da9d4d6a47547c8ed313fee8',
+    status: 'active' 
+  };
+  const token = 's5d6f.657fgyi.d6tfuyg';
   let archiveCommand;
   let stdin;
 
@@ -53,43 +65,49 @@ describe('ArchiveCommand', () => {
   
     it('should return an archived update when the request was successful', () => {
       // Given
+      const program = {
+        args: [ 'MyID' ]
+      };
       archiveCommand.userConfiguration = {
-        getAuthenticationToken: () => Promise.resolve(token)
+        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(archiveCommand.userConfiguration, 'getAuthenticationToken');
       archiveCommand.barracks = {
-        getAccount: token => Promise.resolve(account),
-        archiveUpdate: (token, uuid) => Promise.resolve(archivedUpdate)
+        getAccount: sinon.stub().returns(Promise.resolve(account)),
+        archiveUpdate: sinon.stub().returns(Promise.resolve(archivedUpdate))
       };
-      chai.spy.on(archiveCommand.barracks, 'archiveUpdate');
 
       // When / Then
-      archiveCommand.execute().then(result => {
+      archiveCommand.execute(program).then(result => {
         expect(result).to.equal(archiveUpdate);
-        expect(archiveCommand.barracks.getAccount).to.have.been.called.once;
-        expect(archiveCommand.barracks.archiveUpdate).to.have.been.called.once;
-        expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.called.once;
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledWithExactly(token, program.args[0]);
+        expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
       });
     });
 
     it('should return an error when the request failed', () => {
       // Given
+      const program = {
+        args: [ 'MyID' ]
+      };
       archiveCommand.userConfiguration = {
-        getAuthenticationToken: () => Promise.resolve(token)
+        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(archiveCommand.userConfiguration, 'getAuthenticationToken');
       archiveCommand.barracks = {
-        getAccount: token => Promise.resolve(account),
-        archiveUpdate: (token, uuid) => Promise.reject('Error')
+        getAccount: sinon.stub().returns(Promise.resolve(account)),
+        archiveUpdate: sinon.stub().returns(Promise.reject('Error'))
       };
-      chai.spy.on(archiveCommand.barracks, 'archiveUpdate');
 
       // When / Then
-      archiveCommand.execute().then(result => {
+      archiveCommand.execute(program).then(result => {
         expect(result).to.equal(archiveUpdate);
-        expect(archiveCommand.barracks.getAccount).to.have.been.called.once;
-        expect(archiveCommand.barracks.archiveUpdate).to.have.been.called.once;
-        expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.called.once;
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledWithExactly(token, program.args[0]);
+        expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
       });
     });
 

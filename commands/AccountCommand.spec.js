@@ -1,12 +1,13 @@
 const mockStdin = require('mock-stdin');
 const chai = require('chai');
-const spies = require('chai-spies');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 const AccountCommand = require('./AccountCommand');
 
 chai.use(chaiAsPromised);
-chai.use(spies);
+chai.use(sinonChai);
 
 
 describe('AccountCommand', () => {
@@ -43,37 +44,32 @@ describe('AccountCommand', () => {
     it('should return account information when the token is valid and Barracks client return it', () => {
       // Given
       accountCommand.userConfiguration = {
-        getAuthenticationToken: () => Promise.resolve(token)
+        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(accountCommand.userConfiguration, 'getAuthenticationToken');
       accountCommand.barracks = {
-        getAccount: token => Promise.resolve(account)
+        getAccount: sinon.stub().returns(Promise.resolve(account))
       };
-      chai.spy.on(accountCommand.barracks, 'getAccount');
 
       // When / Then
       accountCommand.execute().then(result => {
         expect(result).to.equal(account);
-        expect(accountCommand.barracks.getAccount).to.have.been.called.once;
-        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.called.once;
+        expect(accountCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(accountCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
       });
     });
 
     it('should request authentication and return account when no token exist and credentials are valid', (done) => {
       // Given
       accountCommand.userConfiguration = {
-        getAuthenticationToken: () => Promise.reject('No token'),
-        saveAuthenticationToken: () => Promise.resolve(token)
+        getAuthenticationToken: sinon.stub().returns(Promise.reject('No token')),
+        saveAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(accountCommand.userConfiguration, 'getAuthenticationToken');
-      chai.spy.on(accountCommand.userConfiguration, 'saveAuthenticationToken');
       
       accountCommand.barracks = {
-        authenticate: (email, password) => Promise.resolve(token),
-        getAccount: (token) => Promise.resolve(account)
+        authenticate: sinon.stub().returns(Promise.resolve(token)),
+        getAccount: sinon.stub().returns(Promise.resolve(account))
       };
-      chai.spy.on(accountCommand.barracks, 'authenticate');
-      chai.spy.on(accountCommand.barracks, 'getAccount');
       
       setTimeout(() => {
         stdin.send(`${account.email}\r`);
@@ -85,10 +81,13 @@ describe('AccountCommand', () => {
       // When / Then
       accountCommand.execute().then(result => {
         expect(result).to.equal(account);
-        expect(accountCommand.barracks.authenticate).to.have.been.called.once;
-        expect(accountCommand.barracks.getAccount).to.have.been.called.once;
-        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.called.once;
-        expect(accountCommand.userConfiguration.saveAuthenticationToken).to.have.been.called.once;
+        expect(accountCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(accountCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, password);
+        expect(accountCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(accountCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
+        expect(accountCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledOnce;
+        expect(accountCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
         done(err);
@@ -98,14 +97,12 @@ describe('AccountCommand', () => {
     it('should request authentication and fail when no token exist and credentials are invalid', (done) => {
       // Given
       accountCommand.userConfiguration = {
-        getAuthenticationToken: () => Promise.reject('No token')
+        getAuthenticationToken: sinon.stub().returns(Promise.reject('No token'))
       };
-      chai.spy.on(accountCommand.userConfiguration, 'getAuthenticationToken');
       
       accountCommand.barracks = {
-        authenticate: (email, password) => Promise.reject('Error')
+        authenticate: sinon.stub().returns(Promise.reject('Error'))
       };
-      chai.spy.on(accountCommand.barracks, 'authenticate');
       
       setTimeout(() => {
         stdin.send(`${account.email}\r`);
@@ -118,8 +115,9 @@ describe('AccountCommand', () => {
       accountCommand.execute().then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(accountCommand.barracks.authenticate).to.have.been.called.once;
-        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.called.once;
+        expect(accountCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(accountCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, password);
+        expect(accountCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
         done();
       });
     });

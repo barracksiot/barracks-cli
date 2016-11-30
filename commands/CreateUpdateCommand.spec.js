@@ -1,12 +1,12 @@
-"use strict";
-
 const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const chaiAsPromised = require("chai-as-promised");
 const CreateUpdateCommand = require('./CreateUpdateCommand');
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 describe('CreateUpdateCommand', () => {
 
@@ -21,13 +21,13 @@ describe('CreateUpdateCommand', () => {
     channel: 'Production'
   };
 
-  describe('#validateCommand(program)', () => {
+  before(() => {
+    createUpdateCommand = new CreateUpdateCommand();
+    createUpdateCommand.barracks = {};
+    createUpdateCommand.userConfiguration = {};
+  });
 
-    before(() => {
-      createUpdateCommand = new CreateUpdateCommand();
-      createUpdateCommand.barracks = {};
-      createUpdateCommand.userConfiguration = {};
-    });
+  describe('#validateCommand(program)', () => {
 
     it('should return true when all the options are present', () => {
       // Given
@@ -152,12 +152,6 @@ describe('CreateUpdateCommand', () => {
       status: 'active' 
     };
 
-    before(() => {
-      createUpdateCommand = new CreateUpdateCommand();
-      createUpdateCommand.barracks = {};
-      createUpdateCommand.userConfiguration = {};
-    });
-
     it('should return an error when the get channel request failed', (done) => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
@@ -173,11 +167,11 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(createUpdateCommand.userConfiguration.getAuthenticationToken.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledWithExactly(token, program.channel)).to.be.true;
+        expect(createUpdateCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
         done();
       });
     });
@@ -188,7 +182,6 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.userConfiguration = {
         getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(createUpdateCommand.userConfiguration, 'getAuthenticationToken');
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
@@ -199,15 +192,15 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(createUpdateCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledWithExactly(token, program.channel)).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
-        })).to.be.true;
+        });
         done();
       });
     });
@@ -218,7 +211,6 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.userConfiguration = {
         getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(createUpdateCommand.userConfiguration, 'getAuthenticationToken');
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
@@ -230,23 +222,23 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(createUpdateCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledWithExactly(token, program.channel)).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
-        })).to.be.true;
-        expect(createUpdateCommand.barracks.createUpdate.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.createUpdate.calledWithExactly(token, {
+        });
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledWithExactly(token, {
           packageId: updatePackage.id,
           name: program.title,
           description: program.description,
           additionalProperties: JSON.parse(program.properties),
           channelId: channel.id
-        })).to.be.true;
+        });
         done();
       });
     });
@@ -260,7 +252,6 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.userConfiguration = {
         getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
       };
-      chai.spy.on(createUpdateCommand.userConfiguration, 'getAuthenticationToken');
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
@@ -270,23 +261,23 @@ describe('CreateUpdateCommand', () => {
 
       // When / Then
       createUpdateCommand.execute(program).then(result => {
-        expect(createUpdateCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.getChannelByName.calledWithExactly(token, program.channel)).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.createPackage.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
-        })).to.be.true;
-        expect(createUpdateCommand.barracks.createUpdate.calledOnce).to.be.true;
-        expect(createUpdateCommand.barracks.createUpdate.calledWithExactly(token, {
+        });
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledWithExactly(token, {
           packageId: updatePackage.id,
           name: program.title,
           description: program.description,
           additionalProperties: JSON.parse(program.properties),
           channelId: channel.id
-        })).to.be.true;
+        });
         done();
       }).catch(err => {
         done('Should not have failed');
