@@ -4,8 +4,9 @@
   "description": "A CLI tool for Barracks",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node ./node_modules/mocha/bin/mocha **/*.spec.js --reporter spec"
+    "start": "./bin/barracks.js",
+    "test": "./node_modules/mocha/bin/mocha **/*.spec.js --reporter spec",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha **/*.spec.js -- -R spec"
   },
   "bin": {
     "barracks": "bin/barracks.js"
@@ -34,7 +35,9 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-spies": "^0.7.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
-    "mock-stdin": "^0.3.1"
+    "mock-stdin": "^0.3.1",
+    "sinon": "^1.17.6"
   }
 }
