@@ -11,6 +11,28 @@
   "bin": {
     "barracks": "bin/barracks.js"
   },
+  "contributors": [
+    {
+      "email": "brice@barracks.io",
+      "name": "Brice Argenson"
+    },
+    {
+      "email": "gregoire@barracks.io",
+      "name": "Grégoire Weber"
+    },
+    {
+      "email": "paul@barracks.io",
+      "name": "Paul Aigeperse"
+    },
+    {
+      "email": "pierre-olivier@barracks.io",
+      "name": "Pierre-Olivier Dybman"
+    },
+    {
+      "email": "simon@barracks.io",
+      "name": "Simon Guerout"
+    }
+  ],
   "keywords": [
     "Barracks",
     "IoT",
@@ -21,7 +43,7 @@
     "url": "git@github.com:barracksiot/barracks-cli.git"
   },
   "author": "contact@barracks.io",
-  "license": "ISC",
+  "license": "Apache License, Version 2.0",
   "dependencies": {
     "commander": "^2.9.0",
     "mkdirp": "^0.5.1",
