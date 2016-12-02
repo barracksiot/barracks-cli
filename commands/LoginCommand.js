@@ -1,9 +1,19 @@
 const read = require('read');
 const BarracksCommand = require('./BarracksCommand');
 
-function validateAuthenticationOptions(program) {
-  return program.username && program.username != true
+function loginOptionsGiven(program) {
+  return program.email && program.email != true
     && program.password && program.password != true;
+}
+
+function getCredentials(loginCommand, program) {
+  if (loginOptionsGiven(program)) {
+    return Promise.resolve({ 
+      email: program.email,
+      password: program.password
+    });
+  }
+  return loginCommand.requestUserAuthentication();
 }
 
 class LoginCommand extends BarracksCommand {
@@ -15,13 +25,12 @@ class LoginCommand extends BarracksCommand {
   }
 
   execute(program) {
-    return this.requestUserAuthentication().then(credentials => {
+    return getCredentials(this, program).then(credentials => {
       return this.authenticate(credentials.email, credentials.password);
     }).then(() => {
       return Promise.resolve('Authentication successful');
     });
   }
-
 }
 
 module.exports = LoginCommand;
