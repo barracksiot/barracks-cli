@@ -13,3 +13,7 @@ program
 //  .command('schedule', 'Publish an update')
   .command('archive', 'Archive an update')
   .parse(process.argv);
+
+process.on('SIGINT', () => {
+  process.exit();
+});

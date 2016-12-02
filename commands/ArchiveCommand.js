@@ -6,6 +6,10 @@ class ArchiveCommand extends BarracksCommand {
     return program.arguments('<update-uuid>');
   }
 
+  validateCommand(program) {
+    return !!program.args[0];
+  }
+
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       return this.barracks.archiveUpdate(token, program.args[0]);

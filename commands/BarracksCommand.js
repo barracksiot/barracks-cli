@@ -42,7 +42,7 @@ class BarracksCommand {
 
   requestUserAuthentication() {
     return new Promise((resolve, reject) => {
-      read({ prompt: 'E-mail: ' }, (err, email) => {
+      read({ prompt: 'Account e-mail: ' }, (err, email) => {
         if (err) {
           reject(err);
         } else {
@@ -80,6 +80,10 @@ class BarracksCommand {
 
   validateCommand(program) {
     return true;
+  }
+
+  execute(program) {
+    return Promise.reject('Need to be overridden');
   }
 
   render() {

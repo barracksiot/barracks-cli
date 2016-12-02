@@ -20,6 +20,7 @@
     "type": "git",
     "url": "git@github.com:barracksiot/barracks-cli.git"
   },
+  "engine": "node >= 5.0",
   "author": "contact@barracks.io",
   "license": "ISC",
   "dependencies": {

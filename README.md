@@ -3,6 +3,16 @@
 # Barracks CLI
 The Command Line Interface tool to interact with the [Barracks](https://barracks.io/) API
 
+## Requirements
+
+Node.js >= 5.x
+
+## Installation
+
+```{r, engine='bash', count_lines}
+$ npm install -g barracks-cli
+```
+
 ## Usage
 
 At any moment, if you want to know what you can do with the CLI or if you need any help about a specific command, you can use the *help* command:
