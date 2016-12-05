@@ -95,7 +95,7 @@ class BarracksCommand {
         prettyRenderer(result);
       }
     } else {
-      console.error('Mandatory arguments are missing. Use --help for more information.');
+      console.error('Mandatory arguments are missing or invalid. Use --help for more information.');
     }
   }
 
