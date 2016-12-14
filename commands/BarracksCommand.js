@@ -42,7 +42,7 @@ class BarracksCommand {
 
   requestUserAuthentication() {
     return new Promise((resolve, reject) => {
-      read({ prompt: 'E-mail: ' }, (err, email) => {
+      read({ prompt: 'Account e-mail: ' }, (err, email) => {
         if (err) {
           reject(err);
         } else {
@@ -82,6 +82,10 @@ class BarracksCommand {
     return true;
   }
 
+  execute(program) {
+    return Promise.reject('Need to be overridden');
+  }
+
   render() {
     if (this.validateCommand(program)) {
       const result = this.execute(program);
@@ -91,7 +95,7 @@ class BarracksCommand {
         prettyRenderer(result);
       }
     } else {
-      console.error('Mandatory arguments are missing. Use --help for more information.');
+      console.error('Mandatory arguments are missing or invalid. Use --help for more information.');
     }
   }
 
