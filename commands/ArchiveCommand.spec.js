@@ -28,7 +28,7 @@ describe('ArchiveCommand', () => {
     },
     additionalProperties: {},
     creationDate: '2016-11-28T22:59:45.180Z',
-    status: 'published',
+    status: 'archived',
     channel: { 
       id: '57c08b9a0cf21701895daa9e',
       name: 'Production',
@@ -63,7 +63,7 @@ describe('ArchiveCommand', () => {
       stdin.end();
     });
   
-    it('should return an archived update when the request was successful', () => {
+    it('should return an archived update when the request was successful', (done) => {
       // Given
       const program = {
         args: [ 'MyID' ]
@@ -78,16 +78,19 @@ describe('ArchiveCommand', () => {
 
       // When / Then
       archiveCommand.execute(program).then(result => {
-        expect(result).to.equal(archiveUpdate);
+        expect(result).to.equal(archivedUpdate);
         expect(archiveCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(archiveCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledOnce;
         expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledWithExactly(token, program.args[0]);
         expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
+        done();
+      }).catch(err => {
+        done('should have succeeded');
       });
     });
 
-    it('should return an error when the request failed', () => {
+    it('should return an error when the request failed', (done) => {
       // Given
       const program = {
         args: [ 'MyID' ]
@@ -102,17 +105,43 @@ describe('ArchiveCommand', () => {
 
       // When / Then
       archiveCommand.execute(program).then(result => {
-        expect(result).to.equal(archiveUpdate);
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.equal('Error');
         expect(archiveCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(archiveCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledOnce;
         expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledWithExactly(token, program.args[0]);
         expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
+        done();
       });
     });
 
+    it('should return an error when the request failed', (done) => {
+      // Given
+      const program = {
+        args: [ 'MyID' ]
+      };
+      archiveCommand.userConfiguration = {
+        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
+      };
+      archiveCommand.barracks = {
+        getAccount: sinon.stub().returns(Promise.resolve(account)),
+        archiveUpdate: sinon.stub().returns(Promise.reject('Error'))
+      };
+
+      // When / Then
+      archiveCommand.execute(program).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.equal('Error');
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledOnce;
+        expect(archiveCommand.barracks.archiveUpdate).to.have.been.calledWithExactly(token, program.args[0]);
+        expect(archiveCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
+        done();
+      });
+    });
   });
-
-
-
 });
