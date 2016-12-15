@@ -3,10 +3,16 @@ const request = require('request-promise');
 const fs = require('fs');
 const path = require('path');
 
-function sendEndpointRequest(barracks, endpoint, options) {
-  const requestUri = Object.getOwnPropertyNames(options.pathVariables || {}).reduce((uri, key) => {
+
+function buildEndpointUri(barracks, endpoint, options) {
+  return Object.getOwnPropertyNames(options.pathVariables || {}).reduce((uri, key) => {
     return uri.replace(`:${key}`, options.pathVariables[key]);
   }, barracks.options.baseUrl + barracks.options.endpoints[endpoint].path);
+}
+
+
+function sendEndpointRequest(barracks, endpoint, options) {
+  const requestUri = buildEndpointUri(barracks, endpoint, options);
   return sendRequest(barracks, barracks.options.endpoints[endpoint].method, requestUri, options);
 }
 
@@ -19,20 +25,21 @@ function sendRequest(barracks, method, uri, options) {
   }, options));
 }
 
-function retrieveAllPages(barracks, pageableStream, endpoint, options) {  
+function retrieveAllPages(barracks, pageableStream, endpoint, options, embeddedKey) {
   retrieveNextPages(
     barracks,
     pageableStream,
-    barracks.options.baseUrl + barracks.options.endpoints[endpoint].path,
-    options
+    buildEndpointUri(barracks, endpoint, options),
+    options,
+    embeddedKey
   );
 }
 
-function retrieveNextPages(barracks, pageableStream, uri, options) {
+function retrieveNextPages(barracks, pageableStream, uri, options, embeddedKey) {
   sendRequest(barracks, 'GET', uri, options).then(response => {
-    pageableStream.write(response.body._embedded.memberUpdateInfoes);
+    pageableStream.write(response.body._embedded[embeddedKey]);
     if (response.body._links.next) {
-      retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options);
+      retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey);
     } else {
       pageableStream.lastPage();
     }
@@ -81,7 +88,8 @@ class Barracks {
         headers: {
           'x-auth-token': token
         }
-      });
+      },
+      'memberUpdateInfoes');
     });
   }
 
@@ -202,6 +210,22 @@ class Barracks {
       }).catch(errResponse => {
         reject(errResponse.message);
       });
+    });
+  }
+
+  getDeviceEvents(token, unitId) {
+    return new Promise((resolve, reject) => {
+      const stream = new PageableStream();
+      resolve(stream);
+      retrieveAllPages(this, stream, 'getDeviceEvents', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          unitId
+        }
+      },
+      'deviceEvents');
     });
   }
 
