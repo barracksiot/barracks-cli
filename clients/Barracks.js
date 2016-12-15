@@ -3,13 +3,11 @@ const request = require('request-promise');
 const fs = require('fs');
 const path = require('path');
 
-
 function buildEndpointUri(barracks, endpoint, options) {
   return Object.getOwnPropertyNames(options.pathVariables || {}).reduce((uri, key) => {
     return uri.replace(`:${key}`, options.pathVariables[key]);
   }, barracks.options.baseUrl + barracks.options.endpoints[endpoint].path);
 }
-
 
 function sendEndpointRequest(barracks, endpoint, options) {
   const requestUri = buildEndpointUri(barracks, endpoint, options);
