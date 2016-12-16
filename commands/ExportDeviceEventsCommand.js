@@ -17,7 +17,7 @@ function filterDeviceEvents(fromDate) {
         stream.lastPage();
       });
     }).catch(err => {
-      pageableStream.fail(err);
+      stream.fail(err);
     });
   });
 }
@@ -27,7 +27,7 @@ class ExportDeviceEventsCommand extends BarracksCommand {
   configureCommand(program) {
     return program
       .option('--unitId [unit id]', 'The unit id to retrieve the event history from.')
-      .option('--fromDate [\'yyyy-mm-dd\']', '(Optionnal) The date from when to begin the export');
+      .option('--fromDate [\'yyyy-mm-dd\']', '(Optionnal) The date from when to begin the export.');
   }
 
   validateCommand(program) {
