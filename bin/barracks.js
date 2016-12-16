@@ -12,6 +12,7 @@ program
   .command('publish', 'Publish an update')
 //  .command('schedule', 'Publish an update')
   .command('archive', 'Archive an update')
+  .command('devices', 'List devices')
   .command('export-device-events', 'Export all events of a device')
   .parse(process.argv);
 

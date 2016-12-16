@@ -211,6 +211,22 @@ class Barracks {
     });
   }
 
+  getDevices(token, channelName) {
+    return new Promise((resolve, reject) => {
+      const stream = new PageableStream();
+      resolve(stream);
+      retrieveAllPages(this, stream, 'getDevices', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          channelName
+        }
+      },
+      'deviceEvents');
+    });
+  }
+
   getDeviceEvents(token, unitId) {
     return new Promise((resolve, reject) => {
       const stream = new PageableStream();

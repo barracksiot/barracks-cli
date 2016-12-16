@@ -37,6 +37,10 @@ module.exports = {
         method: 'GET',
         path: '/api/member/channels'
       },
+      getDevices: {
+        method: 'GET',
+        path: '/api/member/channels/:channelName/devices?size=20'
+      },
       getDeviceEvents: {
         method: 'GET',
         path: '/api/member/devices/:unitId/events?size=20'
