@@ -1,6 +1,27 @@
 const PageableStream = require('../clients/PageableStream');
 const BarracksCommand = require('./BarracksCommand');
 
+function filterDeviceEvents(fromDate) {
+  return new Promise((resolve, reject) => {
+    const stream = new PageableStream();
+    this.barracks.getDeviceEvents(token, program.unitId).then(result => {
+      resolve(stream);
+      result.onPageReceived(page => {
+        page.forEach(event => {
+          if (fromDate < Date.parse(event.receptionDate)) {
+            stream.write(event);
+          }
+        });
+      });
+      result.onLastPage(() => {
+        stream.lastPage();
+      });
+    }).catch(err => {
+      pageableStream.fail(err);
+    });
+  });
+}
+
 class ExportDeviceEventsCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -25,25 +46,7 @@ class ExportDeviceEventsCommand extends BarracksCommand {
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       if (program.fromDate) {
-        const fromDate = Date.parse(program.fromDate);
-        return new Promise((resolve, reject) => {
-          const stream = new PageableStream();
-          this.barracks.getDeviceEvents(token, program.unitId).then(result => {
-            resolve(stream);
-            result.onPageReceived(page => {
-              page.forEach(event => {
-                if (fromDate < Date.parse(event.receptionDate)) {
-                  stream.write(event);
-                }
-              });
-            });
-            result.onLastPage(() => {
-              stream.lastPage();
-            });
-          }).catch(err => {
-            pageableStream.fail(err);
-          });
-        });
+        return filterDeviceEvents(Date.parse(program.fromDate));
       } else {
         return this.barracks.getDeviceEvents(token, program.unitId);
       }

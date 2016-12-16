@@ -35,9 +35,42 @@ describe('ExportDeviceEventsCommand', () => {
       expect(result).to.be.false;
     });
 
+    it('should return false when fromDate format is invalid', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { fromDate: 'notADate'});
+
+      // When
+      const result = exportDeviceEventsCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when fromDate flag is present with no value', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { fromDate: true});
+
+      // When
+      const result = exportDeviceEventsCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+    });
+
     it('should return true when unit id is given', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
+
+      // When
+      const result = exportDeviceEventsCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when unit id and from date are given and fromDate format is valid', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { fromDate: '2014-12-30'});
 
       // When
       const result = exportDeviceEventsCommand.validateCommand(program);
