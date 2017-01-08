@@ -23,6 +23,17 @@ function sendRequest(barracks, method, uri, options) {
   }, options));
 }
 
+function retrievePagesUntilCondition(barracks, pageableStream, endpoint, options, embeddedKey, stopCondition) {
+  retrieveNextPages(
+    barracks,
+    pageableStream,
+    buildEndpointUri(barracks, endpoint, options),
+    options,
+    embeddedKey,
+    stopCondition
+  );
+}
+
 function retrieveAllPages(barracks, pageableStream, endpoint, options, embeddedKey) {
   retrieveNextPages(
     barracks,
@@ -33,12 +44,13 @@ function retrieveAllPages(barracks, pageableStream, endpoint, options, embeddedK
   );
 }
 
-function retrieveNextPages(barracks, pageableStream, uri, options, embeddedKey) {
+function retrieveNextPages(barracks, pageableStream, uri, options, embeddedKey, stopCondition) {
   sendRequest(barracks, 'GET', uri, options).then(response => {
     if (response.body._embedded) {
-      pageableStream.write(response.body._embedded[embeddedKey]);
-      if (response.body._links.next) {
-        retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey);
+      const items = response.body._embedded[embeddedKey];
+      pageableStream.write(items);
+      if (response.body._links.next && (!stopCondition || !stopCondition(items))) {
+        retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey, stopCondition);
       } else {
         pageableStream.lastPage();
       }
@@ -231,19 +243,32 @@ class Barracks {
     });
   }
 
-  getDeviceEvents(token, unitId) {
+  getDeviceEvents(token, unitId, fromDate) {
     return new Promise((resolve, reject) => {
-      const stream = new PageableStream();
-      resolve(stream);
-      retrieveAllPages(this, stream, 'getDeviceEvents', {
+      const resultStream = new PageableStream();
+      const bufferStream = new PageableStream();
+      resolve(resultStream);
+      retrievePagesUntilCondition(this, bufferStream, 'getDeviceEvents', {
         headers: {
           'x-auth-token': token
         },
         pathVariables: {
           unitId
         }
-      },
-      'deviceEvents');
+      }, 'deviceEvents', events => 
+        fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
+      );
+      bufferStream.onPageReceived(events => {
+        const filteredEvents = events.filter(event =>
+          Date.parse(fromDate || 0) < Date.parse(event.receptionDate)
+        );
+        if (filteredEvents.length > 0) {
+          resultStream.write(filteredEvents);
+        }
+      });
+      bufferStream.onLastPage(() => {
+        resultStream.lastPage();
+      });
     });
   }
 

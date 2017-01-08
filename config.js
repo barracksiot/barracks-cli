@@ -43,7 +43,7 @@ module.exports = {
       },
       getDeviceEvents: {
         method: 'GET',
-        path: '/api/member/devices/:unitId/events?size=20'
+        path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
       }
     }
   },
