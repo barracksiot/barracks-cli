@@ -10,10 +10,10 @@ program
   .command('updates', 'List updates')
   .command('create-update', 'Create a new update')
   .command('publish', 'Publish an update')
-//  .command('schedule', 'Publish an update')
+  .command('schedule', 'Publish an update')
   .command('archive', 'Archive an update')
   .command('devices', 'List devices')
-  .command('export-device-events', 'Export all events of a device')
+  .command('device', 'Get device history')
   .parse(process.argv);
 
 process.on('SIGINT', () => {

@@ -4,7 +4,7 @@ function write(content) {
   console.log(prettyjson.render(content));
 }
 
-module.exports = promise => {
+module.exports = promise => new Promise(resolve => {
   promise.then(result => {
     if (result && result.constructor.name === 'PageableStream') {
       result.onPageReceived(page => {
@@ -13,7 +13,9 @@ module.exports = promise => {
     } else {
       write(result);
     }
+    resolve();
   }).catch(err => {
     console.error(err);
+    resolve();
   });
-};
+});

@@ -35,9 +35,13 @@ function retrieveAllPages(barracks, pageableStream, endpoint, options, embeddedK
 
 function retrieveNextPages(barracks, pageableStream, uri, options, embeddedKey) {
   sendRequest(barracks, 'GET', uri, options).then(response => {
-    pageableStream.write(response.body._embedded[embeddedKey]);
-    if (response.body._links.next) {
-      retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey);
+    if (response.body._embedded) {
+      pageableStream.write(response.body._embedded[embeddedKey]);
+      if (response.body._links.next) {
+        retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey);
+      } else {
+        pageableStream.lastPage();
+      }
     } else {
       pageableStream.lastPage();
     }

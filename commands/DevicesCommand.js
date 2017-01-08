@@ -20,18 +20,39 @@ function getAllDevices(token, barracks) {
             }
           });
         }).catch(err => {
-          pageableStream.fail(err);
+          stream.fail(err);
         });
       });
     });
   });
 }
 
+function getAllDevicesFromChannel(token, barracks, channelName) {
+  return new Promise((resolve, reject) => {
+    barracks.getChannelByName(token, channelName).then(channel => {
+      return barracks.getDevices(token, channel.name);
+    }).then(resultStream => {
+      resolve(resultStream);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
 class DevicesCommand extends BarracksCommand {
 
-  execute() {
+  configureCommand(program) {
+    return program
+      .option('--channel [channelName]', '(Optionnal) Render devices from that channel only');
+  }
+
+  execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return getAllDevices(token, this.barracks);
+      if (program.channel) {
+        return getAllDevicesFromChannel(token, this.barracks, program.channel);
+      } else {
+        return getAllDevices(token, this.barracks);
+      }
     });
   }
 }
