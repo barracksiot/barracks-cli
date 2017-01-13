@@ -20,18 +20,6 @@ describe('Barracks', () => {
       barracks = new Barracks();
     });
 
-    it('', (done) => {
-      // Given
-      const username = 'john@doe.fr';
-      const password = 'PaSsWoRd';
-
-      // When
-      const result = barracks.authenticate();
-
-      // Then
-      
-    });
-
   });
 
 });
