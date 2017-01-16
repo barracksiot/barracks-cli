@@ -7,7 +7,7 @@ class PublishCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!program.args[0];
+    return !!program.args && !!program.args[0];
   }
 
   execute(program) {
