@@ -1,76 +1,17 @@
 const PageableStream = require('./PageableStream');
-const request = require('request-promise');
+const HTTPClient = require('./HTTPClient');
 const fs = require('fs');
 const path = require('path');
-
-function buildEndpointUri(barracks, endpoint, options) {
-  return Object.getOwnPropertyNames(options.pathVariables || {}).reduce((uri, key) => {
-    return uri.replace(`:${key}`, options.pathVariables[key]);
-  }, barracks.options.baseUrl + barracks.options.endpoints[endpoint].path);
-}
-
-function sendEndpointRequest(barracks, endpoint, options) {
-  const requestUri = buildEndpointUri(barracks, endpoint, options);
-  return sendRequest(barracks, barracks.options.endpoints[endpoint].method, requestUri, options);
-}
-
-function sendRequest(barracks, method, uri, options) {
-  return request(Object.assign({}, {
-    method: method,
-    uri: uri,
-    json: true,
-    resolveWithFullResponse: true
-  }, options));
-}
-
-function retrievePagesUntilCondition(barracks, pageableStream, endpoint, options, embeddedKey, stopCondition) {
-  retrieveNextPages(
-    barracks,
-    pageableStream,
-    buildEndpointUri(barracks, endpoint, options),
-    options,
-    embeddedKey,
-    stopCondition
-  );
-}
-
-function retrieveAllPages(barracks, pageableStream, endpoint, options, embeddedKey) {
-  retrieveNextPages(
-    barracks,
-    pageableStream,
-    buildEndpointUri(barracks, endpoint, options),
-    options,
-    embeddedKey
-  );
-}
-
-function retrieveNextPages(barracks, pageableStream, uri, options, embeddedKey, stopCondition) {
-  sendRequest(barracks, 'GET', uri, options).then(response => {
-    if (response.body._embedded) {
-      const items = response.body._embedded[embeddedKey];
-      pageableStream.write(items);
-      if (response.body._links.next && (!stopCondition || !stopCondition(items))) {
-        retrieveNextPages(barracks, pageableStream, response.body._links.next.href, options, embeddedKey, stopCondition);
-      } else {
-        pageableStream.lastPage();
-      }
-    } else {
-      pageableStream.lastPage();
-    }
-  }).catch(errResponse => {
-    pageableStream.fail(errResponse);
-  });
-}
 
 class Barracks {
 
   constructor(options) {
-    this.options = options;
+    this.client = new HTTPClient(options);
   }
 
   authenticate(username, password) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'login', {
+      this.client.sendEndpointRequest('login', {
         body: { username, password }
       }).then(response => {
         resolve(response.headers['x-auth-token']);
@@ -82,7 +23,7 @@ class Barracks {
 
   getAccount(token) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'me', {
+      this.client.sendEndpointRequest('me', {
         headers: {
           'x-auth-token': token
         }
@@ -98,7 +39,7 @@ class Barracks {
     return new Promise((resolve, reject) => {
       const stream = new PageableStream();
       resolve(stream);
-      retrieveAllPages(this, stream, 'updates', {
+      this.client.retrieveAllPages(stream, 'updates', {
         headers: {
           'x-auth-token': token
         }
@@ -109,7 +50,7 @@ class Barracks {
 
   publishUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'publishUpdate', {
+      this.client.sendEndpointRequest('publishUpdate', {
         headers: {
           'x-auth-token': token
         },
@@ -126,7 +67,7 @@ class Barracks {
 
   archiveUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'archiveUpdate', {
+      this.client.sendEndpointRequest('archiveUpdate', {
         headers: {
           'x-auth-token': token
         },
@@ -143,7 +84,7 @@ class Barracks {
 
   scheduleUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'archiveUpdate', {
+      this.client.sendEndpointRequest('archiveUpdate', {
         headers: {
           'x-auth-token': token
         },
@@ -160,7 +101,7 @@ class Barracks {
 
   createPackage(token, updatePackage) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'createPackage', {
+      this.client.sendEndpointRequest('createPackage', {
         headers: {
           'x-auth-token': token
         },
@@ -200,12 +141,12 @@ class Barracks {
 
   getChannels(token) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'getChannels', {
+      this.client.sendEndpointRequest('getChannels', {
         headers: {
           'x-auth-token': token
         }
       }).then(response => {
-        resolve(response.body._embedded.channels);
+        resolve(response.body._embedded);
       }).catch(errResponse => {
         reject(errResponse.message);
       });
@@ -214,7 +155,7 @@ class Barracks {
 
   createUpdate(token, update) {
     return new Promise((resolve, reject) => {
-      sendEndpointRequest(this, 'createUpdate', {
+      this.client.sendEndpointRequest('createUpdate', {
         headers: {
           'x-auth-token': token
         },
@@ -231,7 +172,7 @@ class Barracks {
     return new Promise((resolve, reject) => {
       const stream = new PageableStream();
       resolve(stream);
-      retrieveAllPages(this, stream, 'getDevices', {
+      this.client.retrieveAllPages(stream, 'getDevices', {
         headers: {
           'x-auth-token': token
         },
@@ -248,7 +189,7 @@ class Barracks {
       const resultStream = new PageableStream();
       const bufferStream = new PageableStream();
       resolve(resultStream);
-      retrievePagesUntilCondition(this, bufferStream, 'getDeviceEvents', {
+      this.client.retrievePagesUntilCondition(bufferStream, 'getDeviceEvents', {
         headers: {
           'x-auth-token': token
         },
@@ -271,7 +212,6 @@ class Barracks {
       });
     });
   }
-
 };
 
 module.exports = Barracks;
