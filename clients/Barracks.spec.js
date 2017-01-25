@@ -104,6 +104,45 @@ describe('Barracks', () => {
   });
 
   describe('#getUpdates()', () => {
+    /*
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.retrieveAllPages = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getAccount(token).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('me', {
+          headers: { 'x-auth-token': token }
+        });
+        done();
+      });
+    });
+
+    it('should return a token when authentication succeed', done => {
+      // Given
+      const account = { apiKey: 'qwertyuiop', username: 'coucou' };
+      const response = { body: account };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getAccount(token).then(result => {
+        expect(result).to.be.equals(account);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('me', {
+          headers: { 'x-auth-token': token }
+        });
+        done();
+      }).catch(err => {
+        done('should have succeeded');
+      });
+    });
+    */
   });
 
   describe('#publishUpdate()', () => {
