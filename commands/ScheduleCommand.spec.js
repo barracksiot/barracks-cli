@@ -148,7 +148,7 @@ describe('ScheduleCommand', () => {
     it('should call for schedule update when update uuid and mandatory options are given', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
-      const date = Date.parse(`${program.date} ${program.time}`);
+      const date = new Date(`${program.date} ${program.time}`);
       scheduleCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       scheduleCommand.barracks = {
         scheduleUpdate: sinon.stub().returns(Promise.resolve(publishedUpdate))
