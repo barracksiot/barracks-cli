@@ -37,7 +37,7 @@ describe('DevicesCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should return a PageableStream object when services return data', (done) => {
+    it('should return a PageableStream object when services return data', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       const channels = [{ name: 'channel1' }, { name: 'channel2' }];

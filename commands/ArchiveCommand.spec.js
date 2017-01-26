@@ -1,4 +1,3 @@
-const mockStdin = require('mock-stdin');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
@@ -48,22 +47,16 @@ describe('ArchiveCommand', () => {
   };
   const token = 's5d6f.657fgyi.d6tfuyg';
   let archiveCommand;
-  let stdin;
 
   describe('#execute()', () => {
 
     before(() => {
-      stdin = mockStdin.stdin();
       archiveCommand = new ArchiveCommand();
       archiveCommand.barracks = {};
       archiveCommand.userConfiguration = {};
     });
-
-    after(() => {
-      stdin.end();
-    });
   
-    it('should return an archived update when the request was successful', (done) => {
+    it('should return an archived update when the request was successful', done => {
       // Given
       const program = {
         args: [ 'MyID' ]
@@ -90,7 +83,7 @@ describe('ArchiveCommand', () => {
       });
     });
 
-    it('should return an error when the request failed', (done) => {
+    it('should return an error when the request failed', done => {
       // Given
       const program = {
         args: [ 'MyID' ]
@@ -117,7 +110,7 @@ describe('ArchiveCommand', () => {
       });
     });
 
-    it('should return an error when the request failed', (done) => {
+    it('should return an error when the request failed', done => {
       // Given
       const program = {
         args: [ 'MyID' ]

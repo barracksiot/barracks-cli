@@ -152,7 +152,7 @@ describe('CreateUpdateCommand', () => {
       status: 'active' 
     };
 
-    it('should return an error when the get channel request failed', (done) => {
+    it('should return an error when the get channel request failed', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       createUpdateCommand.userConfiguration = {
@@ -176,7 +176,7 @@ describe('CreateUpdateCommand', () => {
       });
     });
 
-    it('should return an error when the create package request failed', (done) => {
+    it('should return an error when the create package request failed', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       createUpdateCommand.userConfiguration = {
@@ -205,7 +205,7 @@ describe('CreateUpdateCommand', () => {
       });
     });
 
-    it('should return an error when the create update request failed', (done) => {
+    it('should return an error when the create update request failed', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       createUpdateCommand.userConfiguration = {
@@ -243,7 +243,7 @@ describe('CreateUpdateCommand', () => {
       });
     });
 
-    it('should return the created update when the create update request is successful', (done) => {
+    it('should return the created update when the create update request is successful', done => {
       // Given
       const update = {
         uuid: 'bc354c98-bc73-4f90-9eeb-9c1698b988bc'

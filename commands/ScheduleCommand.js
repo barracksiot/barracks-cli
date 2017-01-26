@@ -17,6 +17,10 @@ class ScheduleCommand extends BarracksCommand {
       .option('--time [HH:mm]');
   }
 
+  parseScheduleDate(program) {
+    return new Date(`${program.date} ${program.time}`);
+  }
+
   validateCommand(program) {
     return !!(program.date && isDate(program.date)
       && program.time && isTime(program.time)
@@ -25,7 +29,7 @@ class ScheduleCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.scheduleCommand(token, program.args[0]);
+      return this.barracks.scheduleUpdate(token, program.args[0], this.parseScheduleDate(program));
     });
   }
 

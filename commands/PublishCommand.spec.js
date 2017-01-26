@@ -88,7 +88,7 @@ describe('PublishCommand', () => {
       publishCommand.userConfiguration = {};
     });
   
-    it('should call for publish update when update uuid given', () => {
+    it('should call for publish update when update uuid given', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       publishCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -99,11 +99,16 @@ describe('PublishCommand', () => {
       // When / Then
       publishCommand.execute(program).then(result => {
         expect(result).to.equal(publishedUpdate);
-        expect(publishCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishCommand.userConfiguration.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(publishCommand.barracks.publishUpdate).to.have.been.calledOnce;
         expect(publishCommand.barracks.publishUpdate).to.have.been.calledWithExactly(token, program.args[0]);
+        done();
+      }).catch(err => {
+        done(err);
       });
     });
+
   });
+
 });

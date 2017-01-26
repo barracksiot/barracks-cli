@@ -82,7 +82,7 @@ class Barracks {
     });
   }
 
-  scheduleUpdate(token, uuid) {
+  scheduleUpdate(token, uuid, date) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('archiveUpdate', {
         headers: {

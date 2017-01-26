@@ -83,7 +83,7 @@ describe('deviceCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should return an error when the get device events request fail', (done) => {
+    it('should return an error when the get device events request fail', done => {
       // Given
       const errorMessage = 'error';
       const program = Object.assign({}, programWithValidOptions);
@@ -110,7 +110,7 @@ describe('deviceCommand', () => {
       });
     });
 
-    it('should return result of getDeviceEvents when request succeed', (done) => {
+    it('should return result of getDeviceEvents when request succeed', done => {
       // Given
       const response = [{unitId: 'unit1'}, {unitId: 'unit2'}];
       const program = Object.assign({}, programWithValidOptions);

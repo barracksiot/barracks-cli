@@ -39,7 +39,7 @@ describe('BarracksCommand', () => {
       resetCommand();
     });
 
-    it('should return a token when userConfiguration already contains a token', (done) => {
+    it('should return a token when userConfiguration already contains a token', done => {
       // Given
       barracksCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account))
@@ -61,7 +61,7 @@ describe('BarracksCommand', () => {
       });
     });
 
-    it('should ask credentials to user if userConfiguration has no token, and return a token if credentials are valid', (done) => {
+    it('should ask credentials to user if userConfiguration has no token, and return a token if credentials are valid', done => {
       // Given
       barracksCommand.userConfiguration = {
         getAuthenticationToken: sinon.stub().returns(Promise.reject('error'))
@@ -85,7 +85,7 @@ describe('BarracksCommand', () => {
       });
     });
 
-    it('should ask credentials to user if userConfiguration has no token, and return an error if credentials are invalid', (done) => {
+    it('should ask credentials to user if userConfiguration has no token, and return an error if credentials are invalid', done => {
       // Given
       const errorMessage = 'Nope !';
       barracksCommand.userConfiguration = {
@@ -119,7 +119,7 @@ describe('BarracksCommand', () => {
       stdin.end();
     });
 
-    it('should read login and password from console input', (done) => {
+    it('should read login and password from console input', done => {
 
       setTimeout(() => {
         stdin.send(`${account.email}\r`);
@@ -150,7 +150,7 @@ describe('BarracksCommand', () => {
       resetCommand();
     });
 
-    it('should return a token when valid credentials given', (done) => {
+    it('should return a token when valid credentials given', done => {
       // Given
       barracksCommand.barracks = {
         authenticate: sinon.stub().returns(Promise.resolve(token))
@@ -171,7 +171,7 @@ describe('BarracksCommand', () => {
       });
     });
 
-    it('should return an error token when invalid credentials given', (done) => {
+    it('should return an error token when invalid credentials given', done => {
       // Given
       const badEmail = 'plop@plop.com';
       const badPassword = 'password';
@@ -191,7 +191,7 @@ describe('BarracksCommand', () => {
       });
     });
 
-    it('should return an error token when saveAuthenticationToken fail', (done) => {
+    it('should return an error token when saveAuthenticationToken fail', done => {
       // Given
       const errorMessage = 'A marche po';
       barracksCommand.barracks = {
