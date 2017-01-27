@@ -25,6 +25,10 @@ module.exports = {
         method: 'PUT',
         path: '/api/member/updates/:uuid/status/archived'
       },
+      scheduleUpdate: {
+        method: 'PUT',
+        path: '/api/member/updates/:uuid/status/scheduled?time=:time'
+      },
       createPackage: {
         method: 'POST',
         path: '/api/member/packages'

@@ -44,7 +44,7 @@ class Barracks {
           'x-auth-token': token
         }
       },
-      'memberUpdateInfoes');
+      'detailedUpdates');
     });
   }
 
@@ -84,12 +84,13 @@ class Barracks {
 
   scheduleUpdate(token, uuid, date) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('archiveUpdate', {
+      this.client.sendEndpointRequest('scheduleUpdate', {
         headers: {
           'x-auth-token': token
         },
         pathVariables: {
-          uuid
+          uuid,
+          time: date.toISOString()
         }
       }).then(response => {
         resolve(response.body);
@@ -146,7 +147,7 @@ class Barracks {
           'x-auth-token': token
         }
       }).then(response => {
-        resolve(response.body._embedded);
+        resolve(response.body._embedded.channels);
       }).catch(errResponse => {
         reject(errResponse.message);
       });

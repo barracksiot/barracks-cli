@@ -3,11 +3,11 @@ const BarracksCommand = require('./BarracksCommand');
 
 function getAllDevices(token, barracks) {
   return new Promise((resolve, reject) => {
+    const stream = new PageableStream();
+    resolve(stream);
     barracks.getChannels(token).then(channels => {
-      const stream = new PageableStream();
       const channelCount = channels.length;
       let streamClosedCount = 0;
-      resolve(stream);
       channels.forEach(channel => {
         barracks.getDevices(token, channel.name).then(resultStream => {
           resultStream.onPageReceived(page => {
@@ -23,6 +23,8 @@ function getAllDevices(token, barracks) {
           stream.fail(err);
         });
       });
+    }).catch(err => {
+      stream.fail(err);
     });
   });
 }

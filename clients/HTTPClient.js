@@ -22,14 +22,14 @@ class HTTPClient {
   }
 
   sendEndpointRequest(endpoint, options) {
-    const requestUri = buildEndpointUri(endpoint, options);
+    const requestUri = this.buildEndpointUri(endpoint, options);
     return sendRequest(this.serverInfo.endpoints[endpoint].method, requestUri, options);
   }
 
   retrievePagesUntilCondition(pageableStream, endpoint, options, embeddedKey, stopCondition) {
-    retrieveNextPages(
+    this.retrieveNextPages(
       pageableStream,
-      buildEndpointUri(endpoint, options),
+      this.buildEndpointUri(endpoint, options),
       options,
       embeddedKey,
       stopCondition
@@ -37,9 +37,9 @@ class HTTPClient {
   }
 
   retrieveAllPages(pageableStream, endpoint, options, embeddedKey) {
-    retrieveNextPages(
+    this.retrieveNextPages(
       pageableStream,
-      buildEndpointUri(endpoint, options),
+      this.buildEndpointUri(endpoint, options),
       options,
       embeddedKey
     );
@@ -51,7 +51,7 @@ class HTTPClient {
         const items = response.body._embedded[embeddedKey];
         pageableStream.write(items);
         if (response.body._links.next && (!stopCondition || !stopCondition(items))) {
-          retrieveNextPages(pageableStream, response.body._links.next.href, options, embeddedKey, stopCondition);
+          this.retrieveNextPages(pageableStream, response.body._links.next.href, options, embeddedKey, stopCondition);
         } else {
           pageableStream.lastPage();
         }

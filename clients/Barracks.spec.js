@@ -322,7 +322,7 @@ describe('Barracks', () => {
       const channel1 = { uuid: 'lkjhgfdsa', name: 'prod' };
       const channel2 = { uuid: 'qwertyuio', name: 'alpha' };
       const channels = [ channel1, channel2 ];
-      const response = { body: { '_embedded': channels }};
+      const response = { body: { '_embedded': { channels } }};
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
