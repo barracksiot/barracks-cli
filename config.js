@@ -37,13 +37,13 @@ module.exports = {
         method: 'POST',
         path: '/api/member/updates'
       },
-      getChannels: {
+      getSegments: {
         method: 'GET',
-        path: '/api/member/channels'
+        path: '/api/member/segments/order'
       },
       getDevices: {
         method: 'GET',
-        path: '/api/member/channels/:channelName/devices?size=20'
+        path: '/api/member/segments/:segmentId/devices?size=20'
       },
       getDeviceEvents: {
         method: 'GET',
@@ -51,11 +51,10 @@ module.exports = {
       }
     }
   },
-
   userConfig: {
     folder: path.join(
       process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/.barracks'
     )
-  }
-
+  },
+  debug: process.env.DEBUG || false
 };

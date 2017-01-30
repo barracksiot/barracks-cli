@@ -2,6 +2,7 @@ const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const fs = require('fs');
 const path = require('path');
+const logger = require('../utils/logger');
 
 class Barracks {
 
@@ -11,11 +12,14 @@ class Barracks {
 
   authenticate(username, password) {
     return new Promise((resolve, reject) => {
+      logger.debug(`Authenticating ${username}...`);
       this.client.sendEndpointRequest('login', {
         body: { username, password }
       }).then(response => {
+        logger.debug(`Authentication successful.`);
         resolve(response.headers['x-auth-token']);
       }).catch(errResponse => {
+        logger.debug(`Authentication failure.`);
         reject(errResponse.message);
       });
     });
@@ -23,13 +27,16 @@ class Barracks {
 
   getAccount(token) {
     return new Promise((resolve, reject) => {
+      logger.debug(`Getting account information for token ${token}...`);
       this.client.sendEndpointRequest('me', {
         headers: {
           'x-auth-token': token
         }
       }).then(response => {
+        logger.debug(`Account information retrieved.`);
         resolve(response.body);
       }).catch(errResponse => {
+        logger.debug(`Account information request failure.`);
         reject(errResponse.message);
       });
     });
@@ -140,15 +147,19 @@ class Barracks {
     });
   }
 
-  getChannels(token) {
+  getSegments(token) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('getChannels', {
+      logger.debug('Getting user segments...');
+      this.client.sendEndpointRequest('getSegments', {
         headers: {
           'x-auth-token': token
         }
       }).then(response => {
-        resolve(response.body._embedded.channels);
+        const segments = response.body;
+        logger.debug('User segments retrieved:', segments);
+        resolve(segments);
       }).catch(errResponse => {
+        logger.debug('Get user segments failed with:', errResponse);
         reject(errResponse.message);
       });
     });
@@ -169,8 +180,9 @@ class Barracks {
     });
   }
 
-  getDevices(token, channelName) {
+  getDevices(token, segmentId) {
     return new Promise((resolve, reject) => {
+      logger.debug('Getting devices for segment:', segmentId);
       const stream = new PageableStream();
       resolve(stream);
       this.client.retrieveAllPages(stream, 'getDevices', {
@@ -178,7 +190,7 @@ class Barracks {
           'x-auth-token': token
         },
         pathVariables: {
-          channelName
+          segmentId
         }
       },
       'deviceEvents');

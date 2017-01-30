@@ -1,21 +1,22 @@
 const PageableStream = require('../clients/PageableStream');
 const BarracksCommand = require('./BarracksCommand');
+const logger = require('../utils/logger');
 
 function getAllDevices(token, barracks) {
   return new Promise((resolve, reject) => {
     const stream = new PageableStream();
     resolve(stream);
-    barracks.getChannels(token).then(channels => {
-      const channelCount = channels.length;
+    getActiveSegmentsIdsWithOther(token, barracks).then(activeSegmentsIds => {
+      const activeSegmentCount = activeSegmentsIds.length;
       let streamClosedCount = 0;
-      channels.forEach(channel => {
-        barracks.getDevices(token, channel.name).then(resultStream => {
+      activeSegmentsIds.forEach(segmentId => {
+        barracks.getDevices(token, segmentId).then(resultStream => {
           resultStream.onPageReceived(page => {
             stream.write(page);
           });
           resultStream.onLastPage(() => {
             ++streamClosedCount;
-            if (streamClosedCount === channelCount) {
+            if (streamClosedCount === activeSegmentCount) {
               stream.lastPage();                  
             }
           });
@@ -26,6 +27,16 @@ function getAllDevices(token, barracks) {
     }).catch(err => {
       stream.fail(err);
     });
+  });
+}
+
+function getActiveSegmentsIdsWithOther(token, barracks) {
+  return new Promise((resolve, reject) => {
+    barracks.getSegments(token).then(result => {
+      resolve(result.active.map(segment => segment.id).concat('other'));
+    }).catch(err => {
+      reject(err);
+    })
   });
 }
 
