@@ -58,8 +58,7 @@ describe('DevicesCommand', () => {
         */
         done();
       }).catch(err => {
-        console.log(err);
-        done('Should have succeeded');        
+        done(err);        
       });
     });
   });

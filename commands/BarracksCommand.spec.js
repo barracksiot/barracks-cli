@@ -80,8 +80,7 @@ describe('BarracksCommand', () => {
         expect(barracksCommand.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
         done();
       }).catch(err => {
-        console.log(err);
-        done('should have succeeded');
+        done(err);
       });
     });
 
@@ -95,7 +94,6 @@ describe('BarracksCommand', () => {
 
       // When / Then
       barracksCommand.getAuthenticationToken().then(result => {
-        console.log(err);
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(errorMessage);
@@ -138,8 +136,7 @@ describe('BarracksCommand', () => {
         expect(result.password).to.be.equals(accountPassword);
         done();
       }).catch(err => {
-        console.log(err);
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -166,8 +163,7 @@ describe('BarracksCommand', () => {
         expect(barracksCommand.saveAuthenticationToken).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
-        console.log(err);
-        done('should have succeeded');
+        done(err);
       });
     });
 
