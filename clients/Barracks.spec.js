@@ -241,6 +241,57 @@ describe('Barracks', () => {
   });
 
   describe('#scheduleUpdate()', () => {
+
+    it('should return update info when schedule succeed', done => {
+      // Given
+      const uuid = 'poiuytrewq';
+      const date = new Date();
+      const update = { uuid: uuid, status: 'scheduled' };
+      const response = { body: update };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.scheduleUpdate(token, uuid, date).then(result => {
+        expect(result).to.be.equals(update);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('scheduleUpdate', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            uuid,
+            time: date.toISOString() 
+          }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error when schedule failed', done => {
+      // Given
+      const uuid = 'poiuytrewq';
+      const date = new Date();
+      const error = 'Error!';
+      const response = { message: error };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(response));
+
+      // When / Then
+      barracks.scheduleUpdate(token, uuid, date).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('scheduleUpdate', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            uuid,
+            time: date.toISOString() 
+          }
+        });
+        done();
+      });
+    });
+
   });
 
   describe('#createPackage()', () => {
@@ -460,6 +511,49 @@ describe('Barracks', () => {
       });
     });
 
+  });
+
+  describe('#setActiveSegments()', () => {
+
+    const segmentIds = [ '12345', '67890' ];
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const errorResponse = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(errorResponse));
+
+      // When / Then
+      barracks.setActiveSegments(token, segmentIds).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(errorResponse.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('setActiveSegments', {
+          headers: { 'x-auth-token': token },
+          body: segmentIds
+        });
+        done();
+      });
+    });
+
+    it('should return segment ids when request is successful', done => {
+      // Given
+      const response = { body: segmentIds };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.setActiveSegments(token, segmentIds).then(result => {
+        expect(result).to.be.equals(segmentIds);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('setActiveSegments', {
+          headers: { 'x-auth-token': token },
+          body: segmentIds
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
 });

@@ -10,7 +10,10 @@ class SetActiveSegmentsCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return program.args.length > 0 || program.empty;
+    return !!(
+      (program.args.length > 0 && !program.empty) || 
+      (program.empty && program.args.length === 0)
+    );
   }
 
   execute(program) {

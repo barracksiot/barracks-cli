@@ -3,28 +3,69 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require("chai-as-promised");
-const SegmentsCommand = require('./SegmentsCommand');
-const PageableStream = require('../clients/PageableStream');
+const SetActiveSegmentsCommand = require('./SetActiveSegmentsCommand');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function buildSegment(segmentId) {
-  return {
-    id: segmentId,
-    name: 'Plop'
-  };
-}
+describe('SetActiveSegmentsCommand', () => {
 
-describe('segmentsCommand', () => {
-
-  let segmentsCommand;
+  let command;
   const token = 'i8uhkj.token.65ryft';
+  const programWithSegmentIds = { args: [ '123456789', '098765432' ] };
 
-  before(() => {
-    segmentsCommand = new SegmentsCommand();
-    segmentsCommand.barracks = {};
-    segmentsCommand.userConfiguration = {};
+  beforeEach(() => {
+    command = new SetActiveSegmentsCommand();
+    command.barracks = {};
+    command.userConfiguration = {};
+  });
+
+  describe('#validateCommand(program)', () => {
+
+    it('should return false when no args', () => {
+      // Given
+      const program = { args: [] };
+
+      // When
+      const result = command.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return true when args', () => {
+      // Given
+      const program = { args: [ '12345', '67890' ] };
+
+      // When
+      const result = command.validateCommand(program);
+
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when no args and --empty', () => {
+      // Given
+      const program = { args: [], empty: true };
+
+      // When
+      const result = command.validateCommand(program);
+
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when args and --empty', () => {
+      // Given
+      const program = { args: [ '12345' ], empty: true };
+
+      // When
+      const result = command.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+    });
+
   });
 
   describe('#execute(program)', () => {
@@ -32,42 +73,59 @@ describe('segmentsCommand', () => {
     it('should return an error when the request fail', done => {
       // Given
       const errorMessage = 'error';
-      segmentsCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      segmentsCommand.barracks = {
-        getSegments: sinon.stub().returns(Promise.reject(errorMessage))
+      command.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      command.barracks = {
+        setActiveSegments: sinon.stub().returns(Promise.reject(errorMessage))
       };
 
       // When / Then
-      segmentsCommand.execute({}).then(result => {
+      command.execute(programWithSegmentIds).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(errorMessage);
-        expect(segmentsCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(segmentsCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(segmentsCommand.barracks.getSegments).to.have.been.calledOnce;
-        expect(segmentsCommand.barracks.getSegments).to.have.been.calledWithExactly(token);
+        expect(command.getAuthenticationToken).to.have.been.calledOnce;
+        expect(command.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(command.barracks.setActiveSegments).to.have.been.calledOnce;
+        expect(command.barracks.setActiveSegments).to.have.been.calledWithExactly(token, programWithSegmentIds.args);
         done();
       });
     });
 
-    it('should return the segments when the request was successful', done => {
+    it('should resolve when the request is successful', done => {
       // Given
-      const segments = {
-        active: [buildSegment(1), buildSegment(2)],
-        inactive: [buildSegment(3), buildSegment(4)]
-      };
-      segmentsCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      segmentsCommand.barracks = {
-        getSegments: sinon.stub().returns(Promise.resolve(segments))
+      command.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      command.barracks = {
+        setActiveSegments: sinon.stub().returns(Promise.resolve(programWithSegmentIds.args))
       };
 
       // When / Then
-      segmentsCommand.execute({}).then(result => {
-        expect(result).to.be.equals(segments);
-        expect(segmentsCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(segmentsCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(segmentsCommand.barracks.getSegments).to.have.been.calledOnce;
-        expect(segmentsCommand.barracks.getSegments).to.have.been.calledWithExactly(token);
+      command.execute(programWithSegmentIds).then(result => {
+        expect(result).to.be.equals(programWithSegmentIds.args);
+        expect(command.getAuthenticationToken).to.have.been.calledOnce;
+        expect(command.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(command.barracks.setActiveSegments).to.have.been.calledOnce;
+        expect(command.barracks.setActiveSegments).to.have.been.calledWithExactly(token, programWithSegmentIds.args);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should send no ids when option --empty is used', done => {
+      // Given
+      const program = { empty: true, args: [] };
+      command.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      command.barracks = {
+        setActiveSegments: sinon.stub().returns(Promise.resolve(program.args))
+      };
+
+      // When / Then
+      command.execute(program).then(result => {
+        expect(result).to.be.equals(program.args);
+        expect(command.getAuthenticationToken).to.have.been.calledOnce;
+        expect(command.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(command.barracks.setActiveSegments).to.have.been.calledOnce;
+        expect(command.barracks.setActiveSegments).to.have.been.calledWithExactly(token, program.args);
         done();
       }).catch(err => {
         done(err);
