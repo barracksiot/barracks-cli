@@ -246,62 +246,80 @@ describe('Barracks', () => {
   describe('#createPackage()', () => {
   });
 
-  describe('#getChannelByName()', () => {
+  describe('#getSegmentByName()', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const channelName = 'channel prod';
+      const segmentName = 'segment prod';
       const error = 'Error !';
-      barracks.getChannels = sinon.stub().returns(Promise.reject(error));
+      barracks.getSegments = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      barracks.getChannelByName(token, channelName).then(result => {
+      barracks.getSegmentByName(token, segmentName).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(barracks.getChannels).to.have.been.calledOnce;
-        expect(barracks.getChannels).to.have.been.calledWithExactly(token);
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
       });
     });
 
-    it('should return an error if channel does not exists', done => {
+    it('should return an error if segment does not exists', done => {
       // Given
-      const channelName = 'channel prod';
+      const segmentName = 'segment prod';
       const response = [
-        { uuid: 'zxcvbnm', name: 'channel' },
-        { uuid: 'zxcvbnm', name: 'other channel' }
+        { id: 'zxcvbnm', name: 'segment' },
+        { id: 'zxcvbnm', name: 'other segment' }
       ];
-      barracks.getChannels = sinon.stub().returns(Promise.resolve(response));
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.getChannelByName(token, channelName).then(result => {
+      barracks.getSegmentByName(token, segmentName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('No matching channel name');
-        expect(barracks.getChannels).to.have.been.calledOnce;
-        expect(barracks.getChannels).to.have.been.calledWithExactly(token);
+        expect(err).to.not.be.undefined;
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
       });
     });
 
-    it('should return specified channel info when request succeed', done => {
+    it('should return specified active segment info when request succeed', done => {
       // Given
-      const channelName = 'channel prod';
-      const channel = { uuid: 'lkjhgfdsa', name: channelName };
-      const response = [ channel, { uuid: 'zxcvbnm', name: 'other channel' } ];
-      barracks.getChannels = sinon.stub().returns(Promise.resolve(response));
+      const segmentName = 'segment prod';
+      const segment = { id: 'lkjhgfdsa', name: segmentName };
+      const response = { active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ] };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.getChannelByName(token, channelName).then(result => {
-        expect(result).to.be.equals(channel);
-        expect(barracks.getChannels).to.have.been.calledOnce;
-        expect(barracks.getChannels).to.have.been.calledWithExactly(token);
+      barracks.getSegmentByName(token, segmentName).then(result => {
+        expect(result).to.be.equals(segment);
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
         done(err);
       });
     });
+
+    it('should not return specified segment when inactive', done => {
+      // Given
+      const segmentName = 'segment prod';
+      const segment = { id: 'lkjhgfdsa', name: segmentName };
+      const response = { inactive: [ segment, { id: 'zxcvbnm', name: 'other segment' } ], active: [] };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegmentByName(token, segmentName).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
+        done();
+      });
+    });
+
   });
 
   describe('#getSegments()', () => {

@@ -48,6 +48,10 @@ module.exports = {
       getDeviceEvents: {
         method: 'GET',
         path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+      },
+      setActiveSegments: {
+        method: 'POST',
+        path: '/api/member/segments/order'
       }
     }
   },

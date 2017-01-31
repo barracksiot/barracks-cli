@@ -227,6 +227,20 @@ class Barracks {
     });
   }
 
+  setActiveSegments(token, segmentIds) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('setActiveSegments', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: segmentIds
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
 
 }
 
