@@ -14,12 +14,6 @@ const logger = new winston.Logger({
   exitOnError: false
 });
 
-logger.stream = {
-  write: (message) => {
-    logger.info(message);
-  }
-};
-
 logger.debug('The application is in debug mode');
 
 module.exports = logger;
