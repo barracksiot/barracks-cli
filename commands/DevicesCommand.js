@@ -39,10 +39,10 @@ function getActiveSegmentsIdsWithOther(token, barracks) {
   });
 }
 
-function getAllDevicesFromChannel(token, barracks, channelName) {
+function getAllDevicesFromSegment(token, barracks, segmentName) {
   return new Promise((resolve, reject) => {
-    barracks.getChannelByName(token, channelName).then(channel => {
-      return barracks.getDevices(token, channel.name);
+    barracks.getSegmentByName(token, segmentName).then(segment => {
+      return barracks.getDevices(token, segment.id);
     }).then(resultStream => {
       resolve(resultStream);
     }).catch(err => {
@@ -55,13 +55,13 @@ class DevicesCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--channel [channelName]', '(Optionnal) Render devices from that channel only');
+      .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only');
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      if (program.channel) {
-        return getAllDevicesFromChannel(token, this.barracks, program.channel);
+      if (program.segment) {
+        return getAllDevicesFromSegment(token, this.barracks, program.segment);
       } else {
         return getAllDevices(token, this.barracks);
       }

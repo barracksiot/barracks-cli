@@ -131,16 +131,16 @@ class Barracks {
     });
   }
 
-  getChannelByName(token, channelName) {
+  getSegmentByName(token, segmentName) {
     return new Promise((resolve, reject) => {
-      this.getChannels(token).then(channels => {
-        const channel = channels.find(channel => {
-          return channel.name === channelName;
+      this.getSegments(token).then(segments => {
+        const segment = segments.active.find(segment => {
+          return segment.name === segmentName;
         });
-        if (channel) {
-          resolve(channel);
+        if (segment) {
+          resolve(segment);
         } else {
-          reject('No matching channel name');
+          reject('No matching active segment.');
         }
       }).catch(err => {
         reject(err);
@@ -226,6 +226,8 @@ class Barracks {
       });
     });
   }
+
+
 }
 
 module.exports = Barracks;
