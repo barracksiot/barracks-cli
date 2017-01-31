@@ -2,7 +2,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
-const USER_CONFIGURATION_FILE_NAME = "barracks.json";
+const USER_CONFIGURATION_FILE_NAME = 'barracks.json';
 
 function initUserConfigurationFileIfDoesNotExist(userConfiguration) {
   return new Promise((resolve, reject) => {

@@ -1,5 +1,3 @@
-"strict mode";
-
 const debug = require('../config').debug;
 const winston = require('winston');
 winston.emitErrs = true;
@@ -22,6 +20,6 @@ logger.stream = {
   }
 };
 
-logger.debug("The application is in debug mode");
+logger.debug('The application is in debug mode');
 
 module.exports = logger;

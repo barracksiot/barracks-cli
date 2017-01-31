@@ -6,11 +6,9 @@
   "undef": true,
   "unused": true,
   "varstmt": true,
+  "quotmark": "single",
+  "node": true,
   "globals": {
-    "require": true,
-    "module": true,
-    "process": true,
-    "setTimeout": true,
-    "console": true
+
   }
 }
