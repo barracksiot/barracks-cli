@@ -50,14 +50,18 @@ class HTTPClient {
   }
 
   retrieveNextPages(pageableStream, uri, options, embeddedKey, stopCondition) {
-    sendRequest('GET', uri, options).then(response => {
-      if (isPage(response.body)) {
-        this.handlePage(pageableStream, response.body, options, embeddedKey, stopCondition);
-      } else {
-        pageableStream.lastPage();
-      }
-    }).catch(errResponse => {
-      pageableStream.fail(errResponse);
+    return new Promise(resolve => {
+      sendRequest('GET', uri, options).then(response => {
+        if (isPage(response.body)) {
+          this.handlePage(pageableStream, response.body, options, embeddedKey, stopCondition);
+        } else {
+          pageableStream.lastPage();
+        }
+        resolve();
+      }).catch(errResponse => {
+        pageableStream.fail(errResponse);
+        resolve();
+      });
     });
   }
 
