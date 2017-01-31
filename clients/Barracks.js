@@ -12,14 +12,14 @@ class Barracks {
 
   authenticate(username, password) {
     return new Promise((resolve, reject) => {
-      logger.debug(`Authenticating ${username}...`);
+      logger.debug('Authenticating:', username);
       this.client.sendEndpointRequest('login', {
         body: { username, password }
       }).then(response => {
-        logger.debug(`Authentication successful.`);
+        logger.debug('Authentication successful.');
         resolve(response.headers['x-auth-token']);
       }).catch(errResponse => {
-        logger.debug(`Authentication failure.`);
+        logger.debug('Authentication failure.');
         reject(errResponse.message);
       });
     });
@@ -27,23 +27,24 @@ class Barracks {
 
   getAccount(token) {
     return new Promise((resolve, reject) => {
-      logger.debug(`Getting account information for token ${token}...`);
+      logger.debug('Getting account information for token:', token);
       this.client.sendEndpointRequest('me', {
         headers: {
           'x-auth-token': token
         }
       }).then(response => {
-        logger.debug(`Account information retrieved.`);
-        resolve(response.body);
+        const account = response.body;
+        logger.debug('Account information retrieved:', account);
+        resolve(account);
       }).catch(errResponse => {
-        logger.debug(`Account information request failure.`);
+        logger.debug('Account information request failure.');
         reject(errResponse.message);
       });
     });
   }
 
   getUpdates(token) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const stream = new PageableStream();
       resolve(stream);
       this.client.retrieveAllPages(stream, 'updates', {
@@ -181,7 +182,7 @@ class Barracks {
   }
 
   getDevices(token, segmentId) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       logger.debug('Getting devices for segment:', segmentId);
       const stream = new PageableStream();
       resolve(stream);
@@ -198,7 +199,7 @@ class Barracks {
   }
 
   getDeviceEvents(token, unitId, fromDate) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const resultStream = new PageableStream();
       const bufferStream = new PageableStream();
       resolve(resultStream);
@@ -225,6 +226,6 @@ class Barracks {
       });
     });
   }
-};
+}
 
 module.exports = Barracks;

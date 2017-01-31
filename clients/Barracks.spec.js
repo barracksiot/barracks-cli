@@ -9,6 +9,13 @@ const Barracks = require('./Barracks');
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
+function buildSegment(segmentId) {
+  return {
+    id: segmentId,
+    name: 'Plop'
+  };
+}
+
 describe('Barracks', () => {
 
   let barracks;
@@ -228,7 +235,7 @@ describe('Barracks', () => {
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -292,12 +299,12 @@ describe('Barracks', () => {
         expect(barracks.getChannels).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
 
-  describe('#getChannels()', () => {
+  describe('#getSegments()', () => {
 
     it('should return an error message when request fails', done => {
       // Given
@@ -305,36 +312,39 @@ describe('Barracks', () => {
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      barracks.getChannels(token).then(result => {
+      barracks.getSegments(token).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getChannels', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
           headers: { 'x-auth-token': token }
         });
         done();
       });
     });
 
-    it('should return channel list when request succeed', done => {
+    it('should return segment list when request succeed', done => {
       // Given
-      const channel1 = { uuid: 'lkjhgfdsa', name: 'prod' };
-      const channel2 = { uuid: 'qwertyuio', name: 'alpha' };
-      const channels = [ channel1, channel2 ];
-      const response = { body: { '_embedded': { channels } }};
+      const segment1 = { id: 'lkjhgfdsa', name: 'prod' };
+      const segment2 = { id: 'qwertyuio', name: 'alpha' };
+      const segment3 = { id: 'vyugyu', name: 'plop' };
+      const activeSegments = [ segment1, segment2 ];
+      const inactiveSegments = [ segment3 ];
+      const body = { active: activeSegments, inactive: inactiveSegments };
+      const response = { body };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.getChannels(token).then(result => {
-        expect(result).to.be.equals(channels);
+      barracks.getSegments(token).then(result => {
+        expect(result).to.be.equals(body);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getChannels', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
           headers: { 'x-auth-token': token }
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -378,7 +388,7 @@ describe('Barracks', () => {
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -388,4 +398,50 @@ describe('Barracks', () => {
 
   describe('#getDeviceEvents()', () => {
   });
+
+  describe('#getSegments()', () => {
+
+    it('should return the user segments', done => {
+      // Given
+      const segments = {
+        active: [buildSegment(1), buildSegment(2)],
+        inactive: [buildSegment(3), buildSegment(4)]
+      };
+      const response = { body: segments };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegments(token).then(result => {
+        expect(result).to.be.equals(segments);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
+          headers: { 'x-auth-token': token }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error when the request failed', done => {
+      // Given
+      const errorMessage = "Error";
+      const errorResponse = { message: errorMessage };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(errorResponse));
+
+      // When / Then
+      barracks.getSegments(token).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(errorMessage);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
+          headers: { 'x-auth-token': token }
+        });
+        done();
+      });
+    });
+
+  });
+
 });

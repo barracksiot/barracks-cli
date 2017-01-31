@@ -14,7 +14,7 @@ describe('deviceCommand', () => {
   let deviceCommand;
   const token = 'i8uhkj.token.65ryft';
   const programWithValidOptions = {
-    unitId: 'unitIdTest'
+    args: ['unitIdTest']
   };
 
   before(() => {
@@ -101,7 +101,7 @@ describe('deviceCommand', () => {
           expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
           expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
           expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.unitId, undefined);
+          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
           done();
         });
         bufferStream.fail(errorMessage);
@@ -128,7 +128,7 @@ describe('deviceCommand', () => {
           expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
           expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
           expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.unitId, undefined);
+          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
           done();
         });
         bufferStream.write(response);

@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "./bin/barracks.js",
-    "test": "./node_modules/mocha/bin/mocha **/*.spec.js --reporter spec",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha **/*.spec.js -- -R spec"
+    "lint": "jshint **/**.js",
+    "test": "npm run lint && npm run coverage && npm run check-coverage",
+    "coverage": "DEBUG=true istanbul cover ./node_modules/mocha/bin/_mocha **/*.spec.js -- -R spec",
+    "check-coverage": "istanbul check-coverage --statement 80 --branch 50 --function 75"
   },
   "bin": {
     "barracks": "bin/barracks.js"
@@ -61,6 +63,7 @@
     "chai-as-promised": "^6.0.0",
     "chai-spies": "^0.7.1",
     "istanbul": "^0.4.5",
+    "jshint": "^2.9.4",
     "mocha": "^3.2.0",
     "mock-stdin": "^0.3.1",
     "sinon": "^1.17.6",

@@ -14,6 +14,7 @@ program
   .command('archive', 'Archive an update')
   .command('devices', 'List devices')
   .command('device', 'Get device history')
+  .command('segments', 'Get active and inactive segments')
   .parse(process.argv);
 
 process.on('SIGINT', () => {

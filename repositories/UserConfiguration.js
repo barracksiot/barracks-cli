@@ -31,7 +31,6 @@ class UserConfiguration {
   }
 
   saveAuthenticationToken(token) {
-    const that = this;
     return new Promise((resolve, reject) => {
       this.readUserConfiguration().then(config => {
         config.token = token;
@@ -83,7 +82,6 @@ class UserConfiguration {
   }
 
   writeUserConfiguration(config) {
-    const that = this;
     return new Promise((resolve, reject) => {
       fs.writeFile(this.userConfigurationFile, JSON.stringify(config), (err) => {
         if (err) {

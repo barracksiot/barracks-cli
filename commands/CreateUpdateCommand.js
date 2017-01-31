@@ -32,11 +32,13 @@ class CreateUpdateCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(program.title && program.title != true
-      && program.channel && program.channel != true
-      && program.versionId && program.versionId != true
-      && program.package && fileExists(program.package)
-      && (!program.properties || isJsonString(program.properties)));
+    return !!(
+      program.title && program.title !== true && 
+      program.channel && program.channel !== true && 
+      program.versionId && program.versionId !== true && 
+      program.package && fileExists(program.package) && 
+      (!program.properties || isJsonString(program.properties))
+    );
   }
 
   execute(program) {

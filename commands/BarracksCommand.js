@@ -28,7 +28,7 @@ class BarracksCommand {
         return this.barracks.getAccount(token);
       }).then(() => {
         resolve(token);
-      }).catch(err => {
+      }).catch(() => {
         this.requestUserAuthentication().then(credentials => {
           return this.authenticate(credentials.email, credentials.password);
         }).then(token => {
@@ -78,11 +78,11 @@ class BarracksCommand {
     return this.userConfiguration.saveAuthenticationToken(token);
   }
 
-  validateCommand(program) {
+  validateCommand() {
     return true;
   }
 
-  execute(program) {
+  execute() {
     return Promise.reject('Need to be overridden');
   }
 

@@ -1,9 +1,8 @@
-const read = require('read');
 const BarracksCommand = require('./BarracksCommand');
 
 function loginOptionsGiven(program) {
-  return program.email && program.email != true
-    && program.password && program.password != true;
+  return program.email && program.email !== true && 
+      program.password && program.password !== true;
 }
 
 function getCredentials(loginCommand, program) {

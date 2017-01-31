@@ -1,0 +1,16 @@
+{
+  "esversion": 6,
+  "maxcomplexity": 3,
+  "maxparams": 5,
+  "maxstatements": 8,
+  "undef": true,
+  "unused": true,
+  "varstmt": true,
+  "globals": {
+    "require": true,
+    "module": true,
+    "process": true,
+    "setTimeout": true,
+    "console": true
+  }
+}

@@ -1,9 +1,8 @@
 const PageableStream = require('../clients/PageableStream');
 const BarracksCommand = require('./BarracksCommand');
-const logger = require('../utils/logger');
 
 function getAllDevices(token, barracks) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const stream = new PageableStream();
     resolve(stream);
     getActiveSegmentsIdsWithOther(token, barracks).then(activeSegmentsIds => {
@@ -36,7 +35,7 @@ function getActiveSegmentsIdsWithOther(token, barracks) {
       resolve(result.active.map(segment => segment.id).concat('other'));
     }).catch(err => {
       reject(err);
-    })
+    });
   });
 }
 

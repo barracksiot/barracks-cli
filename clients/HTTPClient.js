@@ -9,6 +9,10 @@ function sendRequest(method, uri, options) {
   }, options));
 }
 
+function isPage(body) {
+  return !!body._embedded;
+}
+
 class HTTPClient {
 
   constructor(serverInfo) {
@@ -47,14 +51,8 @@ class HTTPClient {
 
   retrieveNextPages(pageableStream, uri, options, embeddedKey, stopCondition) {
     sendRequest('GET', uri, options).then(response => {
-      if (response.body._embedded) {
-        const items = response.body._embedded[embeddedKey];
-        pageableStream.write(items);
-        if (response.body._links.next && (!stopCondition || !stopCondition(items))) {
-          this.retrieveNextPages(pageableStream, response.body._links.next.href, options, embeddedKey, stopCondition);
-        } else {
-          pageableStream.lastPage();
-        }
+      if (isPage(response.body)) {
+        this.handlePage(pageableStream, response.body, options, embeddedKey, stopCondition);
       } else {
         pageableStream.lastPage();
       }
@@ -62,6 +60,17 @@ class HTTPClient {
       pageableStream.fail(errResponse);
     });
   }
+
+  handlePage(pageableStream, page, options, embeddedKey, stopCondition) {
+    const items = page._embedded[embeddedKey];
+    pageableStream.write(items);
+    if (page._links.next && (!stopCondition || !stopCondition(items))) {
+      this.retrieveNextPages(pageableStream, page._links.next.href, options, embeddedKey, stopCondition);
+    } else {
+      pageableStream.lastPage();
+    }
+  }
+
 }
 
 module.exports = HTTPClient;

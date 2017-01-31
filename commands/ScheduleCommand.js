@@ -22,9 +22,9 @@ class ScheduleCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(program.date && isDate(program.date)
-      && program.time && isTime(program.time)
-      && program.args[0]);
+    return !!(program.date && isDate(program.date) && 
+      program.time && isTime(program.time) && 
+      program.args[0]);
   }
 
   execute(program) {
