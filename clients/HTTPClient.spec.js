@@ -140,7 +140,7 @@ describe('HTTPClient', () => {
       const endpointUri = baseUrl + 'endpoint';
       const options = { headers: { 'x-auth-token': 'token' } };
       const embeddedKey = 'key';
-      const stopCondition = () => { return true; }
+      const stopCondition = sinon.spy();
       client.buildEndpointUri = sinon.stub().returns(endpointUri);
       client.retrieveNextPages = sinon.spy();
 
@@ -197,7 +197,7 @@ describe('HTTPClient', () => {
       const endpointUri = baseUrl + 'endpoint';
       const options = { headers: { 'x-auth-token': 'token' } };
       const embeddedKey = 'key';
-      const stopCondition = () => { return true; }
+      const stopCondition = sinon.spy();
       client.handlePage = sinon.spy();
       const response = { body: { _embedded: { [embeddedKey]: 'coucou' }}};
       requestMock = sinon.stub().returns(Promise.resolve(response));
@@ -224,10 +224,187 @@ describe('HTTPClient', () => {
         done(err);
       });
     });
+
+    it('should send lastPage event to the stream when server respond with last page', (done) => {
+      // Given
+      const stream = new PageableStream();
+      const lastPageCallback = sinon.spy();
+      stream.onLastPage(lastPageCallback);
+      const endpointUri = baseUrl + 'endpoint';
+      const options = { headers: { 'x-auth-token': 'token' } };
+      const embeddedKey = 'key';
+      const stopCondition = sinon.spy();
+      const response = { body: 'coucou' };
+      requestMock = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      client.retrieveNextPages(stream, endpointUri, options, embeddedKey, stopCondition).then(() => {
+        expect(requestMock).to.have.been.calledOnce;
+        expect(requestMock).to.have.been.calledWithExactly(Object.assign({}, {
+          method: 'GET',
+          uri: endpointUri,
+          json: true,
+          resolveWithFullResponse: true
+        }, options));
+        expect(lastPageCallback).to.have.been.calledOnce;
+        expect(lastPageCallback).to.have.been.calledWithExactly();
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should send fail event to the stream when server respond with an error', (done) => {
+      // Given
+      const stream = new PageableStream();
+      const onErrorCallback = sinon.spy();
+      stream.onError(onErrorCallback);
+      const endpointUri = baseUrl + 'endpoint';
+      const options = { headers: { 'x-auth-token': 'token' } };
+      const embeddedKey = 'key';
+      const stopCondition = sinon.spy();
+      client.handlePage = sinon.spy();
+      const error = 'error'
+      requestMock = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      client.retrieveNextPages(stream, endpointUri, options, embeddedKey, stopCondition).then(() => {
+        expect(requestMock).to.have.been.calledOnce;
+        expect(requestMock).to.have.been.calledWithExactly(Object.assign({}, {
+          method: 'GET',
+          uri: endpointUri,
+          json: true,
+          resolveWithFullResponse: true
+        }, options));
+        expect(onErrorCallback).to.have.been.calledOnce;
+        expect(onErrorCallback).to.have.been.calledWithExactly(error);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
-/*
 
   describe('#handlePage()', () => {
+
+    it('should load next page if one exists and no stop condition given', () => {
+      // Given
+      const stream = new PageableStream();
+      const onPageReceivedCallback = sinon.spy();
+      stream.onPageReceived(onPageReceivedCallback);
+      const embeddedKey = 'key';
+      const pageData = [ 'value1', 'value2' ];
+      const nextPageLink = 'link/to/next/page';
+      const page = {
+        _embedded: { [embeddedKey]: pageData },
+        _links: { next: { href: nextPageLink } }
+      };
+      const options = { headers: { 'x-auth-token': 'token' } };
+      client.retrieveNextPages = sinon.spy();
+
+      // When
+      client.handlePage(stream, page, options, embeddedKey);
+
+      // Then
+      expect(onPageReceivedCallback).to.have.been.calledOnce;
+      expect(onPageReceivedCallback).to.have.been.calledWithExactly(pageData);
+      expect(client.retrieveNextPages).to.have.been.calledOnce;
+      expect(client.retrieveNextPages).to.have.been.calledWithExactly(
+        stream,
+        nextPageLink,
+        options,
+        embeddedKey,
+        undefined
+      );
+    });
+
+    it('should load next page if one exists and stop condition given is false', () => {
+      // Given
+      const stream = new PageableStream();
+      const onPageReceivedCallback = sinon.spy();
+      stream.onPageReceived(onPageReceivedCallback);
+      const embeddedKey = 'key';
+      const pageData = [ 'value1', 'value2' ];
+      const nextPageLink = 'link/to/next/page';
+      const page = {
+        _embedded: { [embeddedKey]: pageData },
+        _links: { next: { href: nextPageLink } }
+      };
+      const options = { headers: { 'x-auth-token': 'token' } };
+      client.retrieveNextPages = sinon.spy();
+      const stopCondition = sinon.stub().returns(false);
+
+      // When
+      client.handlePage(stream, page, options, embeddedKey, stopCondition);
+
+      // Then
+      expect(onPageReceivedCallback).to.have.been.calledOnce;
+      expect(onPageReceivedCallback).to.have.been.calledWithExactly(pageData);
+      expect(stopCondition).to.have.been.calledOnce;
+      expect(stopCondition).to.have.been.calledWithExactly(pageData);
+      expect(client.retrieveNextPages).to.have.been.calledOnce;
+      expect(client.retrieveNextPages).to.have.been.calledWithExactly(
+        stream,
+        nextPageLink,
+        options,
+        embeddedKey,
+        stopCondition
+      );
+    });
+
+    it('should send lastPage event to the stream if stop condition is true', () => {
+      // Given
+      const stream = new PageableStream();
+      const lastPageCallback = sinon.spy();
+      const onPageReceivedCallback = sinon.spy();
+      stream.onLastPage(lastPageCallback);
+      stream.onPageReceived(onPageReceivedCallback);
+      const embeddedKey = 'key';
+      const pageData = [ 'value1', 'value2' ];
+      const nextPageLink = 'link/to/next/page';
+      const page = {
+        _embedded: { [embeddedKey]: pageData },
+        _links: { next: { href: nextPageLink } }
+      };
+      const options = { headers: { 'x-auth-token': 'token' } };
+      const stopCondition = sinon.stub().returns(true);
+
+      // When
+      client.handlePage(stream, page, options, embeddedKey, stopCondition);
+
+      // Then
+      expect(onPageReceivedCallback).to.have.been.calledOnce;
+      expect(onPageReceivedCallback).to.have.been.calledWithExactly(pageData);
+      expect(stopCondition).to.have.been.calledOnce;
+      expect(stopCondition).to.have.been.calledWithExactly(pageData);
+      expect(lastPageCallback).to.have.been.calledOnce;
+      expect(lastPageCallback).to.have.been.calledWithExactly();
+    });
+
+    it('should send lastPage event to the stream if no next page available', () => {
+      // Given
+      const stream = new PageableStream();
+      const lastPageCallback = sinon.spy();
+      const onPageReceivedCallback = sinon.spy();
+      stream.onLastPage(lastPageCallback);
+      stream.onPageReceived(onPageReceivedCallback);
+      const embeddedKey = 'key';
+      const pageData = [ 'value1', 'value2' ];
+      const nextPageLink = 'link/to/next/page';
+      const page = {
+        _embedded: { [embeddedKey]: pageData },
+        _links: {}
+      };
+      const options = { headers: { 'x-auth-token': 'token' } };
+
+      // When
+      client.handlePage(stream, page, options, embeddedKey);
+
+      // Then
+      expect(onPageReceivedCallback).to.have.been.calledOnce;
+      expect(onPageReceivedCallback).to.have.been.calledWithExactly(pageData);
+      expect(lastPageCallback).to.have.been.calledOnce;
+      expect(lastPageCallback).to.have.been.calledWithExactly();
+    });
   });
-  */
 });
