@@ -4,25 +4,17 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require("chai-as-promised");
-const jsonRenderer = require('./jsonRenderer');
+const prettyRenderer = require('./prettyRenderer');
+const prettyjson = require('prettyjson');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function getRenderedJson(spy) {
-  let i = 0;
-  let value = '';
-  for (; i < spy.callCount; i++) {
-    value += spy.args[i][0];
-  }
-  console.warn("Here:", value)
-  return JSON.parse(value);
-}
-
-describe('jsonRenderer', () => {
+describe('prettyRenderer', () => {
 
   const originalConsoleLog = console.log;
   const originalConsoleError = console.error;
+  const originalPrettyRender = prettyjson.render;
 
   beforeEach(() => {
     console.log = sinon.spy();
@@ -32,19 +24,22 @@ describe('jsonRenderer', () => {
   afterEach(() => {
     console.log = originalConsoleLog;
     console.error = originalConsoleError;
+    prettyjson.render = originalPrettyRender;
   });
 
-  it('should print a stringified JSON of the resolved result when it is not a PageableStream', done => {
+  it('should build a string with prettyjson and render it with console.log', done => {
     // Given
-    const object = {
-      prop: 'value'
-    };
+    const object = { prop: 'value' };
+    const prettyString = '- prop: value';
     const promise = Promise.resolve(object);
+    prettyjson.render = sinon.stub().returns(prettyString);
 
     // When / Then
-    jsonRenderer(promise).then(() => {
+    prettyRenderer(promise).then(() => {
+      expect(prettyjson.render).to.have.been.calledOnce;
+      expect(prettyjson.render).to.have.been.calledWithExactly(object);
       expect(console.log).to.have.been.calledOnce;
-      expect(console.log).to.have.been.calledWithExactly(JSON.stringify(object));
+      expect(console.log).to.have.been.calledWithExactly(prettyString);
       done();
     }).catch(err => {
       done(err);
@@ -55,9 +50,10 @@ describe('jsonRenderer', () => {
     // Given
     const error = 'Error';
     const promise = Promise.reject(error);
-
+    prettyjson.render = sinon.spy();
     // When / Then
-    jsonRenderer(promise).then(() => {
+    prettyRenderer(promise).then(() => {
+      expect(prettyjson.render).to.have.not.been.called;
       expect(console.error).to.have.been.calledOnce;
       expect(console.error).to.have.been.calledWithExactly(error);
       done();
@@ -70,15 +66,19 @@ describe('jsonRenderer', () => {
     // Given
     const chunk1 = [{ prop: 'value1' }];
     const chunk2 = [{ prop: 'value2' }];
+    const prettyString = '- prop: value';
     const stream = new PageableStream();
     const promise = Promise.resolve(stream);
+    prettyjson.render = sinon.stub().returns(prettyString);
 
     // When / Then
-    jsonRenderer(promise).then(() => {
+    prettyRenderer(promise).then(() => {
       stream.write(chunk1);
       stream.write(chunk2);
       stream.lastPage();
-      expect(getRenderedJson(console.log)).to.be.deep.equal([].concat(chunk1, chunk2));
+      expect(prettyjson.render).to.have.been.called.twice;
+      expect(console.log).to.have.been.called.twice;
+      expect(console.log).to.have.always.been.calledWithExactly(prettyString);
       done();
     }).catch(err => {
       done(err);
