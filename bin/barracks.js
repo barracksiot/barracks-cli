@@ -15,7 +15,7 @@ program
   .command('devices', 'List devices')
   .command('device', 'Get device history')
   .command('segments', 'Get active and inactive segments')
-  .command('set-active-segments', 'Get active and inactive segments')
+  .command('set-active-segments', 'Set active segments in priority order')
   .parse(process.argv);
 
 process.on('SIGINT', () => {

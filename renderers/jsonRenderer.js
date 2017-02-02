@@ -4,7 +4,7 @@ function write(content) {
 
 module.exports = promise => new Promise(resolve => {
   promise.then(result => {
-    if (result.constructor.name === 'PageableStream') {
+    if (result && result.constructor.name === 'PageableStream') {
       let firstPage = true;
       write('[');
       result.onPageReceived(page => {
@@ -17,7 +17,7 @@ module.exports = promise => new Promise(resolve => {
       result.onLastPage(() => {
         write(']');
       });
-    } else {
+    } else if (result) {
       write(JSON.stringify(result));
     }
     resolve();
