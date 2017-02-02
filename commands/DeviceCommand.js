@@ -5,7 +5,7 @@ class DeviceCommand extends BarracksCommand {
   configureCommand(program) {
     return program
       .arguments('<unit-id>')
-      .option('--fromDate [\'YYYY-MM-DD\' | \'YYYY-MM-DDTHH:mm:ss.sssZ\']', '(Optionnal) The date (ISO-8601) from when to begin the history.');
+      .option('--fromDate [\'YYYY-MM-DD\' | \'YYYY-MM-DD HH:mm\' | \'YYYY-MM-DDTHH:mm:ss.sssZ\']', '(Optionnal) The date from when to begin the history');
   }
 
   validateCommand(program) {

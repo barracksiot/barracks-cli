@@ -340,7 +340,25 @@ describe('Barracks', () => {
       // Given
       const segmentName = 'segment prod';
       const segment = { id: 'lkjhgfdsa', name: segmentName };
-      const response = { active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ] };
+      const response = { active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ], other: { id: 'other', name: 'Other' } };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegmentByName(token, segmentName).then(result => {
+        expect(result).to.be.equals(segment);
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return other segment when name is other when request succeed', done => {
+      // Given
+      const segmentName = 'Other';
+      const segment = { id: 'other', name: segmentName };
+      const response = { active: [ { id: 'zxcvbnm', name: 'other segment' } ], other: segment };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
