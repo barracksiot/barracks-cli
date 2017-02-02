@@ -24,13 +24,18 @@ $ barracks help
 
   Commands:
 
-    login           Authenticate to Barracks
-    account         Get account information
-    updates         List updates
-    create-update   Create a new update
-    publish         Publish an update
-    archive         Archive an update
-    help [cmd]      display help for [cmd]
+    login                 Authenticate to Barracks
+    account               Get account information
+    updates               List updates
+    create-update         Create a new update
+    publish               Publish an update
+    schedule              Publish an update
+    archive               Archive an update
+    devices               List devices
+    device                Get device history
+    segments              Get active and inactive segments
+    set-active-segments   Set active segments in priority order
+    help [cmd]            display help for [cmd]
 
   Options:
 
@@ -54,7 +59,7 @@ Authentication successful
 
 After that, you can use any of the other commands:
 ```{r, engine='bash', count_lines}
-$ barracks create-update --title "My Update" --channel Production --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
+$ barracks create-update --title "My Update" --segment Other --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
 ```
 
 ## Features
@@ -65,11 +70,11 @@ Currently, the following features are available through the CLI:
 * Create a new update
 * Publish an update
 * Archive an update
-
-The next versions will cover the following:
 * Schedule an update
-* Display (or extract) custom data received from the devices
-* Create a segment based on device properties
+* List registered devices
+* Retrieve device information
+* List segments
+* Change active segments
 
 ## Docs & Community
 
