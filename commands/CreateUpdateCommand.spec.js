@@ -18,7 +18,7 @@ describe('CreateUpdateCommand', () => {
     versionId: 'Version id',
     properties: JSON.stringify({ coucou: 'Plop' }),
     'package': __filename,
-    channel: 'Production'
+    segment: 'Production'
   };
 
   before(() => {
@@ -117,9 +117,9 @@ describe('CreateUpdateCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when the channel is missing', () => {
+    it('should return false when the segment is missing', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { channel: undefined });
+      const program = Object.assign({}, programWithValidOptions, { segment: undefined });
 
       // When
       const result = createUpdateCommand.validateCommand(program);
@@ -136,9 +136,9 @@ describe('CreateUpdateCommand', () => {
       id: "PackageID"
     };
 
-    const channel = {
-      id: "ChannelId",
-      name: programWithValidOptions.channel
+    const segment = {
+      id: "SegmentId",
+      name: programWithValidOptions.segment
     };
 
     const account = {
@@ -152,7 +152,7 @@ describe('CreateUpdateCommand', () => {
       status: 'active' 
     };
 
-    it('should return an error when the get channel request failed', done => {
+    it('should return an error when the get segment request failed', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
       createUpdateCommand.userConfiguration = {
@@ -160,7 +160,7 @@ describe('CreateUpdateCommand', () => {
       };
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getChannelByName: sinon.stub().returns(Promise.reject('Error'))
+        getSegmentByName: sinon.stub().returns(Promise.reject('Error'))
       };
 
       // When / Then
@@ -170,8 +170,8 @@ describe('CreateUpdateCommand', () => {
         expect(createUpdateCommand.userConfiguration.getAuthenticationToken).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
         done();
       });
     });
@@ -184,7 +184,7 @@ describe('CreateUpdateCommand', () => {
       };
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
         createPackage: sinon.stub().returns(Promise.reject("Error"))
       };
 
@@ -194,8 +194,8 @@ describe('CreateUpdateCommand', () => {
       }).catch(err => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
@@ -213,7 +213,7 @@ describe('CreateUpdateCommand', () => {
       };
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
         createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
         createUpdate: sinon.stub().returns(Promise.reject("Error"))
       };
@@ -224,8 +224,8 @@ describe('CreateUpdateCommand', () => {
       }).catch(err => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
@@ -237,7 +237,7 @@ describe('CreateUpdateCommand', () => {
           name: program.title,
           description: program.description,
           additionalProperties: JSON.parse(program.properties),
-          channelId: channel.id
+          segmentId: segment.id
         });
         done();
       });
@@ -254,7 +254,7 @@ describe('CreateUpdateCommand', () => {
       };
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getChannelByName: sinon.stub().returns(Promise.resolve(channel)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
         createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
         createUpdate: sinon.stub().returns(Promise.resolve(update))
       };
@@ -263,8 +263,8 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.execute(program).then(result => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.getChannelByName).to.have.been.calledWithExactly(token, program.channel);
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
           file: program.package,
@@ -276,7 +276,7 @@ describe('CreateUpdateCommand', () => {
           name: program.title,
           description: program.description,
           additionalProperties: JSON.parse(program.properties),
-          channelId: channel.id
+          segmentId: segment.id
         });
         done();
       }).catch(err => {
