@@ -3,8 +3,9 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
-const chaiAsPromised = require("chai-as-promised");
+const chaiAsPromised = require('chai-as-promised');
 const BarracksCommand = require('./BarracksCommand');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -13,6 +14,7 @@ describe('BarracksCommand', () => {
 
   let barracksCommand;
   let stdin;
+  let mockedRead;
 
   const account = {
     firstName: 'John',
@@ -114,6 +116,7 @@ describe('BarracksCommand', () => {
     });
 
     after(() => {
+      resetCommand();
       stdin.end();
     });
 
@@ -137,6 +140,81 @@ describe('BarracksCommand', () => {
         done();
       }).catch(err => {
         done(err);
+      });
+    });
+
+    it('should reject error if email read fail', done => {
+      // Given
+      const error = 'error';
+      const checkMockedRead = sinon.spy();
+      const MockedBarracksCommand = proxyquire('./BarracksCommand', {
+        'read': (options, callback) => {
+          return mockedRead(options, callback);
+        }
+      });
+      mockedBarracksCommand = new MockedBarracksCommand();
+      mockedRead = (options, callback) => {
+        checkMockedRead(options, callback);
+        callback(error);
+      };
+
+      // When / Then
+      mockedBarracksCommand.requestUserAuthentication().then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(checkMockedRead).to.have.been.calledOnce;
+        expect(checkMockedRead).to.have.been.calledWithExactly(
+          { prompt: 'Account e-mail: ' },
+          sinon.match.func
+        );
+        done();
+      });
+    });
+
+    it('should reject error if password read fail', done => {
+      // Given
+      let mockCallCount = 0;
+      const error = 'error';
+      const checkFirstMockedRead = sinon.spy();
+      const checkSecondMockedRead = sinon.spy();
+      const MockedBarracksCommand = proxyquire('./BarracksCommand', {
+        'read': (options, callback) => {
+          return mockedRead(options, callback);
+        }
+      });
+      mockedBarracksCommand = new MockedBarracksCommand();
+      mockedRead = (options, callback) => {
+        if (mockCallCount === 0) {
+          checkFirstMockedRead(options, callback);
+          callback(undefined, account.email);
+        } else {
+          checkSecondMockedRead(options, callback);
+          callback(error);
+        }
+        ++mockCallCount;
+      };
+
+      setTimeout(() => {
+        stdin.send(`${account.email}\r`);
+      }, 100);
+
+      // When / Then
+      mockedBarracksCommand.requestUserAuthentication().then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(checkFirstMockedRead).to.have.been.calledOnce;
+        expect(checkFirstMockedRead).to.have.been.calledWithExactly(
+          { prompt: 'Account e-mail: ' },
+          sinon.match.func
+        );
+        expect(checkSecondMockedRead).to.have.been.calledOnce;
+        expect(checkSecondMockedRead).to.have.been.calledWithExactly(
+          { prompt: 'Password: ', silent: true },
+          sinon.match.func
+        );
+        done();
       });
     });
   });

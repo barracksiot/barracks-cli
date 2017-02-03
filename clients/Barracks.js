@@ -241,7 +241,6 @@ class Barracks {
       });
     });
   }
-
 }
 
 module.exports = Barracks;
