@@ -31,6 +31,7 @@ describe('Barracks', () => {
   });
 
   describe('#authenticate()', () => {
+
     it('should return an error message when authentication fails', done => {
       // Given
       const username = 'user';
@@ -594,6 +595,32 @@ describe('Barracks', () => {
   });
 
   describe('#getDeviceEvents()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const unitId = 'myUnit';
+      const options = { 
+        headers: { 'x-auth-token': token },
+        pathVariables: { unitId }
+      };
+      barracks.client.retrievePagesUntilCondition = sinon.spy();
+
+      // When / Then
+      barracks.getDeviceEvents(token, unitId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledOnce;
+        expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getDeviceEvents',
+          options,
+          'deviceEvents',
+          sinon.match.func
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
   describe('#getSegments()', () => {
