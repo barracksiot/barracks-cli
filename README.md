@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/barracksiot/barracks-cli.svg?branch=master)](https://travis-ci.org/barracksiot/barracks-cli) [![Coverage Status](https://coveralls.io/repos/github/barracksiot/barracks-cli/badge.svg?branch=master)](https://coveralls.io/github/barracksiot/barracks-cli?branch=master) [![npm version](https://badge.fury.io/js/barracks-cli.svg)](https://badge.fury.io/js/barracks-cli)
+
 ![Barracks logo](https://barracks.io/wp-content/uploads/2016/09/barracks_logo_green.png)
 
 # Barracks CLI
@@ -5,7 +7,7 @@ The Command Line Interface tool to interact with the [Barracks](https://barracks
 
 ## Requirements
 
-Node.js >= 5.x
+Node.js >= 6.x
 
 ## Installation
 
