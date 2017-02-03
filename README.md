@@ -7,7 +7,7 @@ The Command Line Interface tool to interact with the [Barracks](https://barracks
 
 ## Requirements
 
-Node.js >= 5.x
+Node.js >= 6.x
 
 ## Installation
 
