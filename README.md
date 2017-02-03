@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/barracksiot/barracks-cli.svg?branch=master)](https://travis-ci.org/barracksiot/barracks-cli)
+
 ![Barracks logo](https://barracks.io/wp-content/uploads/2016/09/barracks_logo_green.png)
 
 # Barracks CLI
