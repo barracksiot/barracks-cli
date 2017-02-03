@@ -56,6 +56,22 @@ class Barracks {
     });
   }
 
+  getUpdatesBySegmentId(token, segmentId) {
+    return new Promise(resolve => {
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'updatesBySegmentId', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          segmentId
+        }
+      },
+      'detailedUpdates');
+    });
+  }
+
   publishUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('publishUpdate', {

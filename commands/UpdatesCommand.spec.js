@@ -59,13 +59,16 @@ describe('UpdatesCommand', () => {
     it('should call getUpdatesBySegmentId when a segment id is given and return the client response', (done) => {
       // Given
       const segmentId = 'mySegmentId';
-      const program = { segment: segmentId };
+      const segmentName = 'mySegmentName';
+      const segment = { id: segmentId, name: segmentName }
+      const program = { segment: segmentName };
       const clientResponse = 'response';
 
       updatesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updatesCommand.barracks = {
         getUpdatesBySegmentId: sinon.stub().returns(Promise.resolve(clientResponse)),
-        getUpdates: sinon.stub().returns(Promise.resolve(clientResponse))
+        getUpdates: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
       };
 
       // When / Then
@@ -74,6 +77,8 @@ describe('UpdatesCommand', () => {
         expect(updatesCommand.barracks.getUpdates).to.not.have.been.calledOnce;
         expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledOnce;
         expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledWithExactly(token, segmentId);
+        expect(updatesCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(updatesCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, segmentName);
         done();
       }).catch(err => {
         done('Should not have failed');

@@ -4,19 +4,26 @@ class UpdatesCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--segment [segmentId]', '(Optionnal) A segment id to filter the list of updates');
+      .option('--segment [name]', '(Optionnal) Filter by segment name');
   }
 
   execute(program) {
-    return this.getAuthenticationToken().then(token => {
+    let token;
+    return this.getAuthenticationToken().then(authToken => {
+      token = authToken;
       if (program && program.segment) {
-        return this.barracks.getUpdatesBySegmentId(token, program.segment);
+        return this.barracks.getSegmentByName(token, program.segment);
+      } else {
+        return Promise.resolve();
+      }
+    }).then(segment => {
+      if (segment) {
+        return this.barracks.getUpdatesBySegmentId(token, segment.id);
       } else {
         return this.barracks.getUpdates(token);
       }
     });
   }
-
 }
 
 module.exports = UpdatesCommand;

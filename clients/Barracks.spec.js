@@ -139,6 +139,34 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getUpdatesySegmentId()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const segmentId = 'mySegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      };
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getUpdatesBySegmentId(token, segmentId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'updatesBySegmentId',
+          options,
+          'detailedUpdates'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#publishUpdate()', () => {
 
     it('should return an error message when request fails', done => {

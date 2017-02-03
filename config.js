@@ -17,6 +17,10 @@ module.exports = {
         method: 'GET',
         path: '/api/member/updates?size=20'
       },
+      updatesBySegmentId: {
+        method: 'GET',
+        path: '/api/member/segments/:segmentId/updates'
+      },
       publishUpdate: {
         method: 'PUT',
         path: '/api/member/updates/:uuid/status/published'
