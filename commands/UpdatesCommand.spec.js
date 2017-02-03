@@ -40,14 +40,14 @@ describe('UpdatesCommand', () => {
 
       updatesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updatesCommand.barracks = {
-        getUpdatesBySegment: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getUpdatesBySegmentId: sinon.stub().returns(Promise.resolve(clientResponse)),
         getUpdates: sinon.stub().returns(Promise.resolve(clientResponse))
       };
 
       // When / Then
       updatesCommand.execute().then(result => {
         expect(result).to.equal(clientResponse);
-        expect(updatesCommand.barracks.getUpdatesBySegment).to.not.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.not.have.been.calledOnce;
         expect(updatesCommand.barracks.getUpdates).to.have.been.calledOnce;
         expect(updatesCommand.barracks.getUpdates).to.have.been.calledWithExactly(token);
         done();
@@ -56,7 +56,7 @@ describe('UpdatesCommand', () => {
       });
     });
 
-    it('should call getUpdatesBySegment when a segment id is given and return the client response', (done) => {
+    it('should call getUpdatesBySegmentId when a segment id is given and return the client response', (done) => {
       // Given
       const segmentId = 'mySegmentId';
       const program = { segment: segmentId };
@@ -64,7 +64,7 @@ describe('UpdatesCommand', () => {
 
       updatesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updatesCommand.barracks = {
-        getUpdatesBySegment: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getUpdatesBySegmentId: sinon.stub().returns(Promise.resolve(clientResponse)),
         getUpdates: sinon.stub().returns(Promise.resolve(clientResponse))
       };
 
@@ -72,8 +72,8 @@ describe('UpdatesCommand', () => {
       updatesCommand.execute(program).then(result => {
         expect(result).to.equal(clientResponse);
         expect(updatesCommand.barracks.getUpdates).to.not.have.been.calledOnce;
-        expect(updatesCommand.barracks.getUpdatesBySegment).to.have.been.calledOnce;
-        expect(updatesCommand.barracks.getUpdatesBySegment).to.have.been.calledWithExactly(token, segmentId);
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledWithExactly(token, segmentId);
         done();
       }).catch(err => {
         done('Should not have failed');

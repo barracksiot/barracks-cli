@@ -10,7 +10,7 @@ class UpdatesCommand extends BarracksCommand {
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       if (program && program.segment) {
-        return this.barracks.getUpdatesBySegment(token, program.segment);
+        return this.barracks.getUpdatesBySegmentId(token, program.segment);
       } else {
         return this.barracks.getUpdates(token);
       }
