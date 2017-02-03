@@ -31,7 +31,6 @@ describe('Barracks', () => {
   });
 
   describe('#authenticate()', () => {
-
     it('should return an error message when authentication fails', done => {
       // Given
       const username = 'user';
@@ -402,17 +401,20 @@ describe('Barracks', () => {
     it('should return an error if segment does not exists', done => {
       // Given
       const segmentName = 'segment prod';
-      const response = [
-        { id: 'zxcvbnm', name: 'segment' },
-        { id: 'zxcvbnm', name: 'other segment' }
-      ];
+      const response = {
+        active: [
+          { id: 'zxcvbnm', name: 'segment' },
+          { id: 'zxcvbnm', name: 'other segment' }
+        ],
+        other: { id: 'other', name: 'Other' }
+      };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       barracks.getSegmentByName(token, segmentName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.not.be.undefined;
+        expect(err).to.be.equals('No matching active segment.');
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
