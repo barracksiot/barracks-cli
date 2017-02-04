@@ -195,10 +195,6 @@ describe('BarracksCommand', () => {
         ++mockCallCount;
       };
 
-      setTimeout(() => {
-        stdin.send(`${account.email}\r`);
-      }, 100);
-
       // When / Then
       mockedBarracksCommand.requestUserAuthentication().then(result => {
         done('should have failed');

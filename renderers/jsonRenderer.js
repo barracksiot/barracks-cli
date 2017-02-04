@@ -22,7 +22,7 @@ module.exports = promise => new Promise(resolve => {
     }
     resolve();
   }).catch(err => {
-    console.error(err);
+    console.error(JSON.stringify({ error: err }));
     resolve();
   });
 });
