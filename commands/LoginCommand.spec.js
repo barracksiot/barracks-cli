@@ -33,15 +33,6 @@ describe('LoginCommand', () => {
     }
   }
 
-  function mockStdinCredentials(stdin, email, password) {
-    setTimeout(() => {
-      stdin.send(`${email}\r`);
-      setTimeout(() => {
-        stdin.send(`${password}\r`);
-      }, 100);
-    }, 100);
-  }
-
   describe('#execute(program)', () => {
 
     before(() => {
