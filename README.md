@@ -30,6 +30,7 @@ $ barracks help
     account               Get account information
     updates               List updates
     create-update         Create a new update
+    edit-update           Edit an existing update
     publish               Publish an update
     schedule              Publish an update
     archive               Archive an update
@@ -70,6 +71,7 @@ Currently, the following features are available through the CLI:
 * Display account information
 * List updates
 * Create a new update
+* Edit an update in draft
 * Publish an update
 * Archive an update
 * Schedule an update

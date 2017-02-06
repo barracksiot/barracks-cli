@@ -133,11 +133,11 @@ describe('CreateUpdateCommand', () => {
   describe('#execute(program)', () => {
 
     const updatePackage = {
-      id: "PackageID"
+      id: 'PackageID'
     };
 
     const segment = {
-      id: "SegmentId",
+      id: 'SegmentId',
       name: programWithValidOptions.segment
     };
 
@@ -185,7 +185,7 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
-        createPackage: sinon.stub().returns(Promise.reject("Error"))
+        createPackage: sinon.stub().returns(Promise.reject('Error'))
       };
 
       // When / Then
@@ -280,7 +280,48 @@ describe('CreateUpdateCommand', () => {
         });
         done();
       }).catch(err => {
-        done('Should not have failed');
+        done(err);
+      });
+    });
+
+    it('should return the created update (with no custom data) when the create update request is successful', done => {
+      // Given
+      const update = {
+        uuid: 'bc354c98-bc73-4f90-9eeb-9c1698b988bc'
+      };
+      const program = Object.assign({}, programWithValidOptions, { properties: undefined });
+      createUpdateCommand.userConfiguration = {
+        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
+      };
+      createUpdateCommand.barracks = {
+        getAccount: sinon.stub().returns(Promise.resolve(account)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
+        createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
+        createUpdate: sinon.stub().returns(Promise.resolve(update))
+      };
+
+      // When / Then
+      createUpdateCommand.execute(program).then(result => {
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
+          file: program.package,
+          versionId: program.versionId
+        });
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdate).to.have.been.calledWithExactly(token, {
+          packageId: updatePackage.id,
+          name: program.title,
+          description: program.description,
+          additionalProperties: {},
+          segmentId: segment.id
+        });
+        done();
+      }).catch(err => {
+        done(err);
       });
     });
 

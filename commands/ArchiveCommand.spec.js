@@ -48,13 +48,38 @@ describe('ArchiveCommand', () => {
   const token = 's5d6f.657fgyi.d6tfuyg';
   let archiveCommand;
 
-  describe('#execute()', () => {
+  before(() => {
+    archiveCommand = new ArchiveCommand();
+    archiveCommand.barracks = {};
+    archiveCommand.userConfiguration = {};
+  });
 
-    before(() => {
-      archiveCommand = new ArchiveCommand();
-      archiveCommand.barracks = {};
-      archiveCommand.userConfiguration = {};
+  describe('#validateCommand(program)', () => {
+
+    it('should return true when the update uuid is given', () => {
+      // Given
+      const program = { args: ['1234567890poiuytrewq'] };
+
+      // When
+      const result = archiveCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.true;
     });
+  
+    it('should return false when no update uuid given', () => {
+      // Given
+      const program = { args: [] };
+
+      // When
+      const result = archiveCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+    });
+  });
+
+  describe('#execute()', () => {
   
     it('should return an archived update when the request was successful', done => {
       // Given
