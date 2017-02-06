@@ -34,51 +34,54 @@ describe('UpdatesCommand', () => {
       updatesCommand.userConfiguration = {};
     });
 
-    it('should return a pageable stream when the get updates request is successful', (done) => {
+    it('should call getUpdates when no segment id given and return the client response', (done) => {
       // Given
-      const stream = new PageableStream();
-      updatesCommand.userConfiguration = {
-        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
+      const clientResponse = 'response';
+
+      updatesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updatesCommand.barracks = {
-        getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getUpdates: sinon.stub().returns(Promise.resolve(stream))
+        getUpdatesBySegmentId: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getUpdates: sinon.stub().returns(Promise.resolve(clientResponse))
       };
 
       // When / Then
       updatesCommand.execute().then(result => {
-        expect(result).to.equal(stream);
-        expect(updatesCommand.userConfiguration.getAuthenticationToken.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(updatesCommand.barracks.getUpdates.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getUpdates.calledWithExactly(token)).to.be.true;
+        expect(result).to.equal(clientResponse);
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.not.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdates).to.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdates).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
         done('Should not have failed');
       });
     });
 
-    it('should return an error when the get updates request failed', (done) => {
+    it('should call getUpdatesBySegmentId when a segment id is given and return the client response', (done) => {
       // Given
-      updatesCommand.userConfiguration = {
-        getAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
+      const segmentId = 'mySegmentId';
+      const segmentName = 'mySegmentName';
+      const segment = { id: segmentId, name: segmentName }
+      const program = { segment: segmentName };
+      const clientResponse = 'response';
+
+      updatesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updatesCommand.barracks = {
-        getAccount: sinon.stub().returns(Promise.resolve(account)),
-        getUpdates: sinon.stub().returns(Promise.reject('error'))
+        getUpdatesBySegmentId: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getUpdates: sinon.stub().returns(Promise.resolve(clientResponse)),
+        getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
       };
 
       // When / Then
-      updatesCommand.execute().then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(updatesCommand.userConfiguration.getAuthenticationToken.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getAccount.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getAccount.calledWithExactly(token)).to.be.true;
-        expect(updatesCommand.barracks.getUpdates.calledOnce).to.be.true;
-        expect(updatesCommand.barracks.getUpdates.calledWithExactly(token)).to.be.true;
+      updatesCommand.execute(program).then(result => {
+        expect(result).to.equal(clientResponse);
+        expect(updatesCommand.barracks.getUpdates).to.not.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledOnce;
+        expect(updatesCommand.barracks.getUpdatesBySegmentId).to.have.been.calledWithExactly(token, segmentId);
+        expect(updatesCommand.barracks.getSegmentByName).to.have.been.calledOnce;
+        expect(updatesCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, segmentName);
         done();
+      }).catch(err => {
+        done('Should not have failed');
       });
     });
 
