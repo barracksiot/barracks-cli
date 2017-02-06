@@ -50,7 +50,7 @@ describe('jsonRenderer', () => {
     });
   });
 
-  it('should print the error message of the rejected result', done => {
+  it('should print the error message AS a JSON of the rejected result', done => {
     // Given
     const error = 'Error';
     const promise = Promise.reject(error);
@@ -58,7 +58,7 @@ describe('jsonRenderer', () => {
     // When / Then
     jsonRenderer(promise).then(() => {
       expect(console.error).to.have.been.calledOnce;
-      expect(console.error).to.have.been.calledWithExactly(error);
+      expect(console.error).to.have.been.calledWithExactly(JSON.stringify({ error }));
       done();
     }).catch(err => {
       done(err);

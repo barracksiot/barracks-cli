@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
 const Barracks = require('./Barracks');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -19,6 +20,8 @@ function buildSegment(segmentId) {
 describe('Barracks', () => {
 
   let barracks;
+  let mockedCreateReadStream = undefined;
+  let mockedBasename = undefined;
   const token = 'i8uhkj.token.65ryft';
   const programWithValidOptions = {};
 
@@ -155,7 +158,7 @@ describe('Barracks', () => {
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -195,7 +198,7 @@ describe('Barracks', () => {
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -253,45 +256,29 @@ describe('Barracks', () => {
   });
 
   describe('#getUpdates()', () => {
-    /*
 
-    it('should return an error message when request fails', done => {
+    it('should return a stream object and deleguate to the client', done => {
       // Given
-      const error = { message: 'Error !' };
-      barracks.client.retrieveAllPages = sinon.stub().returns(Promise.reject(error));
+      const options = { headers: {
+        'x-auth-token': token
+      }}
+      barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
-      barracks.getAccount(token).then(result => {
-        done('should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(error.message);
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('me', {
-          headers: { 'x-auth-token': token }
-        });
-        done();
-      });
-    });
-
-    it('should return a token when authentication succeed', done => {
-      // Given
-      const account = { apiKey: 'qwertyuiop', username: 'coucou' };
-      const response = { body: account };
-      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
-
-      // When / Then
-      barracks.getAccount(token).then(result => {
-        expect(result).to.be.equals(account);
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('me', {
-          headers: { 'x-auth-token': token }
-        });
+      barracks.getUpdates(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'updates',
+          options,
+          'detailedUpdates'
+        );
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
-    */
   });
 
   describe('#publishUpdate()', () => {
@@ -333,7 +320,7 @@ describe('Barracks', () => {
         });
         done();
       }).catch(err => {
-        done('should have succeeded');
+        done(err);
       });
     });
   });
@@ -433,10 +420,106 @@ describe('Barracks', () => {
         done();
       });
     });
-
   });
 
   describe('#createPackage()', () => {
+
+    beforeEach(() => {
+      const ProxifiedBarracks = proxyquire('./Barracks', {
+        fs: { createReadStream: file => { return mockedCreateReadStream(file) } },
+        path: { basename: file => { return mockedBasename(file) } }
+      });
+
+      barracks = new ProxifiedBarracks();
+    });
+
+    it('should return the package created', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      const response = { body: 'coucou' }
+      const fileReadStream = 'fileReadStream';
+      const file = 'file';
+      const versionId = 'version';
+      const package = { versionId, file };
+
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
+      mockedBasename = sinon.stub().returns(file);
+
+      // When / Then
+      barracks.createPackage(token, package).then(result => {
+        expect(result).to.be.equals(response.body);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createPackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
+            }
+          }
+        );
+        expect(mockedCreateReadStream).to.have.been.calledOnce;
+        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
+        expect(mockedBasename).to.have.been.calledOnce;
+        expect(mockedBasename).to.have.been.calledWithExactly(file);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should reject an erro if request fails', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      const response = { message: 'error' }
+      const fileReadStream = 'fileReadStream';
+      const file = 'file';
+      const versionId = 'version';
+      const package = { versionId, file };
+
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(response));
+      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
+      mockedBasename = sinon.stub().returns(file);
+
+      // When / Then
+      barracks.createPackage(token, package).then(result => {
+        done('shoud have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(response.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createPackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
+            }
+          }
+        );
+        expect(mockedCreateReadStream).to.have.been.calledOnce;
+        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
+        expect(mockedBasename).to.have.been.calledOnce;
+        expect(mockedBasename).to.have.been.calledWithExactly(file);
+        done();
+      });
+    });
   });
 
   describe('#getSegmentByName()', () => {
@@ -461,17 +544,20 @@ describe('Barracks', () => {
     it('should return an error if segment does not exists', done => {
       // Given
       const segmentName = 'segment prod';
-      const response = [
-        { id: 'zxcvbnm', name: 'segment' },
-        { id: 'zxcvbnm', name: 'other segment' }
-      ];
+      const response = {
+        active: [
+          { id: 'zxcvbnm', name: 'segment' },
+          { id: 'zxcvbnm', name: 'other segment' }
+        ],
+        other: { id: 'other', name: 'Other' }
+      };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       barracks.getSegmentByName(token, segmentName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.not.be.undefined;
+        expect(err).to.be.equals('No matching active segment.');
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
@@ -624,9 +710,60 @@ describe('Barracks', () => {
   });
 
   describe('#getDevices()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getDevices(token, segmentId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getDevices',
+          options,
+          'deviceEvents'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
   describe('#getDeviceEvents()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const unitId = 'myUnit';
+      const options = { 
+        headers: { 'x-auth-token': token },
+        pathVariables: { unitId }
+      };
+      barracks.client.retrievePagesUntilCondition = sinon.spy();
+
+      // When / Then
+      barracks.getDeviceEvents(token, unitId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledOnce;
+        expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getDeviceEvents',
+          options,
+          'deviceEvents',
+          sinon.match.func
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
   describe('#getSegments()', () => {
@@ -716,5 +853,4 @@ describe('Barracks', () => {
       });
     });
   });
-
 });

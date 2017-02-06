@@ -23,21 +23,14 @@ describe('LoginCommand', () => {
     password: accountPassword
   };
 
-  function expectLoginSuccessful(result, loginCommand) {
+  function expectLoginSuccessful(result, loginCommand, withCredentials) {
     expect(result).to.be.equals('Authentication successful');
-    expect(loginCommand.barracks.authenticate).to.have.been.calledOnce;
-    expect(loginCommand.barracks.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
-    expect(loginCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledOnce;
-    expect(loginCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledWithExactly(token);
-  }
-
-  function mockStdinCredentials(stdin, email, password) {
-    setTimeout(() => {
-      stdin.send(`${email}\r`);
-      setTimeout(() => {
-        stdin.send(`${password}\r`);
-      }, 100);
-    }, 100);
+    expect(loginCommand.authenticate).to.have.been.calledOnce;
+    expect(loginCommand.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
+    if (!withCredentials) {
+      expect(loginCommand.requestUserAuthentication).to.have.been.calledOnce;
+      expect(loginCommand.requestUserAuthentication).to.have.been.calledWithExactly();
+    }
   }
 
   describe('#execute(program)', () => {
@@ -56,160 +49,51 @@ describe('LoginCommand', () => {
     it('should return "Authentication successful" when all the options are present and credentials are valid', (done) => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
-      loginCommand.userConfiguration = {
-        saveAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
+      loginCommand.authenticate = sinon.stub().returns(Promise.resolve(token));
 
       // When / Then
       loginCommand.execute(program).then(result => {
-        expectLoginSuccessful(result, loginCommand);
+        expectLoginSuccessful(result, loginCommand, true);
         done();
       }).catch(err => {
-        done('Should have succeeded');
+        done(err);
       });
     });
 
     it('should return an error when all the options are present but credentials are invalid', (done) => {
       // Given
-      const program = Object.assign({}, programWithValidOptions);
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.reject(serviceErrorMessage))
+      const wrongEmail = 'wrongEmail';
+      const wrongPassword = 'wrongPassword';
+      const program = {
+        email: wrongEmail,
+        password: wrongPassword
       };
+      loginCommand.authenticate = sinon.stub().returns(Promise.reject(serviceErrorMessage));
 
       // When / Then
       loginCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(serviceErrorMessage);
-        expect(loginCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(loginCommand.barracks.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
+        expect(loginCommand.authenticate).to.have.been.calledOnce;
+        expect(loginCommand.authenticate).to.have.been.calledWithExactly(wrongEmail, wrongPassword);
         done();
       });
     });
 
-    it('should ask for credentials and return "Authentication successful" when "email" option missing and user give valid credentials', (done) => {
+    it('should ask for credentials and return "Authentication successful" when credentials typed ad not given in command', (done) => {
       // Given
-      const program = Object.assign({}, { email: undefined, password: 'anotherPassword' });
-      loginCommand.userConfiguration = {
-        saveAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
+      const program = { email: undefined, password: undefined };
+      authResponse = { email: accountEmail, password: accountPassword };
+      loginCommand.requestUserAuthentication = sinon.stub().returns(Promise.resolve(authResponse));
+      loginCommand.authenticate = sinon.stub().returns(Promise.resolve(token));
 
       // When / Then
       loginCommand.execute(program).then(result => {
-        expectLoginSuccessful(result, loginCommand);
+        expectLoginSuccessful(result, loginCommand, false);
         done()
       }).catch(err => {
         done('Should have succeeded');
-      });
-    });
-
-    it('should ask for credentials and return "Authentication successful" when "password" option missing and user give valid credentials', (done) => {
-      // Given
-      const program = Object.assign({}, { email: 'anotherEmail', password: undefined });
-      loginCommand.userConfiguration = {
-        saveAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
-
-      // When / Then
-      loginCommand.execute(program).then(result => {
-        expectLoginSuccessful(result, loginCommand);
-        done()
-      }).catch(err => {
-        done('Should have succeeded');
-      });
-    });
-
-    it('should ask for credentials and return "Authentication successful" when no option given and user give valid credentials', (done) => {
-      // Given
-      const program = {};
-      loginCommand.userConfiguration = {
-        saveAuthenticationToken: sinon.stub().returns(Promise.resolve(token))
-      };
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
-
-      // When / Then
-      loginCommand.execute(program).then(result => {
-        expectLoginSuccessful(result, loginCommand);
-        done()
-      }).catch(err => {
-        done('Should have succeeded');
-      });
-    });
-
-    it('should ask for credentials and return "Authentication successful" when "email" option missing and user give invalid credentials', (done) => {
-      // Given
-      const program = Object.assign({}, { email: undefined, password: 'anotherPassword' });
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.reject(serviceErrorMessage))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
-
-      // When / Then
-      loginCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(serviceErrorMessage);
-        expect(loginCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(loginCommand.barracks.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
-        done();
-      });
-    });
-
-    it('should ask for credentials and return "Authentication successful" when "password" option missing and user give invalid credentials', (done) => {
-      // Given
-      const program = Object.assign({}, { email: 'anotherEmail', password: undefined });
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.reject(serviceErrorMessage))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
-
-      // When / Then
-      loginCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(serviceErrorMessage);
-        expect(loginCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(loginCommand.barracks.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
-        done();
-      });
-    });
-
-    it('should ask for credentials and return "Authentication successful" when no option given and user give invalid credentials', (done) => {
-            // Given
-      const program = Object.assign({}, { email: 'anotherEmail', password: undefined });
-      loginCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.reject(serviceErrorMessage))
-      };
-
-      mockStdinCredentials(stdin, accountEmail, accountPassword);
-
-      // When / Then
-      loginCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(serviceErrorMessage);
-        expect(loginCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(loginCommand.barracks.authenticate).to.have.been.calledWithExactly(accountEmail, accountPassword);
-        done();
       });
     });
   });
