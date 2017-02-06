@@ -35,6 +35,10 @@ describe('EditSegmentCommand', () => {
     id: savedSegment.id,
     query: JSON.stringify(savedSegment.query)
   };
+  const programWithName = {
+    id: savedSegment.id,
+    name: 'Segmentounette'
+  };
   const programWithAllOptions = {
     id: savedSegment.id,
     name: 'Segmentounette',
@@ -148,6 +152,29 @@ describe('EditSegmentCommand', () => {
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
           id: programWithAllOptions.id,
           query: JSON.parse(programWithAllOptions.query)
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the edited segment when the request is successful and query is not sent', done => {
+      // Given
+      editSegmentCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      editSegmentCommand.barracks = {
+        editSegment: sinon.stub().returns(Promise.resolve(savedSegment))
+      };
+
+      // When / Then
+      editSegmentCommand.execute(programWithName).then(result => {
+        expect(result).to.be.equals(savedSegment);
+        expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(editSegmentCommand.barracks.editSegment).to.have.been.calledOnce;
+        expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
+          id: programWithAllOptions.id,
+          name: programWithAllOptions.name
         });
         done();
       }).catch(err => {
