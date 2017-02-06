@@ -1,2 +1,2 @@
-const SegmentsCommand = require('../commands/SegmentsCommand');
-new SegmentsCommand().render();
+const EditSegmentCommand = require('../commands/EditSegmentCommand');
+new EditSegmentCommand().render();
