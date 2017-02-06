@@ -335,7 +335,7 @@ describe('Barracks', () => {
       });
     });
 
-    it('should reject an erro if request fails', done => {
+    it('should reject an error if request fails', done => {
       // Given
       const segmentId = 'aSegment';
       const options = {
@@ -704,6 +704,129 @@ describe('Barracks', () => {
           headers: { 'x-auth-token': token },
           body: segmentIds
         });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#checkUpdate()', () => {
+
+    it('should reject an error if client fail', done => {
+      // Given
+      const baseUrl = 'base/url';
+      const apiKey = 'myApiKey';
+      const unitId = 'unitId';
+      const versionId = 'version1';
+      const error = 'blah error';
+      const device = { unitId, versionId };
+      const constructorSpy = sinon.spy();
+      const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
+      const ProxifiedBarracks = proxyquire('./Barracks', {
+        'barracks-sdk': function Constructor (options) {
+          constructorSpy(options);
+          this.checkUpdate = checkUpdateSpy;
+        }
+      });
+
+      barracks = new ProxifiedBarracks();
+      barracks.options = { baseUrl };
+      
+      // When / Then
+      barracks.checkUpdate(apiKey, device).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(constructorSpy).to.have.been.calledOnce;
+        expect(constructorSpy).to.have.been.calledWithExactly({
+          baseURL: baseUrl,
+          apiKey,
+          unitId
+        });
+        expect(checkUpdateSpy).to.have.been.calledOnce;
+        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+          versionId,
+          undefined
+        );
+        done();
+      });
+    });
+
+    it('should call client with empty customClientData when device with no customClientData given', done => {
+      // Given
+      const baseUrl = 'base/url';
+      const apiKey = 'myApiKey';
+      const unitId = 'unitId';
+      const versionId = 'version1';
+      const response = { versionId: 'version2', packageId: 'id' };
+      const device = { unitId, versionId };
+      const constructorSpy = sinon.spy();
+      const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
+      const ProxifiedBarracks = proxyquire('./Barracks', {
+        'barracks-sdk': function Constructor (options) {
+          constructorSpy(options);
+          this.checkUpdate = checkUpdateSpy;
+        }
+      });
+
+      barracks = new ProxifiedBarracks();
+      barracks.options = { baseUrl };
+      
+      // When / Then
+      barracks.checkUpdate(apiKey, device).then(result => {
+        expect(result).to.be.equals(response);
+        expect(constructorSpy).to.have.been.calledOnce;
+        expect(constructorSpy).to.have.been.calledWithExactly({
+          baseURL: baseUrl,
+          apiKey,
+          unitId
+        });
+        expect(checkUpdateSpy).to.have.been.calledOnce;
+        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+          versionId,
+          undefined
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should call client with customClientData when device with customClientData given', done => {
+      // Given
+      const baseUrl = 'base/url';
+      const apiKey = 'myApiKey';
+      const unitId = 'unitId';
+      const versionId = 'version1';
+      const customClientData = { data1: 'value', data2: 4 };
+      const response = { versionId: 'version2', packageId: 'id' };
+      const device = { unitId, versionId, customClientData };
+      const constructorSpy = sinon.spy();
+      const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
+      const ProxifiedBarracks = proxyquire('./Barracks', {
+        'barracks-sdk': function Constructor (options) {
+          constructorSpy(options);
+          this.checkUpdate = checkUpdateSpy;
+        }
+      });
+
+      barracks = new ProxifiedBarracks();
+      barracks.options = { baseUrl };
+      
+      // When / Then
+      barracks.checkUpdate(apiKey, device).then(result => {
+        expect(result).to.be.equals(response);
+        expect(constructorSpy).to.have.been.calledOnce;
+        expect(constructorSpy).to.have.been.calledWithExactly({
+          baseURL: baseUrl,
+          apiKey,
+          unitId
+        });
+        expect(checkUpdateSpy).to.have.been.calledOnce;
+        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+          versionId,
+          customClientData
+        );
         done();
       }).catch(err => {
         done(err);
