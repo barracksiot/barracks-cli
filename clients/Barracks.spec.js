@@ -270,7 +270,7 @@ describe('Barracks', () => {
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'updates',
+          'getUpdates',
           options,
           'detailedUpdates'
         );
