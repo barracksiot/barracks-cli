@@ -1,5 +1,6 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
+const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../utils/logger');
@@ -7,6 +8,7 @@ const logger = require('../utils/logger');
 class Barracks {
 
   constructor(options) {
+    this.options = options;
     this.client = new HTTPClient(options);
   }
 
@@ -238,6 +240,24 @@ class Barracks {
         resolve(response.body);
       }).catch(errResponse => {
         reject(errResponse.message);
+      });
+    });
+  }
+
+  checkUpdate(apiKey, device) {
+    return new Promise((resolve, reject) => {
+      logger.debug('checking update:', device);
+      const client = new BarracksSDK({
+        baseURL: this.options.baseUrl,
+        apiKey,
+        unitId: device.unitId
+      });
+
+      client.checkUpdate(device.versionId, device.customClientData).then(update => {
+        resolve(update);
+      }).catch(err => {
+        logger.debug('check update failed:', err);
+        reject(err);
       });
     });
   }
