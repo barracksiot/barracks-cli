@@ -87,9 +87,7 @@ class BarracksCommand {
   }
 
   render() {
-    console.log('plop 1');
     if (this.validateCommand(program)) {
-    console.log('plop 2');
       const result = this.execute(program);
       if (program.json) {
         jsonRenderer(result);
