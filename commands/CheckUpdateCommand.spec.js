@@ -11,6 +11,7 @@ chai.use(sinonChai);
 describe('CheckUpdateCommand', () => {
 
   let checkUpdateCommand;
+  const token = '123456WS';
   const unitId = 'testCLI_1';
   const versionId = '0.1';
   const apiKey = '1234567890poiuytrewq';
@@ -28,19 +29,8 @@ describe('CheckUpdateCommand', () => {
       checkUpdateCommand.barracks = {};
       checkUpdateCommand.userConfiguration = {};
     });
-
-    it('should return true when the device and apiKey are given', () => {
-      // Given
-      const program = programWithValidArgs;
-
-      // When
-      const result = checkUpdateCommand.validateCommand(program);
-
-      // Then
-      expect(result).to.be.true;
-    });
   
-    it('should return false when one param given', () => {
+    it('should return true when device given', () => {
       // Given
       const program = { args: ['{ "unitId":"testCLI_1", "versionId":"0.1"}'] };
 
@@ -48,7 +38,7 @@ describe('CheckUpdateCommand', () => {
       const result = checkUpdateCommand.validateCommand(program);
 
       // Then
-      expect(result).to.be.false;
+      expect(result).to.be.true;
     });
 
     it('should return false when no param given', () => {
@@ -74,12 +64,21 @@ describe('CheckUpdateCommand', () => {
     it('should call client to check update', done => {
       // Given
       const program = programWithValidArgs;
+      const account = { apiKey };
       const response = 'cool';
-      checkUpdateCommand.barracks.checkUpdate = sinon.stub().returns(Promise.resolve(response));
+      checkUpdateCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      checkUpdateCommand.barracks = {
+        getAccount: sinon.stub().returns(Promise.resolve(account)),
+        checkUpdate: sinon.stub().returns(Promise.resolve(response))
+      };
 
       // When / Then
       checkUpdateCommand.execute(program).then(result => {
         expect(result).to.equal(response);
+        expect(checkUpdateCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(checkUpdateCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(checkUpdateCommand.barracks.getAccount).to.have.been.calledOnce;
+        expect(checkUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(checkUpdateCommand.barracks.checkUpdate).to.have.been.calledOnce;
         expect(checkUpdateCommand.barracks.checkUpdate).to.have.been.calledWithExactly(
           apiKey,
