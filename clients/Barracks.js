@@ -167,6 +167,41 @@ class Barracks {
     });
   }
 
+  createSegment(token, segment) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createSegment', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: segment
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
+  editSegment(token, diff) {
+    return new Promise((resolve, reject) => {
+      this.getSegment(token, diff.id).then(segment => {
+        return this.client.sendEndpointRequest('editSegment', {
+          headers: {
+            'x-auth-token': token
+          },
+          body: Object.assign({}, segment, diff),
+          pathVariables: {
+            id: segment.id
+          }
+        });
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getSegmentByName(token, segmentName) {
     return new Promise((resolve, reject) => {
       this.getSegments(token).then(segments => {
@@ -180,6 +215,23 @@ class Barracks {
         }
       }).catch(err => {
         reject(err);
+      });
+    });
+  }
+
+  getSegment(token, segmentId) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('getSegment', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          id: segmentId
+        }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
       });
     });
   }

@@ -120,6 +120,93 @@ describe('Barracks', () => {
     
   });
 
+  describe('#editSegment()', () => {
+
+    const originalSegment = {
+      id: '12345678',
+      name: 'test segment',
+      query: { eq: { unitId: '123456' } }
+    };
+
+    it('should return an error message when edit request fails', done => {
+      // Given
+      const changes = { id: originalSegment.id, name: 'New name' };
+      const error = { message: 'Error !' };
+      barracks.getSegment = sinon.stub().returns(Promise.resolve(originalSegment));
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.editSegment(token, changes).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        try {
+          expect(err).to.be.equals(error.message);
+          expect(barracks.getSegment).to.have.been.calledOnce;
+          expect(barracks.getSegment).to.have.been.calledWithExactly(token, changes.id);
+          expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+          expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('editSegment', {
+            headers: { 'x-auth-token': token },
+            body: Object.assign({}, originalSegment, changes),
+            pathVariables: { id: originalSegment.id }
+          });
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
+    });
+
+    it('should return an error message when the segment does not exist', done => {
+      // Given
+      const changes = { id: originalSegment.id, name: 'test segment' };
+      const error = { message: 'Error !' };
+      const excpectedResult = Object.assign({}, originalSegment, changes);
+      barracks.getSegment = sinon.stub().returns(Promise.reject(error));
+      barracks.client.sendEndpointRequest = sinon.spy();
+
+      // When / Then
+      barracks.editSegment(token, changes).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        try {
+          expect(err).to.be.equals(error.message);
+          expect(barracks.getSegment).to.have.been.calledOnce;
+          expect(barracks.getSegment).to.have.been.calledWithExactly(token, changes.id);
+          expect(barracks.client.sendEndpointRequest).to.not.have.been.called;
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
+    });
+
+    it('should return the edited segment', done => {
+      // Given
+      const changes = { id: originalSegment.id, name: 'NaaaAAmE' };
+      const expectedResult = Object.assign({}, originalSegment, changes);
+      const response = { body: expectedResult };
+      barracks.getSegment = sinon.stub().returns(Promise.resolve(originalSegment));
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.editSegment(token, changes).then(result => {
+        expect(result).to.be.equal(expectedResult);
+        expect(barracks.getSegment).to.have.been.calledOnce;
+        expect(barracks.getSegment).to.have.been.calledWithExactly(token, changes.id);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('editSegment', {
+          headers: { 'x-auth-token': token },
+          body: expectedResult,
+          pathVariables: { id: originalSegment.id }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+    
+  });
+
   describe('#authenticate()', () => {
 
     it('should return an error message when authentication fails', done => {
@@ -201,6 +288,58 @@ describe('Barracks', () => {
         done(err);
       });
     });
+  });
+
+  describe('#getSegment()', () => {
+
+    const existingSegment = {
+      id: '123456789',
+      name: 'Plop',
+      query: {}
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getSegment(token, existingSegment.id).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegment', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            id: existingSegment.id
+          }
+        });
+        done();
+      });
+    });
+
+    it('should return a segment when request succeed', done => {
+      // Given
+      const response = { body: existingSegment };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegment(token, existingSegment.id).then(result => {
+        expect(result).to.be.equals(existingSegment);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getSegment', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            id: existingSegment.id
+          }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+    
   });
 
   describe('#getUpdate()', () => {
@@ -728,6 +867,51 @@ describe('Barracks', () => {
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createUpdate', {
           headers: { 'x-auth-token': token },
           body: update
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+  });
+
+  describe('#createSegment()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const segment = { name: 'Segment', query: { eq: { unitId: 'value' } } };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createSegment(token, segment).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createSegment', {
+          headers: { 'x-auth-token': token },
+          body: segment
+        });
+        done();
+      });
+    });
+
+    it('should return the created segment', done => {
+      // Given
+      const segment = { name: 'Segment', query: { eq: { unitId: 'value' } } };
+      const savedSegment = Object.assign({}, segment, { userId: '123456789' });
+      const response = { body: savedSegment };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createSegment(token, segment).then(result => {
+        expect(result).to.be.equals(savedSegment);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createSegment', {
+          headers: { 'x-auth-token': token },
+          body: segment
         });
         done();
       }).catch(err => {

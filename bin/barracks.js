@@ -16,6 +16,8 @@ program
   .command('devices', 'List devices')
   .command('device', 'Get device history')
   .command('segments', 'Get active and inactive segments')
+  .command('create-segment', 'Create a new segment')
+  .command('edit-segment', 'Edit an existing segment')
   .command('set-active-segments', 'Set active segments in priority order')
   .parse(process.argv);
 
