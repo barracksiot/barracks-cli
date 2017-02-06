@@ -282,4 +282,44 @@ describe('BarracksCommand', () => {
       });
     });
   });
+
+  describe('#saveAuthenticationToken()', () => {
+
+    before(() => {
+      resetCommand();
+    });
+
+    it('should call save token of userConfiguration', done => {
+      // Given
+      const response = 'coucou';
+      barracksCommand.userConfiguration.saveAuthenticationToken = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracksCommand.saveAuthenticationToken(token).then(result => {
+        expect(result).to.equals(response);
+        expect(barracksCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledOnce;
+        expect(barracksCommand.userConfiguration.saveAuthenticationToken).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#execute()', () => {
+
+    before(() => {
+      resetCommand();
+    });
+
+    it('should reject to make sure it is overridden', done => {
+      // When / Then
+      barracksCommand.execute().then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.equals('Need to be overridden');
+        done();
+      });
+    });
+  });
 });
