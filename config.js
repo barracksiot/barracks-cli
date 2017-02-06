@@ -45,6 +45,10 @@ module.exports = {
         method: 'GET',
         path: '/api/member/segments/order'
       },
+      createSegment: {
+        method: 'POST',
+        path: '/api/member/segments'
+      },
       getDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices?size=20'
