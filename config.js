@@ -13,9 +13,13 @@ module.exports = {
         method: 'GET',
         path: '/api/auth/me'
       },
-      updates: {
+      getUpdates: {
         method: 'GET',
         path: '/api/member/updates?size=20'
+      },
+      updatesBySegmentId: {
+        method: 'GET',
+        path: '/api/member/segments/:segmentId/updates'
       },
       publishUpdate: {
         method: 'PUT',
@@ -37,13 +41,33 @@ module.exports = {
         method: 'POST',
         path: '/api/member/updates'
       },
+      getUpdate: {
+        method: 'GET',
+        path: '/api/member/updates/:uuid'
+      },
       getSegments: {
         method: 'GET',
         path: '/api/member/segments/order'
       },
+      createSegment: {
+        method: 'POST',
+        path: '/api/member/segments'
+      },
+      editSegment: {
+        method: 'PUT',
+        path: '/api/member/segments/:id'
+      },
+      getSegment: {
+        method: 'GET',
+        path: '/api/member/segments/:id'
+      },
       getDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices?size=20'
+      },
+      editUpdate: {
+        method: 'PUT',
+        path: '/api/member/updates/:uuid'
       },
       getDeviceEvents: {
         method: 'GET',
