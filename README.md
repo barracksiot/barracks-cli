@@ -38,6 +38,7 @@ $ barracks help
     device                Get device history
     segments              Get active and inactive segments
     set-active-segments   Set active segments in priority order
+    check-update          Emulate a device checking for an update
     help [cmd]            display help for [cmd]
 
   Options:
@@ -63,6 +64,17 @@ Authentication successful
 After that, you can use any of the other commands:
 ```{r, engine='bash', count_lines}
 $ barracks create-update --title "My Update" --segment Other --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
+```
+
+Examples of the check-update command:
+```{r, engine='bash', count_lines}
+$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1" }'
+```
+```{r, engine='bash', count_lines}
+$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1", "customClientData": { "key1":"value1", "key2":"value2" } }'
+```
+```{r, engine='bash', count_lines}
+$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1", "customClientData": { "key1":"value1", "key2":"value2" } }' --download ~/Downloads/update.sh
 ```
 
 ## Features
