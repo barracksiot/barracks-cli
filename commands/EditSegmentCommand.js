@@ -20,9 +20,10 @@ function extractOptions(program, fields) {
 
 function buildSegmentDiff(program) {
   const extractedOptions = extractOptions(program, ['id', 'name', 'query']);
-  return Object.assign({}, extractedOptions, {
-    query: JSON.parse(extractedOptions.query)
-  });
+  if (extractedOptions.query) {
+    extractedOptions.query = JSON.parse(extractedOptions.query);
+  }
+  return extractedOptions;
 }
 
 class EditSegmentCommand extends BarracksCommand {
@@ -52,7 +53,7 @@ class EditSegmentCommand extends BarracksCommand {
       return this.barracks.editSegment(token, buildSegmentDiff(program));
     });
   }
-  
+
 }
 
 module.exports = EditSegmentCommand;

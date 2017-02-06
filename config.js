@@ -53,6 +53,14 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments'
       },
+      editSegment: {
+        method: 'PUT',
+        path: '/api/member/segments/:id'
+      },
+      getSegment: {
+        method: 'GET',
+        path: '/api/member/segments/:id'
+      },
       getDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices?size=20'
