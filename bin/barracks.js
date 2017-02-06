@@ -9,6 +9,7 @@ program
   .command('account', 'Get account information')
   .command('updates', 'List updates')
   .command('create-update', 'Create a new update')
+  .command('edit-update', 'Edit an existing update')
   .command('publish', 'Publish an update')
   .command('schedule', 'Publish an update')
   .command('archive', 'Archive an update')

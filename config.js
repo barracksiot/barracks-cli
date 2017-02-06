@@ -13,7 +13,7 @@ module.exports = {
         method: 'GET',
         path: '/api/auth/me'
       },
-      updates: {
+      getUpdates: {
         method: 'GET',
         path: '/api/member/updates?size=20'
       },
@@ -37,6 +37,10 @@ module.exports = {
         method: 'POST',
         path: '/api/member/updates'
       },
+      getUpdate: {
+        method: 'GET',
+        path: '/api/member/updates/:uuid'
+      },
       getSegments: {
         method: 'GET',
         path: '/api/member/segments/order'
@@ -44,6 +48,10 @@ module.exports = {
       getDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices?size=20'
+      },
+      editUpdate: {
+        method: 'PUT',
+        path: '/api/member/updates/:uuid'
       },
       getDeviceEvents: {
         method: 'GET',

@@ -27,6 +27,96 @@ describe('Barracks', () => {
     barracks.client = {};
   });
 
+  describe('#editUpdate()', () => {
+
+    const originalUpdate = {
+      name: 'test update',
+      versionId: '2.3',
+      uuid: '123456789',
+      packageInfo: { id: '123456' }
+    };
+
+    const originalUpdateWithPackageId = {
+      name: 'test update',
+      versionId: '2.3',
+      uuid: '123456789',
+      packageId: '123456'
+    };
+
+    it('should return an error message when edit request fails', done => {
+      // Given
+      const changes = { uuid: originalUpdate.uuid, name: 'test update' };
+      const error = { message: 'Error !' };
+      barracks.getUpdate = sinon.stub().returns(Promise.resolve(originalUpdate));
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.editUpdate(token, changes).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.getUpdate).to.have.been.calledOnce;
+        expect(barracks.getUpdate).to.have.been.calledWithExactly(token, changes.uuid);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('editUpdate', {
+          headers: { 'x-auth-token': token },
+          body: Object.assign({}, originalUpdateWithPackageId, changes),
+          pathVariables: { uuid: originalUpdateWithPackageId.uuid }
+        });
+        done();
+      });
+    });
+
+    it('should return an error message when the update does not exist', done => {
+      // Given
+      const changes = { uuid: originalUpdate.uuid, name: 'test update' };
+      const error = { message: 'Error !' };
+      const excpectedResult = Object.assign({}, originalUpdateWithPackageId, changes);
+      barracks.getUpdate = sinon.stub().returns(Promise.reject(error));
+      barracks.client.sendEndpointRequest = sinon.spy();
+
+      // When / Then
+      barracks.editUpdate(token, changes).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        try {
+          expect(err).to.be.equals(error.message);
+          expect(barracks.getUpdate).to.have.been.calledOnce;
+          expect(barracks.getUpdate).to.have.been.calledWithExactly(token, changes.uuid);
+          expect(barracks.client.sendEndpointRequest).to.not.have.been.called;
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
+    });
+
+    it('should return the edited update', done => {
+      // Given
+      const changes = { uuid: originalUpdate.uuid, name: 'test update' };
+      const response = { body: originalUpdate };
+      barracks.getUpdate = sinon.stub().returns(Promise.resolve(originalUpdate));
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+      const excpectedResult = Object.assign({}, originalUpdateWithPackageId, changes);
+
+      // When / Then
+      barracks.editUpdate(token, changes).then(result => {
+        expect(barracks.getUpdate).to.have.been.calledOnce;
+        expect(barracks.getUpdate).to.have.been.calledWithExactly(token, changes.uuid);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('editUpdate', {
+          headers: { 'x-auth-token': token },
+          body: excpectedResult,
+          pathVariables: { uuid: originalUpdateWithPackageId.uuid }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+    
+  });
+
   describe('#authenticate()', () => {
 
     it('should return an error message when authentication fails', done => {
@@ -108,6 +198,58 @@ describe('Barracks', () => {
         done('should have succeeded');
       });
     });
+  });
+
+  describe('#getUpdate()', () => {
+
+    const existingUpdate = {
+      uuid: '123456789',
+      name: 'Plop',
+      versionId: 'Cool'
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getUpdate(token, existingUpdate.uuid).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getUpdate', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            uuid: existingUpdate.uuid
+          }
+        });
+        done();
+      });
+    });
+
+    it('should return an update when request succeed', done => {
+      // Given
+      const response = { body: existingUpdate };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getUpdate(token, existingUpdate.uuid).then(result => {
+        expect(result).to.be.equals(existingUpdate);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getUpdate', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            uuid: existingUpdate.uuid
+          }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+    
   });
 
   describe('#getUpdates()', () => {
@@ -478,6 +620,7 @@ describe('Barracks', () => {
         done(err);
       });
     });
+
   });
 
   describe('#getDevices()', () => {
