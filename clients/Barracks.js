@@ -47,12 +47,32 @@ class Barracks {
     return new Promise(resolve => {
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'updates', {
+      this.client.retrieveAllPages(stream, 'getUpdates', {
         headers: {
           'x-auth-token': token
         }
       },
       'detailedUpdates');
+    });
+  }
+
+  getUpdate(token, uuid) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('getUpdate', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          uuid
+        }
+      }).then(response => {
+        const update = response.body;
+        logger.debug('Update information retrieved:', update);
+        resolve(update);
+      }).catch(errResponse => {
+        logger.debug('Update information request failure.');
+        reject(errResponse.message);
+      });
     });
   }
 
@@ -195,6 +215,32 @@ class Barracks {
         }
       },
       'deviceEvents');
+    });
+  }
+
+  editUpdate(token, updateDiff) {
+    return new Promise((resolve, reject) => {
+      this.getUpdate(token, updateDiff.uuid).then(update => {
+        const newUpdate = Object.assign({}, update, { packageId: update.packageInfo.id }, updateDiff);
+        delete newUpdate.packageInfo;
+        logger.debug('Editing update:', newUpdate);
+        return this.client.sendEndpointRequest('editUpdate', {
+          headers: {
+            'x-auth-token': token
+          },
+          body: newUpdate,
+          pathVariables: {
+            uuid: newUpdate.uuid
+          }
+        });
+      }).then(response => {
+        const update = response.body;
+        logger.debug('Edit update successful:', update);
+        resolve(update);
+      }).catch(errResponse => {
+        logger.debug('Edit update failed:', errResponse);
+        reject(errResponse.message);
+      });
     });
   }
 

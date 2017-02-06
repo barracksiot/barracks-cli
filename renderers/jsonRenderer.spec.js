@@ -15,7 +15,6 @@ function getRenderedJson(spy) {
   for (; i < spy.callCount; i++) {
     value += spy.args[i][0];
   }
-  console.warn("Here:", value)
   return JSON.parse(value);
 }
 
