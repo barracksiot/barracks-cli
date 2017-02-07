@@ -41,6 +41,7 @@
   "author": "contact@barracks.io",
   "license": "Apache-2.0",
   "dependencies": {
+    "barracks-sdk": "0.0.2",
     "commander": "2.9.0",
     "mkdirp": "0.5.1",
     "pjson": "1.0.7",
