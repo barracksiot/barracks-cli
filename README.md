@@ -68,13 +68,13 @@ $ barracks create-update --title "My Update" --segment Other --versionId v0.0.14
 
 Examples of the check-update command:
 ```{r, engine='bash', count_lines}
-$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1" }'
+$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1"
 ```
 ```{r, engine='bash', count_lines}
-$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1", "customClientData": { "key1":"value1", "key2":"value2" } }'
+$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }'
 ```
 ```{r, engine='bash', count_lines}
-$ barracks check-update '{ "unitId":"EmulatedDeviceId", "versionId":"0.1", "customClientData": { "key1":"value1", "key2":"value2" } }' --download ~/Downloads/update.sh
+$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }' --download ~/Downloads/update.sh
 ```
 
 ## Features
