@@ -1,6 +1,6 @@
 {
   "name": "barracks-cli",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "A CLI tool for Barracks",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "lint": "jshint **/**.js",
     "test": "npm run lint && npm run coverage && npm run check-coverage",
     "coverage": "DEBUG=true istanbul cover ./node_modules/mocha/bin/_mocha **/*.spec.js -- -R spec",
-    "check-coverage": "istanbul check-coverage --statement 90 --branch 70 --function 90",
+    "check-coverage": "istanbul check-coverage --statement 90 --branch 75 --function 90",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "bin": {
