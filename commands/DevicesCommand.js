@@ -1,7 +1,7 @@
 const BarracksCommand = require('./BarracksCommand');
 
 function getAllDevices(token, barracks) {
-  return barracks.getDevices();
+  return barracks.getDevices(token);
 }
 
 function getAllDevicesFromSegment(token, barracks, segmentName) {
