@@ -40,10 +40,8 @@ describe('DevicesCommand', () => {
     it('should return a PageableStream object when services return data', done => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
-      const channels = [{ name: 'channel1' }, { name: 'channel2' }];
       devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       devicesCommand.barracks = {
-        getChannels: sinon.stub().returns(Promise.resolve(channels)),
         getDevices: sinon.stub().returns(Promise.resolve(new PageableStream()))
       };
 
