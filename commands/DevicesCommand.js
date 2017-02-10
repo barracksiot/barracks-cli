@@ -7,7 +7,7 @@ function getAllDevices(token, barracks) {
 function getAllDevicesFromSegment(token, barracks, segmentName) {
   return new Promise((resolve, reject) => {
     barracks.getSegmentByName(token, segmentName).then(segment => {
-      return barracks.getDevices(token, segment.id);
+      return barracks.getSegmentDevices(token, segment.id);
     }).then(resultStream => {
       resolve(resultStream);
     }).catch(err => {
