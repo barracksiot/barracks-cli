@@ -53,6 +53,10 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments'
       },
+      createFilter: {
+        method: 'POST',
+        path: '/api/member/filters'
+      },
       editSegment: {
         method: 'PUT',
         path: '/api/member/segments/:id'
