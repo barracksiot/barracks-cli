@@ -963,7 +963,32 @@ describe('Barracks', () => {
         done(err);
       });
     });
+  });
 
+  describe('#getFilters()', () => {
+
+    it('should forward to the client with correct headers', done => {
+      // Given
+      const options = {
+        headers: { 'x-auth-token': token },
+      }
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getFilters(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getFilters',
+          options,
+          'filters'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
   describe('#getDevices()', () => {
