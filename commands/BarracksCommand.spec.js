@@ -35,6 +35,18 @@ describe('BarracksCommand', () => {
     barracksCommand.userConfiguration = {};
   }
 
+  describe('#validateCommand()', () => {
+
+    before(() => {
+      resetCommand();
+    });
+
+    it('should return true by default', () => {
+      const result = barracksCommand.validateCommand();
+      expect(result).to.be.true;
+    });
+  });
+
   describe('#getAuthenticationToken()', () => {
 
     before(() => {

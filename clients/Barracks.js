@@ -317,20 +317,29 @@ class Barracks {
     });
   }
 
-  getDevices(token, segmentId) {
+  getDevices(token, query) {
     return new Promise(resolve => {
-      logger.debug('Getting devices for segment:', segmentId);
+      logger.debug('Getting devices with query:', query);
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevices', {
-        headers: {
-          'x-auth-token': token
+      if (query) {
+        this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            query: JSON.stringify(query)
+          }
         },
-        pathVariables: {
-          segmentId
-        }
-      },
-      'deviceEvents');
+        'devices');
+      } else {
+        this.client.retrieveAllPages(stream, 'getDevices', {
+          headers: {
+            'x-auth-token': token
+          }
+        },
+        'devices');
+      }
     });
   }
 

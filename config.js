@@ -71,7 +71,11 @@ module.exports = {
       },
       getDevices: {
         method: 'GET',
-        path: '/api/member/segments/:segmentId/devices?size=20'
+        path: '/api/member/devices?size=20'
+      },
+      getDevicesWithQuery: {
+        method: 'GET',
+        path: '/api/member/devices?size=20?query=:query'
       },
       editUpdate: {
         method: 'PUT',
