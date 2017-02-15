@@ -965,6 +965,67 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getFilterByName()', () => {
+
+    const filterName = 'myCoolFilter';
+    const filter = { name: filterName, query: { eq: { unitId: 'plop' } } };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = 'Error !';
+      barracks.getFilters = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+    });
+
+    it('should return an error if filter does not exists', done => {
+      // Given
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } }
+      ];
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('No filter with name ' + filterName + ' found.');
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+    });
+
+    it('should return specified filter when request succeed', done => {
+      // Given
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } },
+        filter
+      ];
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        expect(result).to.be.equals(filter);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getFilters()', () => {
 
     it('should forward to the client with correct headers', done => {

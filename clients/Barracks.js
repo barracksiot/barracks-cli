@@ -199,6 +199,23 @@ class Barracks {
     });
   }
 
+  getFilterByName(token, filterName) {
+    return new Promise((resolve, reject) => {
+      this.getFilters(token).then(filters => {
+        const filter = filters.find(filter => {
+          return filter.name === filterName;
+        });
+        if (filter) {
+          resolve(filter);
+        } else {
+          reject('No filter with name ' + filterName + ' found.');
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
   getFilters(token) {
     return new Promise(resolve => {
       logger.debug('Getting filters');
