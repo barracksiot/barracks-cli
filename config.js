@@ -75,7 +75,7 @@ module.exports = {
       },
       getDevicesWithQuery: {
         method: 'GET',
-        path: '/api/member/devices?size=20?query=:query'
+        path: '/api/member/devices?size=20&query=:query'
       },
       editUpdate: {
         method: 'PUT',

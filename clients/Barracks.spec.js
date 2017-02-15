@@ -1082,7 +1082,7 @@ describe('Barracks', () => {
       const query = { eq: { unitId: 'plop' } };
       const options = {
         headers: { 'x-auth-token': token },
-        pathVariables: { query: JSON.stringify(query) }
+        pathVariables: { query: encodeURI(JSON.stringify(query)) }
       };
       barracks.client.retrieveAllPages = sinon.spy();
 

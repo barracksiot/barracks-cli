@@ -328,7 +328,7 @@ class Barracks {
             'x-auth-token': token
           },
           pathVariables: {
-            query: JSON.stringify(query)
+            query: encodeURI(JSON.stringify(query))
           }
         },
         'devices');
