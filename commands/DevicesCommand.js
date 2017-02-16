@@ -1,18 +1,23 @@
 const BarracksCommand = require('./BarracksCommand');
 
-function getQuery(token, program, barracks) {
+function getAllDevicesFromFilter(token, barracks, filterName) {
   return new Promise((resolve, reject) => {
-    let promise;
-    if (program.segment) {
-      promise = barracks.getSegmentByName(token, program.segment);
-    } else if (program.filter) {
-      promise = barracks.getFilterByName(token, program.filter);
-    } else {
-      promise = Promise.resolve({});
-    }
+    barracks.getFilterByName(token, filterName).then(filter => {
+      return barracks.getDevices(token, filter.query);
+    }).then(resultStream => {
+      resolve(resultStream);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
 
-    promise.then(filterObject => {
-      resolve(filterObject.query);
+function getAllDevicesFromSegment(token, barracks, segmentName) {
+  return new Promise((resolve, reject) => {
+    barracks.getSegmentByName(token, segmentName).then(segment => {
+      return barracks.getSegmentDevices(token, segment.id);
+    }).then(resultStream => {
+      resolve(resultStream);
     }).catch(err => {
       reject(err);
     });
@@ -42,12 +47,14 @@ class DevicesCommand extends BarracksCommand {
   }
 
   execute(program) {
-    let token;
-    return this.getAuthenticationToken().then(authToken => {
-      token = authToken;
-      return getQuery(token, program, this.barracks);
-    }).then(query => {
-      return this.barracks.getDevices(token, query);
+    return this.getAuthenticationToken().then(token => {
+      if (program.segment) {
+        return getAllDevicesFromSegment(token, this.barracks, program.segment);
+      } else if (program.filter) {
+        return getAllDevicesFromFilter(token, this.barracks, program.filter);
+      } else {
+        return this.barracks.getDevices(token);
+      }
     });
   }
 }

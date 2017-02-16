@@ -1052,6 +1052,34 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getSegmentDevices()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getSegmentDevices(token, segmentId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getSegmentDevices',
+          options,
+          'devices'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getDevices()', () => {
 
     it('should return a stream object and deleguate to the client when no query given', done => {

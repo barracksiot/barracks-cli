@@ -65,6 +65,10 @@ module.exports = {
         method: 'GET',
         path: '/api/member/segments/:id'
       },
+      getSegmentDevices: {
+        method: 'GET',
+        path: '/api/member/segments/:segmentId/devices'
+      },
       getFilters: {
         method: 'GET',
         path: '/api/member/filters/'

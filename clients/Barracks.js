@@ -317,6 +317,23 @@ class Barracks {
     });
   }
 
+  getSegmentDevices(token, segmentId) {
+    return new Promise(resolve => {
+      logger.debug('Getting devices for segment:', segmentId);
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getSegmentDevices', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          segmentId
+        }
+      },
+      'devices');
+    });
+  }
+
   getDevices(token, query) {
     return new Promise(resolve => {
       logger.debug('Getting devices with query:', query);
