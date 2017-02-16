@@ -92,6 +92,10 @@ module.exports = {
       setActiveSegments: {
         method: 'POST',
         path: '/api/member/segments/order'
+      },
+      createComponent: {
+        method: 'POST',
+        path: '/api/member/components'
       }
     }
   },

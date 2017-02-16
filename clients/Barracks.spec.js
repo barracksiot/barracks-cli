@@ -1248,6 +1248,59 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#createComponent()', () => {
+
+    const componentRef = 'my.component.yo';
+    const componentName = 'A cool component';
+    const componentDescription = 'A very cool component';
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const component = { ref: componentRef, name: componentName, description: componentDescription };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createComponent(token, component).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createComponent',
+          {
+            headers: { 'x-auth-token': token },
+            body: component
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the component created', done => {
+      // Given
+      const component = { ref: componentRef, name: componentName, description: componentDescription };
+      const response = { body: Object.assign({}, component, { id: 'theNewId' }) };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createComponent(token, component).then(result => {
+        expect(result).to.be.equals(response.body);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createComponent',
+          {
+            headers: { 'x-auth-token': token },
+            body: component
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#checkUpdate()', () => {
 
     it('should reject an error if client fail', done => {

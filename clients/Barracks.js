@@ -430,6 +430,21 @@ class Barracks {
     });
   }
 
+  createComponent(token, component) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createComponent', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: component
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);
