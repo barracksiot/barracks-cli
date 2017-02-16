@@ -22,6 +22,7 @@ program
   .command('edit-segment', 'Edit an existing segment')
   .command('set-active-segments', 'Set active segments in priority order')
   .command('check-update', 'Check for an update the same way a device would')
+  .command('create-package', 'Create a new package')
   .parse(process.argv);
 
 process.on('SIGINT', () => {
