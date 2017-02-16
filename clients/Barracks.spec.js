@@ -991,7 +991,7 @@ describe('Barracks', () => {
     });
   });
 
-  describe('#getDevices()', () => {
+  describe('#getSegmentDevices()', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
@@ -1003,14 +1003,40 @@ describe('Barracks', () => {
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
-      barracks.getDevices(token, segmentId).then(result => {
+      barracks.getSegmentDevices(token, segmentId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getSegmentDevices',
+          options,
+          'devices'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#getDevices()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const options = {
+        headers: { 'x-auth-token': token }
+      }
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getDevices(token).then(result => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
           'getDevices',
           options,
-          'deviceEvents'
+          'devices'
         );
         done();
       }).catch(err => {

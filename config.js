@@ -73,6 +73,10 @@ module.exports = {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices?size=20'
       },
+      getDevices: {
+        method: 'GET',
+        path: '/api/member/devices?size=20'
+      },
       editUpdate: {
         method: 'PUT',
         path: '/api/member/updates/:uuid'
