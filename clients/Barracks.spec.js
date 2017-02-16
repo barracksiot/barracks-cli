@@ -921,6 +921,51 @@ describe('Barracks', () => {
 
   });
 
+  describe('#createFilter()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createFilter(token, filter).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilter', {
+          headers: { 'x-auth-token': token },
+          body: filter
+        });
+        done();
+      });
+    });
+
+    it('should return the created filter', done => {
+      // Given
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const savedFilter = Object.assign({}, filter, { userId: '123456789' });
+      const response = { body: savedFilter };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createFilter(token, filter).then(result => {
+        expect(result).to.be.equals(savedFilter);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilter', {
+          headers: { 'x-auth-token': token },
+          body: filter
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+  });
+
   describe('#getSegmentDevices()', () => {
 
     it('should return a stream object and deleguate to the client', done => {

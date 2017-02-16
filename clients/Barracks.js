@@ -184,6 +184,21 @@ class Barracks {
     });
   }
 
+  createFilter(token, filter) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createFilter', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: filter
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   editSegment(token, diff) {
     return new Promise((resolve, reject) => {
       this.getSegment(token, diff.id).then(segment => {
