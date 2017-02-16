@@ -286,12 +286,12 @@ class Barracks {
     });
   }
 
-  getDevices(token, segmentId) {
+  getSegmentDevices(token, segmentId) {
     return new Promise(resolve => {
       logger.debug('Getting devices for segment:', segmentId);
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevices', {
+      this.client.retrieveAllPages(stream, 'getSegmentDevices', {
         headers: {
           'x-auth-token': token
         },
@@ -299,7 +299,21 @@ class Barracks {
           segmentId
         }
       },
-      'deviceEvents');
+      'devices');
+    });
+  }
+
+  getDevices(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting all devices...');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getDevices', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'devices');
     });
   }
 
