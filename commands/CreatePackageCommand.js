@@ -1,6 +1,6 @@
 const BarracksCommand = require('./BarracksCommand');
 
-class CreateUpdateCommand extends BarracksCommand {
+class CreatePackageCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
@@ -19,7 +19,7 @@ class CreateUpdateCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.createPackage(token, {
+      return this.barracks.createComponent(token, {
         ref: program.ref,
         name: program.name,
         description: program.description
@@ -28,4 +28,4 @@ class CreateUpdateCommand extends BarracksCommand {
   }
 }
 
-module.exports = CreateUpdateCommand;
+module.exports = CreatePackageCommand;

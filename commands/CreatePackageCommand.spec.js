@@ -113,13 +113,13 @@ describe('CreatePackageCommand', () => {
         name: packageName
       };
       createPackageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createPackageCommand.barracks.createPackage = sinon.stub().returns(Promise.resolve(response));
+      createPackageCommand.barracks.createComponent = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       createPackageCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createPackageCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createPackageCommand.barracks.createPackage).to.have.been.calledWithExactly(
+        expect(createPackageCommand.barracks.createComponent).to.have.been.calledOnce;
+        expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
           token,
           {
             ref: packageRef,
@@ -143,13 +143,13 @@ describe('CreatePackageCommand', () => {
         description: packageDescription
       };
       createPackageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createPackageCommand.barracks.createPackage = sinon.stub().returns(Promise.resolve(response));
+      createPackageCommand.barracks.createComponent = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       createPackageCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createPackageCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createPackageCommand.barracks.createPackage).to.have.been.calledWithExactly(
+        expect(createPackageCommand.barracks.createComponent).to.have.been.calledOnce;
+        expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
           token,
           {
             ref: packageRef,
