@@ -1087,6 +1087,7 @@ describe('Barracks', () => {
       const options = {
         headers: { 'x-auth-token': token }
       };
+
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
