@@ -6,7 +6,7 @@ class CreatePackageCommand extends BarracksCommand {
     return program
       .option('--reference [value]', 'The unique reference of the package')
       .option('--name [value]', 'The name of the package')
-      .option('--description [value]', '(Optionnal) The description of the pacakge');
+      .option('--description [value]', '(Optionnal) The description of the package');
   }
 
   validateCommand(program) {
