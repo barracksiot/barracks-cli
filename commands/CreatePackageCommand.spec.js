@@ -12,11 +12,11 @@ describe('CreatePackageCommand', () => {
 
   let createPackageCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageRef = 'my.package.yo';
+  const packageReference = 'my.package.yo';
   const packageName = 'A cool package';
   const packageDescription = 'A very cool package';
   const validProgram = {
-    ref: packageRef,
+    reference: packageReference,
     name: packageName
   };
   const validProgramWithDescription = Object.assign({}, validProgram, { description: packageDescription });
@@ -38,9 +38,9 @@ describe('CreatePackageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when only ref option given', () => {
+    it('should return false when only reference option given', () => {
       // Given
-      const program = { ref: packageRef };
+      const program = { reference: packageReference };
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -56,9 +56,9 @@ describe('CreatePackageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when empty ref option given', () => {
+    it('should return false when empty reference option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { ref: true });
+      const program = Object.assign({}, validProgram, { reference: true });
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -83,7 +83,7 @@ describe('CreatePackageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return true when both ref and name options given', () => {
+    it('should return true when both reference and name options given', () => {
       // Given
       const program = validProgram;
       // When
@@ -92,7 +92,7 @@ describe('CreatePackageCommand', () => {
       expect(result).to.be.true;
     });
 
-    it('should return true when ref, name and description options given', () => {
+    it('should return true when reference, name and description options given', () => {
       // Given
       const program = validProgramWithDescription;
       // When
@@ -104,12 +104,12 @@ describe('CreatePackageCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should forward to barracks client when valid ref and name given', done => {
+    it('should forward to barracks client when valid reference and name given', done => {
       // Given
       const program = validProgram;
       const response = {
         id: 'anId',
-        ref: packageRef,
+        reference: packageReference,
         name: packageName
       };
       createPackageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -122,7 +122,7 @@ describe('CreatePackageCommand', () => {
         expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
           token,
           {
-            ref: packageRef,
+            reference: packageReference,
             name: packageName,
             description: undefined
           }
@@ -133,12 +133,12 @@ describe('CreatePackageCommand', () => {
       });
     });
 
-    it('should forward to barracks client when valid ref, name and description given', done => {
+    it('should forward to barracks client when valid reference, name and description given', done => {
       // Given
       const program = validProgramWithDescription
       const response = {
         id: 'anId',
-        ref: packageRef,
+        reference: packageReference,
         name: packageName,
         description: packageDescription
       };
@@ -152,7 +152,7 @@ describe('CreatePackageCommand', () => {
         expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
           token,
           {
-            ref: packageRef,
+            reference: packageReference,
             name: packageName,
             description: packageDescription
           }

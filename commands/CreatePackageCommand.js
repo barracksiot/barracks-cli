@@ -4,14 +4,14 @@ class CreatePackageCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--ref [value]', 'The unique reference of the package')
+      .option('--reference [value]', 'The unique reference of the package')
       .option('--name [value]', 'The name of the package')
       .option('--description [value]', '(Optionnal) The description of the pacakge');
   }
 
   validateCommand(program) {
     return !!(
-      program.ref && program.ref !== true && 
+      program.reference && program.reference !== true && 
       program.name && program.name !== true && 
       (!program.description || (program.description && program.description !== true))
     );
@@ -20,7 +20,7 @@ class CreatePackageCommand extends BarracksCommand {
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       return this.barracks.createComponent(token, {
-        ref: program.ref,
+        reference: program.reference,
         name: program.name,
         description: program.description
       });
