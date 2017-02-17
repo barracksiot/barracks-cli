@@ -203,7 +203,6 @@ class Barracks {
     return new Promise((resolve, reject) => {
       this.getFilters(token).then(stream => {
         stream.onPageReceived(page => {
-          console.log('plop');
           const filter = page.find(filter => {
             return filter.name === filterName;
           });
@@ -212,7 +211,6 @@ class Barracks {
           }
         });
         stream.onLastPage(() => {
-          console.log('coucou');
           reject('No filter with name ' + filterName + ' found.');
         });
         stream.onError(error => {
