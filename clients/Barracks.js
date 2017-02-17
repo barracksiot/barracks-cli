@@ -199,6 +199,29 @@ class Barracks {
     });
   }
 
+  getFilterByName(token, filterName) {
+    return new Promise((resolve, reject) => {
+      this.getFilters(token).then(stream => {
+        stream.onPageReceived(page => {
+          const filter = page.find(filter => {
+            return filter.name === filterName;
+          });
+          if (filter) {
+            resolve(filter);
+          }
+        });
+        stream.onLastPage(() => {
+          reject('No filter with name ' + filterName + ' found.');
+        });
+        stream.onError(error => {
+          reject(error);
+        });
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
   getFilters(token) {
     return new Promise(resolve => {
       logger.debug('Getting filters');
@@ -317,17 +340,29 @@ class Barracks {
     });
   }
 
-  getDevices(token) {
+  getDevices(token, query) {
     return new Promise(resolve => {
-      logger.debug('Getting all devices...');
+      logger.debug('Getting devices with query:', query);
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevices', {
-        headers: {
-          'x-auth-token': token
-        }
-      },
-      'devices');
+      if (query) {
+        this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            query: encodeURI(JSON.stringify(query))
+          }
+        },
+        'devices');
+      } else {
+        this.client.retrieveAllPages(stream, 'getDevices', {
+          headers: {
+            'x-auth-token': token
+          }
+        },
+        'devices');
+      }
     });
   }
 

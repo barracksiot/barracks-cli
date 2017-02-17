@@ -965,6 +965,97 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getFilterByName()', () => {
+
+    const filterName = 'myCoolFilter';
+    const filter = { name: filterName, query: { eq: { unitId: 'plop' } } };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = 'Error !';
+      barracks.getFilters = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+    });
+
+    it('should return an error if stream fail', done => {
+      // Given
+      const error = 'stream failed';
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+      setTimeout(() => {
+        stream.fail(error);
+      }, 250);
+    });
+
+    it('should return an error if filter does not exists', done => {
+      // Given
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } }
+      ];
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('No filter with name ' + filterName + ' found.');
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+      setTimeout(() => {
+        stream.write(response);
+        stream.lastPage();
+      }, 250);
+    });
+
+    it('should return specified filter when request succeed', done => {
+      // Given
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } },
+        filter
+      ];
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        expect(result).to.be.equals(filter);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+      setTimeout(() => {
+        stream.write(response);
+        stream.lastPage();
+      }, 250);
+    });
+  });
+
   describe('#getFilters()', () => {
 
     it('should forward to the client with correct headers', done => {
@@ -1021,11 +1112,12 @@ describe('Barracks', () => {
 
   describe('#getDevices()', () => {
 
-    it('should return a stream object and deleguate to the client', done => {
+    it('should return a stream object and deleguate to the client when no query given', done => {
       // Given
       const options = {
         headers: { 'x-auth-token': token }
-      }
+      };
+
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
@@ -1035,6 +1127,31 @@ describe('Barracks', () => {
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
           'getDevices',
+          options,
+          'devices'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return a stream object and deleguate to the client when query given', done => {
+      // Given
+      const query = { eq: { unitId: 'plop' } };
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { query: encodeURI(JSON.stringify(query)) }
+      };
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getDevices(token, query).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getDevicesWithQuery',
           options,
           'devices'
         );
