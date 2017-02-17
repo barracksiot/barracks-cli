@@ -16,6 +16,7 @@ program
   .command('devices', 'List devices')
   .command('device', 'Get device history')
   .command('create-filter', 'Create a filter')
+  .command('filters', 'List filters')
   .command('segments', 'Get active and inactive segments')
   .command('create-segment', 'Create a new segment')
   .command('edit-segment', 'Edit an existing segment')

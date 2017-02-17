@@ -199,6 +199,20 @@ class Barracks {
     });
   }
 
+  getFilters(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting filters');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getFilters', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'filters');
+    });
+  }
+
   editSegment(token, diff) {
     return new Promise((resolve, reject) => {
       this.getSegment(token, diff.id).then(segment => {
