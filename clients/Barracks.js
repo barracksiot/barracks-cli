@@ -201,15 +201,23 @@ class Barracks {
 
   getFilterByName(token, filterName) {
     return new Promise((resolve, reject) => {
-      this.getFilters(token).then(filters => {
-        const filter = filters.find(filter => {
-          return filter.name === filterName;
+      this.getFilters(token).then(stream => {
+        stream.onPageReceived(page => {
+          console.log('plop');
+          const filter = page.find(filter => {
+            return filter.name === filterName;
+          });
+          if (filter) {
+            resolve(filter);
+          }
         });
-        if (filter) {
-          resolve(filter);
-        } else {
+        stream.onLastPage(() => {
+          console.log('coucou');
           reject('No filter with name ' + filterName + ' found.');
-        }
+        });
+        stream.onError(error => {
+          reject(error);
+        });
       }).catch(err => {
         reject(err);
       });

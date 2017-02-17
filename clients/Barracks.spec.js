@@ -986,13 +986,34 @@ describe('Barracks', () => {
       });
     });
 
+    it('should return an error if stream fail', done => {
+      // Given
+      const error = 'stream failed';
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(barracks.getFilters).to.have.been.calledOnce;
+        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        done();
+      });
+      setTimeout(() => {
+        stream.fail(error);
+      }, 250);
+    });
+
     it('should return an error if filter does not exists', done => {
       // Given
       const response = [
         { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
         { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } }
       ];
-      barracks.getFilters = sinon.stub().returns(Promise.resolve(response));
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
@@ -1003,6 +1024,10 @@ describe('Barracks', () => {
         expect(barracks.getFilters).to.have.been.calledWithExactly(token);
         done();
       });
+      setTimeout(() => {
+        stream.write(response);
+        stream.lastPage();
+      }, 250);
     });
 
     it('should return specified filter when request succeed', done => {
@@ -1012,7 +1037,8 @@ describe('Barracks', () => {
         { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } },
         filter
       ];
-      barracks.getFilters = sinon.stub().returns(Promise.resolve(response));
+      const stream = new PageableStream();
+      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
@@ -1023,6 +1049,10 @@ describe('Barracks', () => {
       }).catch(err => {
         done(err);
       });
+      setTimeout(() => {
+        stream.write(response);
+        stream.lastPage();
+      }, 250);
     });
   });
 
