@@ -1112,7 +1112,7 @@ describe('Barracks', () => {
 
   describe('#getDevices()', () => {
 
-    it('should return a stream object and deleguate to the client when no query given', done => {
+    it('should return a stream object and deleguate to the client', done => {
       // Given
       const options = {
         headers: { 'x-auth-token': token }
@@ -1135,7 +1135,10 @@ describe('Barracks', () => {
         done(err);
       });
     });
+  });
 
+  describe('#getDevicesFilteredByQuery()', () => {
+    
     it('should return a stream object and deleguate to the client when query given', done => {
       // Given
       const query = { eq: { unitId: 'plop' } };
@@ -1146,7 +1149,7 @@ describe('Barracks', () => {
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
-      barracks.getDevices(token, query).then(result => {
+      barracks.getDevicesFilteredByQuery(token, query).then(result => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(

@@ -340,29 +340,34 @@ class Barracks {
     });
   }
 
-  getDevices(token, query) {
+  getDevices(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting devices');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getDevices', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'devices');
+    });
+  }
+
+  getDevicesFilteredByQuery(token, query) {
     return new Promise(resolve => {
       logger.debug('Getting devices with query:', query);
       const stream = new PageableStream();
       resolve(stream);
-      if (query) {
-        this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            query: encodeURI(JSON.stringify(query))
-          }
+      this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
+        headers: {
+          'x-auth-token': token
         },
+        pathVariables: {
+          query: encodeURI(JSON.stringify(query))
+        }
+      },
         'devices');
-      } else {
-        this.client.retrieveAllPages(stream, 'getDevices', {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'devices');
-      }
     });
   }
 

@@ -3,7 +3,7 @@ const BarracksCommand = require('./BarracksCommand');
 function getAllDevicesFromFilter(token, barracks, filterName) {
   return new Promise((resolve, reject) => {
     barracks.getFilterByName(token, filterName).then(filter => {
-      return barracks.getDevices(token, filter.query);
+      return barracks.getDevicesFilteredByQuery(token, filter.query);
     }).then(resultStream => {
       resolve(resultStream);
     }).catch(err => {
