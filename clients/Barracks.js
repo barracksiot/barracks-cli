@@ -201,24 +201,29 @@ class Barracks {
 
   getFilterByName(token, filterName) {
     return new Promise((resolve, reject) => {
-      this.getFilters(token).then(stream => {
-        stream.onPageReceived(page => {
-          const filter = page.find(filter => {
-            return filter.name === filterName;
-          });
-          if (filter) {
-            resolve(filter);
-          }
+      const buffer = new PageableStream();
+      buffer.onPageReceived(page => {
+        const filter = page.find(filter => {
+          return filter.name === filterName;
         });
-        stream.onLastPage(() => {
-          reject('No filter with name ' + filterName + ' found.');
-        });
-        stream.onError(error => {
-          reject(error);
-        });
-      }).catch(err => {
-        reject(err);
+        if (filter) {
+          resolve(filter);
+        }
       });
+      buffer.onLastPage(() => {
+        reject('No filter with name ' + filterName + ' found.');
+      });
+      buffer.onError(error => {
+        reject(error);
+      });
+
+      this.client.retrievePagesUntilCondition(
+        buffer,
+        'getFilters',
+        { headers: { 'x-auth-token': token } },
+        'filters',
+        filters => filters.find(filter => filter.name === filterName)
+      );
     });
   }
 

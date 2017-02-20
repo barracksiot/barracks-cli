@@ -71,7 +71,7 @@ module.exports = {
       },
       getFilters: {
         method: 'GET',
-        path: '/api/member/filters/'
+        path: '/api/member/filters?size=20'
       },
       getDevices: {
         method: 'GET',

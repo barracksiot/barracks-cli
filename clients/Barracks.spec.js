@@ -970,40 +970,33 @@ describe('Barracks', () => {
     const filterName = 'myCoolFilter';
     const filter = { name: filterName, query: { eq: { unitId: 'plop' } } };
 
-    it('should return an error message when request fails', done => {
-      // Given
-      const error = 'Error !';
-      barracks.getFilters = sinon.stub().returns(Promise.reject(error));
-
-      // When / Then
-      barracks.getFilterByName(token, filterName).then(result => {
-        done('should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(barracks.getFilters).to.have.been.calledOnce;
-        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
-        done();
-      });
-    });
-
     it('should return an error if stream fail', done => {
       // Given
       const error = 'stream failed';
-      const stream = new PageableStream();
-      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.fail(error);
+          return Promise.resolve();
+        });
+      };
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(barracks.getFilters).to.have.been.calledOnce;
-        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
         done();
       });
-      setTimeout(() => {
-        stream.fail(error);
-      }, 250);
     });
 
     it('should return an error if filter does not exists', done => {
@@ -1012,22 +1005,31 @@ describe('Barracks', () => {
         { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
         { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } }
       ];
-      const stream = new PageableStream();
-      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.write(response);
+          stream.lastPage();
+          return Promise.resolve();
+        });
+      };
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals('No filter with name ' + filterName + ' found.');
-        expect(barracks.getFilters).to.have.been.calledOnce;
-        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
         done();
       });
-      setTimeout(() => {
-        stream.write(response);
-        stream.lastPage();
-      }, 250);
     });
 
     it('should return specified filter when request succeed', done => {
@@ -1037,22 +1039,31 @@ describe('Barracks', () => {
         { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } },
         filter
       ];
-      const stream = new PageableStream();
-      barracks.getFilters = sinon.stub().returns(Promise.resolve(stream));
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.write(response);
+          stream.lastPage();
+          return Promise.resolve();
+        });
+      };
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         expect(result).to.be.equals(filter);
-        expect(barracks.getFilters).to.have.been.calledOnce;
-        expect(barracks.getFilters).to.have.been.calledWithExactly(token);
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
         done();
       }).catch(err => {
         done(err);
       });
-      setTimeout(() => {
-        stream.write(response);
-        stream.lastPage();
-      }, 250);
     });
   });
 
