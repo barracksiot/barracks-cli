@@ -451,6 +451,23 @@ class Barracks {
     });
   }
 
+  revokeToken(token, tokenId) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('revokeToken', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          tokenId
+        }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);

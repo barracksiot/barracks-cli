@@ -105,6 +105,10 @@ module.exports = {
         method: 'POST',
         path: '/api/tokens'
       },
+      revokeToken: {
+        method: 'POST',
+        path: '/api/tokens/:tokenId/revoke'
+      }
     }
   },
   userConfig: {
