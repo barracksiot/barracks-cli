@@ -106,7 +106,7 @@ module.exports = {
         path: '/api/tokens'
       },
       revokeToken: {
-        method: 'POST',
+        method: 'GET',
         path: '/api/tokens/:tokenId/revoke'
       }
     }
