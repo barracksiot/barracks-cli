@@ -104,7 +104,7 @@ describe('DevicesCommand', () => {
       const error = 'request failed';
       devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       devicesCommand.barracks.getFilterByName = sinon.stub().returns(Promise.resolve(filter));
-      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.reject(error));
+      devicesCommand.barracks.getDevicesFilteredByQuery = sinon.stub().returns(Promise.reject(error));
 
       // when / Then
       devicesCommand.execute(program).then(result => {
@@ -115,8 +115,8 @@ describe('DevicesCommand', () => {
         expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(devicesCommand.barracks.getFilterByName).to.have.been.calledOnce;
         expect(devicesCommand.barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token, query);
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledWithExactly(token, query);
         done();
       });
     });
@@ -126,7 +126,7 @@ describe('DevicesCommand', () => {
       const program = programWithValidFilter;
       devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       devicesCommand.barracks.getFilterByName = sinon.stub().returns(Promise.resolve(filter));
-      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.resolve(new PageableStream()));
+      devicesCommand.barracks.getDevicesFilteredByQuery = sinon.stub().returns(Promise.resolve(new PageableStream()));
 
       // when / Then
       devicesCommand.execute(program).then(result => {
@@ -135,8 +135,8 @@ describe('DevicesCommand', () => {
         expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(devicesCommand.barracks.getFilterByName).to.have.been.calledOnce;
         expect(devicesCommand.barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token, query);
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledWithExactly(token, query);
         done();
       }).catch(err => {
         done(err);
