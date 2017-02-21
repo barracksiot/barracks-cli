@@ -36,8 +36,15 @@ $ barracks help
     archive               Archive an update
     devices               List devices
     device                Get device history
+    create-filter         Create a filter
+    filters               List filters
     segments              Get active and inactive segments
+    create-segment        Create a new segment
+    edit-segment          Edit an existing segment
     set-active-segments   Set active segments in priority order
+    create-token          Create an API token
+    tokens                List all API tokens
+    revoke-token          Revoke the specified API token
     check-update          Emulate a device checking for an update
     help [cmd]            display help for [cmd]
 
