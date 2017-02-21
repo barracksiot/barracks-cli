@@ -105,6 +105,10 @@ module.exports = {
         method: 'POST',
         path: '/api/tokens'
       },
+      getTokens: {
+        method: 'GET',
+        path: '/api/tokens'
+      },
       revokeToken: {
         method: 'GET',
         path: '/api/tokens/:tokenId/revoke'

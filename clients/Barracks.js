@@ -451,6 +451,20 @@ class Barracks {
     });
   }
 
+  getTokens(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting tokens');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(
+        stream,
+        'getTokens',
+        { headers: { 'x-auth-token': token } },
+        'tokens'
+      );
+    });
+  }
+
   revokeToken(token, tokenId) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('revokeToken', {
