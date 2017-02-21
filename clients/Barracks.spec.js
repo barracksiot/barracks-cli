@@ -1441,6 +1441,50 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#createToken()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const newToken = { name: 'My API token' };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createToken(token, newToken).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
+          headers: { 'x-auth-token': token },
+          body: newToken
+        });
+        done();
+      });
+    });
+
+    it('should return the token created', done => {
+      // Given
+      const newToken = { name: 'My API token' };
+      const newTokenFull = { name: 'My API token', value: 'mnbvcxzasdfghjklpoiuytrewq' };
+      const response = { body: newTokenFull };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createToken(token, newToken).then(result => {
+        expect(result).to.be.equals(newTokenFull);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
+          headers: { 'x-auth-token': token },
+          body: newToken
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#checkUpdateAndDownload()', () => {
 
     const baseUrl = 'base/url';

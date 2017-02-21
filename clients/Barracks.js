@@ -436,6 +436,21 @@ class Barracks {
     });
   }
 
+  createToken(token, newToken) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createToken', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: newToken
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);

@@ -73,7 +73,7 @@ describe('CreateTokenCommand', () => {
         expect(createTokenCommand.barracks.createToken).to.have.been.calledOnce;
         expect(createTokenCommand.barracks.createToken).to.have.been.calledWithExactly(
           authToken,
-          tokenName
+          { name: tokenName }
         );
         done();
       });
@@ -97,7 +97,7 @@ describe('CreateTokenCommand', () => {
         expect(createTokenCommand.barracks.createToken).to.have.been.calledOnce;
         expect(createTokenCommand.barracks.createToken).to.have.been.calledWithExactly(
           authToken,
-          tokenName
+          { name: tokenName }
         );
         done();
       }).catch(err => {

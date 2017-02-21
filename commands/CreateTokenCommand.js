@@ -12,7 +12,7 @@ class CreateTokenCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.createToken(token, program.name);
+      return this.barracks.createToken(token, { name: program.name });
     });
   }
 }

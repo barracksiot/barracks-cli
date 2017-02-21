@@ -100,7 +100,11 @@ module.exports = {
       setActiveSegments: {
         method: 'POST',
         path: '/api/member/segments/order'
-      }
+      },
+      createToken: {
+        method: 'POST',
+        path: '/api/tokens'
+      },
     }
   },
   userConfig: {
