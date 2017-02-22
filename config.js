@@ -103,15 +103,15 @@ module.exports = {
       },
       createToken: {
         method: 'POST',
-        path: '/api/tokens'
+        path: '/api/auth/tokens'
       },
       getTokens: {
         method: 'GET',
-        path: '/api/tokens'
+        path: '/api/auth/tokens'
       },
       revokeToken: {
-        method: 'GET',
-        path: '/api/tokens/:tokenId/revoke'
+        method: 'POST',
+        path: '/api/auth/tokens/:tokenId/revoke'
       }
     }
   },
