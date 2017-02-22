@@ -5,7 +5,9 @@ class CreateVersionCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--packageName [value]', 'The package name for which you want to create the version')
+      .option('--versionId [value]', 'The id of the version')
+      .option('--name [value]', 'The name of the version')
+      .option('--packageReference [value]', 'The reference for which existing package you want to create the version')
       .option('--file [file]', 'The path to the package of the update')
       .option('--description [value]', '(Optionnal) The description of the update')
       .option('--metadata [json]', '(Optionnal) The metadata you want to associate with the update (must be a valid JSON)'); 
@@ -13,7 +15,9 @@ class CreateVersionCommand extends BarracksCommand {
 
   validateCommand(program) {
     return !!(
-      program.packageName && program.packageName !== true && 
+      program.versionId && program.versionId !== true && 
+      program.name && program.name !== true && 
+      program.packageReference && program.packageReference !== true && 
       program.file && Validator.fileExists(program.file) && 
       (!program.description || (program.description  && program.description !== true)) &&
       (!program.metadata || Validator.isJsonString(program.metadata))
@@ -21,13 +25,11 @@ class CreateVersionCommand extends BarracksCommand {
   }
 
   execute(program) {
-    let token;
-    return this.getAuthenticationToken().then(authToken => {
-      token = authToken;
-      return this.barracks.getComponentByName(token, program.packageName);
-    }).then(component => {
+    return this.getAuthenticationToken().then(token => {
       return this.barracks.createVersion(token, {
-        component: component.id,
+        id: program.versionId,
+        name: program.name,
+        component: program.packageReference,
         file: program.file,
         description: program.description,
         metadata: program.metadata

@@ -26,17 +26,19 @@ describe('CreateVersionCommand', () => {
   });
 
   const token = 'edcbhjuijm,l';
-  const packageName = 'My Package';
+  const versionId = '2.3.4';
+  const name = 'version 2';
+  const packageReference = 'com.package.ref';
   const file = 'path/to/my/package/version.tar.gz';
   const description = 'The is the description of the version for my package';
   const metadata = {
     data1: 'value1',
     data2: 'value2',
   };
-  const minimalValidProgram = { packageName, file };
-  const programWithDescription = { packageName, file, description };
-  const programWithMetadata = { packageName, file, metadata: JSON.stringify(metadata) };
-  const programWithDescriptionAndMetadata = { packageName, file, description, metadata: JSON.stringify(metadata) };
+  const minimalValidProgram = { versionId, name, packageReference, file };
+  const programWithDescription = { versionId, name, packageReference, file, description };
+  const programWithMetadata = { versionId, name, packageReference, file, metadata: JSON.stringify(metadata) };
+  const programWithDescriptionAndMetadata = { versionId, name, packageReference, file, description, metadata: JSON.stringify(metadata) };
 
   before(() => {
     createVersionCommand = new CreateVersionCommand();
@@ -55,25 +57,43 @@ describe('CreateVersionCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when only packageName option given', () => {
+    it('should return false when only versionId option given', () => {
       // Given
-      const program = { packageName };
+      const program = { versionId };
       // When
       const result = createVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when only file option given, and file exists', () => {
+    it('should return false when only name option given', () => {
       // Given
-      const program = { packageName };
+      const program = { name };
       // When
       const result = createVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when package name and file option given, and file do not exists', () => {
+    it('should return false when only packageReference option given', () => {
+      // Given
+      const program = { packageReference };
+      // When
+      const result = createVersionCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when only file option given', () => {
+      // Given
+      const program = { packageReference };
+      // When
+      const result = createVersionCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when minimal options given but file do not exists', () => {
       // Given
       const program = minimalValidProgram;
       const spyFileExists = sinon.spy();
@@ -91,7 +111,7 @@ describe('CreateVersionCommand', () => {
       expect(spyFileExists).to.have.been.calledWithExactly(file);
     });
 
-    it('should return true when package name and file option given, and file exists', () => {
+    it('should return true when minimal options given, and file exists', () => {
       // Given
       const program = minimalValidProgram;
       const spyFileExists = sinon.spy();
@@ -249,34 +269,13 @@ describe('CreateVersionCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should reject an error if the component is not found', done => {
-      // Given
-      const error = 'Component not found';
-      const program = minimalValidProgram;
-      createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.getComponentByName = sinon.stub().returns(Promise.reject(error));
-
-      // When / Then
-      createVersionCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledWithExactly(token, packageName);
-        done();
-      });
-    });
-
     it('should reject an error if creation request fail', done => {
       // Given
       const program = minimalValidProgram;
       const componentId = '09876543sdfghjkl';
-      const component = { name: packageName, id: componentId };
+      const component = { name: packageReference, id: componentId };
       const error = 'creation failed';
       createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.getComponentByName = sinon.stub().returns(Promise.resolve(component));
       createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
@@ -286,13 +285,13 @@ describe('CreateVersionCommand', () => {
         expect(err).to.be.equals(error);
         expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledWithExactly(token, packageName);
         expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
         expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
           token,
           {
-            component: componentId,
+            id: versionId,
+            name,
+            component: packageReference,
             file,
             description: undefined,
             metadata: undefined
@@ -306,10 +305,9 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = minimalValidProgram;
       const componentId = '09876543sdfghjkl';
-      const component = { name: packageName, id: componentId };
-      const response = { id: 'wertyui', component: packageName };
+      const component = { name: packageReference, id: componentId };
+      const response = { id: 'wertyui', component: packageReference };
       createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.getComponentByName = sinon.stub().returns(Promise.resolve(component));
       createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
@@ -317,16 +315,48 @@ describe('CreateVersionCommand', () => {
         expect(result).to.be.equals(response);
         expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.getComponentByName).to.have.been.calledWithExactly(token, packageName);
         expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
         expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
           token,
           {
-            component: componentId,
+            id: versionId,
+            name,
+            component: packageReference,
             file,
             description: undefined,
             metadata: undefined
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should forward to barracks client when all options given', done => {
+      // Given
+      const program = programWithDescriptionAndMetadata;
+      const componentId = '09876543sdfghjkl';
+      const component = { name: packageReference, id: componentId };
+      const response = { id: 'wertyui', component: packageReference };
+      createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      createVersionCommand.execute(program).then(result => {
+        expect(result).to.be.equals(response);
+        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
+        expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
+          token,
+          {
+            id: versionId,
+            name,
+            component: packageReference,
+            file,
+            description,
+            metadata: JSON.stringify(metadata)
           }
         );
         done();
