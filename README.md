@@ -45,7 +45,7 @@ $ barracks help
     create-token          Create an API token
     tokens                List all API tokens
     revoke-token          Revoke the specified API token
-    check-update          Emulate a device checking for an update
+    check-update          Check for an update the same way a device would
     help [cmd]            display help for [cmd]
 
   Options:
@@ -98,6 +98,9 @@ Currently, the following features are available through the CLI:
 * Retrieve device information
 * List segments
 * Change active segments
+* Create a new segment
+* Edit an existing segment
+* Simulate a device check for update
 
 ## Docs & Community
 

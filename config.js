@@ -75,7 +75,7 @@ module.exports = {
       },
       getFilters: {
         method: 'GET',
-        path: '/api/member/filters/'
+        path: '/api/member/filters?size=20'
       },
       getDevices: {
         method: 'GET',
@@ -84,10 +84,6 @@ module.exports = {
       getDevicesWithQuery: {
         method: 'GET',
         path: '/api/member/devices?size=20&query=:query'
-      },
-      getDevices: {
-        method: 'GET',
-        path: '/api/member/devices?size=20'
       },
       editUpdate: {
         method: 'PUT',
@@ -112,6 +108,10 @@ module.exports = {
       revokeToken: {
         method: 'POST',
         path: '/api/auth/tokens/revoke'
+      },
+      createComponent: {
+        method: 'POST',
+        path: '/api/member/components'
       }
     }
   },

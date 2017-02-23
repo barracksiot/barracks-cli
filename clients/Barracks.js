@@ -201,24 +201,29 @@ class Barracks {
 
   getFilterByName(token, filterName) {
     return new Promise((resolve, reject) => {
-      this.getFilters(token).then(stream => {
-        stream.onPageReceived(page => {
-          const filter = page.find(filter => {
-            return filter.name === filterName;
-          });
-          if (filter) {
-            resolve(filter);
-          }
+      const buffer = new PageableStream();
+      buffer.onPageReceived(page => {
+        const filter = page.find(filter => {
+          return filter.name === filterName;
         });
-        stream.onLastPage(() => {
-          reject('No filter with name ' + filterName + ' found.');
-        });
-        stream.onError(error => {
-          reject(error);
-        });
-      }).catch(err => {
-        reject(err);
+        if (filter) {
+          resolve(filter);
+        }
       });
+      buffer.onLastPage(() => {
+        reject('No filter with name ' + filterName + ' found.');
+      });
+      buffer.onError(error => {
+        reject(error);
+      });
+
+      this.client.retrievePagesUntilCondition(
+        buffer,
+        'getFilters',
+        { headers: { 'x-auth-token': token } },
+        'filters',
+        filters => filters.find(filter => filter.name === filterName)
+      );
     });
   }
 
@@ -340,29 +345,34 @@ class Barracks {
     });
   }
 
-  getDevices(token, query) {
+  getDevices(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting devices');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getDevices', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'devices');
+    });
+  }
+
+  getDevicesFilteredByQuery(token, query) {
     return new Promise(resolve => {
       logger.debug('Getting devices with query:', query);
       const stream = new PageableStream();
       resolve(stream);
-      if (query) {
-        this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            query: encodeURI(JSON.stringify(query))
-          }
+      this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
+        headers: {
+          'x-auth-token': token
         },
+        pathVariables: {
+          query: encodeURI(JSON.stringify(query))
+        }
+      },
         'devices');
-      } else {
-        this.client.retrieveAllPages(stream, 'getDevices', {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'devices');
-      }
     });
   }
 
@@ -472,6 +482,21 @@ class Barracks {
           'x-auth-token': authToken
         },
         body: { value: tokenToRevoke }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
+  createComponent(token, component) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createComponent', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: component
       }).then(response => {
         resolve(response.body);
       }).catch(errResponse => {

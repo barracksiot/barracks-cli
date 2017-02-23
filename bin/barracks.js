@@ -25,6 +25,7 @@ program
   .command('tokens', 'List all API tokens')
   .command('revoke-token', 'Revoke the specified API token')
   .command('check-update', 'Check for an update the same way a device would')
+  .command('create-package', 'Create a new package')
   .parse(process.argv);
 
 process.on('SIGINT', () => {
