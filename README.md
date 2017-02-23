@@ -37,8 +37,10 @@ $ barracks help
     devices               List devices
     device                Get device history
     segments              Get active and inactive segments
+    create-segment        Create a new segment
+    edit-segment          Edit an existing segment
     set-active-segments   Set active segments in priority order
-    check-update          Emulate a device checking for an update
+    check-update          Check for an update the same way a device would
     help [cmd]            display help for [cmd]
 
   Options:
@@ -91,6 +93,9 @@ Currently, the following features are available through the CLI:
 * Retrieve device information
 * List segments
 * Change active segments
+* Create a new segment
+* Edit an existing segment
+* Simulate a device check for update
 
 ## Docs & Community
 
