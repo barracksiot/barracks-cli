@@ -109,5 +109,5 @@ module.exports = {
     )
   },
   debug: process.env.DEBUG || false,
-  experimental: process.env.EXPERIMENTAL || false
+  experimental: process.env.EXPERIMENTAL ? parseInt(process.env.EXPERIMENTAL) : false
 };
