@@ -111,7 +111,7 @@ module.exports = {
       },
       revokeToken: {
         method: 'POST',
-        path: '/api/auth/tokens/:tokenId/revoke'
+        path: '/api/auth/tokens/revoke'
       }
     }
   },

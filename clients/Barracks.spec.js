@@ -1515,19 +1515,19 @@ describe('Barracks', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const tokenId = '1234567890987654321234567890';
+      const tokenToRevoke = '1234567890987654321234567890';
       const error = { message: 'Error !' };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      barracks.revokeToken(token, tokenId).then(result => {
+      barracks.revokeToken(token, tokenToRevoke).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
           headers: { 'x-auth-token': token },
-          pathVariables: { tokenId }
+          body: { value: tokenToRevoke }
         });
         done();
       });
@@ -1535,23 +1535,23 @@ describe('Barracks', () => {
 
     it('should return the token revoked', done => {
       // Given
-      const tokenId = '1234567890987654321234567890';
+      const tokenToRevoke = '1234567890987654321234567890';
       const revokedToken = {
-        id: tokenId,
+        id: 'sdfghjhgfdsdfghgfdsdfgh',
         name: 'My API token',
-        value: 'mnbvcxzasdfghjklpoiuytrewq',
+        value: tokenToRevoke,
         revoked: true
       };
       const response = { body: revokedToken };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.revokeToken(token, tokenId).then(result => {
+      barracks.revokeToken(token, tokenToRevoke).then(result => {
         expect(result).to.be.equals(revokedToken);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
           headers: { 'x-auth-token': token },
-          pathVariables: { tokenId }
+          body: { value: tokenToRevoke }
         });
         done();
       }).catch(err => {

@@ -13,10 +13,8 @@ describe('RevokeTokenCommand', () => {
   let revokeTokenCommand;
 
   const authToken = '123456WS';
-  const tokenId = '1234567890987654321234567890';
-  const programWithValidOptions = {
-    'token-id': tokenId
-  };
+  const token = '1234567890987654321234567890';
+  const programWithValidOptions = { args: [ token ] };
 
   before(() => {
     revokeTokenCommand = new RevokeTokenCommand();
@@ -26,7 +24,7 @@ describe('RevokeTokenCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return false when no option given', () => {
+    it('should return false when no argument given', () => {
       // Given
       const program = {};
       // When
@@ -35,22 +33,22 @@ describe('RevokeTokenCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when no value given for token id', () => {
+    it('should return true when all arguments are valid and present', () => {
       // Given
-      const program = { 'token-id': true };
-      // When
-      const result = revokeTokenCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return true when all the options are valid and present', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions);
+      const program = programWithValidOptions;
       // When
       const result = revokeTokenCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
+    });
+
+    it('should return false when more than one argument given', () => {
+      // Given
+      const program = { args: [ token, 'plop' ] };
+      // When
+      const result = revokeTokenCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
     });
   });
 
@@ -73,7 +71,7 @@ describe('RevokeTokenCommand', () => {
         expect(revokeTokenCommand.barracks.revokeToken).to.have.been.calledOnce;
         expect(revokeTokenCommand.barracks.revokeToken).to.have.been.calledWithExactly(
           authToken,
-          tokenId
+          token
         );
         done();
       });
@@ -81,25 +79,25 @@ describe('RevokeTokenCommand', () => {
 
     it('should return the revoked token when request succeed', done => {
       // Given
-      const token = {
-        id: tokenId,
+      const tokenFull = {
+        id: '1234567890987654321',
         name: 'tokenName',
-        value: 'qwertyuioplkjhgfdsazxcvbnm',
+        value: token,
         revoked: true
       };
       const program = Object.assign({}, programWithValidOptions);
       revokeTokenCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(authToken));
-      revokeTokenCommand.barracks.revokeToken = sinon.stub().returns(Promise.resolve(token));
+      revokeTokenCommand.barracks.revokeToken = sinon.stub().returns(Promise.resolve(tokenFull));
 
       // When / Then
       revokeTokenCommand.execute(program).then(result => {
-        expect(result).to.be.equals(token);
+        expect(result).to.be.equals(tokenFull);
         expect(revokeTokenCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(revokeTokenCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(revokeTokenCommand.barracks.revokeToken).to.have.been.calledOnce;
         expect(revokeTokenCommand.barracks.revokeToken).to.have.been.calledWithExactly(
           authToken,
-          tokenId
+          token
         );
         done();
       }).catch(err => {

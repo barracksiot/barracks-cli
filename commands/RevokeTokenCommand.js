@@ -3,16 +3,16 @@ const BarracksCommand = require('./BarracksCommand');
 class RevokeTokenCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program.option('--tokenId [value]', 'The id of the token');
+    return program.arguments('<token>');
   }
 
   validateCommand(program) {
-    return !!(program.tokenId && program.tokenId !== true);
+    return !!(program.args && program.args.length === 1 && program.args[0] !== true);
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.revokeToken(token, program.tokenId);
+      return this.barracks.revokeToken(token, program.args[0]);
     });
   }
 }

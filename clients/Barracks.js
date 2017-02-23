@@ -465,15 +465,13 @@ class Barracks {
     });
   }
 
-  revokeToken(token, tokenId) {
+  revokeToken(authToken, tokenToRevoke) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('revokeToken', {
         headers: {
-          'x-auth-token': token
+          'x-auth-token': authToken
         },
-        pathVariables: {
-          tokenId
-        }
+        body: { value: tokenToRevoke }
       }).then(response => {
         resolve(response.body);
       }).catch(errResponse => {
