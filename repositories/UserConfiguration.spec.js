@@ -368,7 +368,6 @@ describe('UserConfiguration', () => {
     const ProxyUserConfiguration = proxyquire('./UserConfiguration', {
       fs: {
         writeFile: (file, encoding, callback) => {
-          console.log('coucou');
           proxyFsWriteFile(file, encoding, callback);
         }
       }

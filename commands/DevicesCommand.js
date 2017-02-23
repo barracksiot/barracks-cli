@@ -1,4 +1,5 @@
 const BarracksCommand = require('./BarracksCommand');
+const config = require('../config');
 
 function getAllDevicesFromFilter(token, barracks, filterName) {
   return new Promise((resolve, reject) => {
@@ -41,9 +42,14 @@ class DevicesCommand extends BarracksCommand {
   }
 
   configureCommand(program) {
-    return program
-      .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only (Cannot be used with --filter).')
-      .option('--filter [filterName]', '(Optionnal) Apply a filter on the device list (Cannot be used with --segment).');
+    if (config.experimental) {
+      return program
+        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only (Cannot be used with --filter).')
+        .option('--filter [filterName]', '(Optionnal) Apply a filter on the device list (Cannot be used with --segment).');
+    } else {
+      return program
+        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only.');
+      }
   }
 
   execute(program) {

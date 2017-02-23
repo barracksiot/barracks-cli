@@ -108,5 +108,6 @@ module.exports = {
       process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/.barracks'
     )
   },
-  debug: process.env.DEBUG || false
+  debug: process.env.DEBUG || false,
+  experimental: process.env.EXPERIMENTAL || false
 };
