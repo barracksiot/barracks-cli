@@ -1,23 +1,5 @@
-const fs = require('fs');
+const Validator = require('../utils/Validator');
 const BarracksCommand = require('./BarracksCommand');
-
-function isJsonString(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
-function fileExists(path) {
-  try {
-    fs.accessSync(path, fs.F_OK);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 
 class CreateUpdateCommand extends BarracksCommand {
 
@@ -36,8 +18,8 @@ class CreateUpdateCommand extends BarracksCommand {
       program.title && program.title !== true && 
       program.segment && program.segment !== true && 
       program.versionId && program.versionId !== true && 
-      program.package && fileExists(program.package) && 
-      (!program.properties || isJsonString(program.properties))
+      program.package && Validator.fileExists(program.package) && 
+      (!program.properties || Validator.isJsonString(program.properties))
     );
   }
 

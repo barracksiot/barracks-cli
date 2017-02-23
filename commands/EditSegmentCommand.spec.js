@@ -2,8 +2,8 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const chaiAsPromised = require("chai-as-promised");
-const EditSegmentCommand = require('./EditSegmentCommand');
+const chaiAsPromised = require('chai-as-promised');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -11,6 +11,20 @@ chai.use(sinonChai);
 describe('EditSegmentCommand', () => {
 
   let editSegmentCommand;
+  let proxyIsJsonString;
+  let proxyFileExists;
+
+  const EditSegmentCommand = proxyquire('./EditSegmentCommand', {
+    '../utils/Validator': {
+      isJsonString: (str) => {
+        return proxyIsJsonString(str);
+      },
+      fileExists: (path) => {
+        return proxyFileExists(path);
+      }
+    }
+  });
+
   const token = 'i8uhkj.token.65ryft';
   const savedSegment = {
     id: '12345678',
@@ -49,6 +63,8 @@ describe('EditSegmentCommand', () => {
     editSegmentCommand = new EditSegmentCommand();
     editSegmentCommand.barracks = {};
     editSegmentCommand.userConfiguration = {};
+    proxyIsJsonString = undefined;
+    roxyFileExists = undefined;
   });
 
   describe('#validateCommand(program)', () => {
@@ -56,43 +72,54 @@ describe('EditSegmentCommand', () => {
     it('should return true when all the options are valid and present', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions);
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return true;
+      }
 
       // When
       const result = editSegmentCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithAllOptions.query);
     });
 
     it('should return false when id is missing', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions, { id: undefined });
-
       // When
       const result = editSegmentCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
 
     it('should return false when query is not a valid JSON', () => {
       // Given
-      const program = Object.assign({}, programWithAllOptions, { query: 'Not { a } json' });
+      const query = 'Not { a } json';
+      const program = Object.assign({}, programWithAllOptions, { query });
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return false;
+      }
 
       // When
       const result = editSegmentCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(query);
     });
 
     it('should return true when query is missing', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions, { query: undefined });
-
       // When
       const result = editSegmentCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.true;
     });
@@ -100,14 +127,20 @@ describe('EditSegmentCommand', () => {
     it('should return true when name is missing', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions, { name: undefined });
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return true;
+      }
 
       // When
       const result = editSegmentCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithAllOptions.query);
     });
-
   });
 
   describe('#execute(program)', () => {

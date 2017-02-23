@@ -1,12 +1,5 @@
+const Validator = require('../utils/Validator');
 const BarracksCommand = require('./BarracksCommand');
-
-function isValidJson(json) {
-  try {
-    return !!JSON.parse(json);
-  } catch (e) {
-    return false;
-  }
-}
 
 class CreateFilterCommand extends BarracksCommand {
 
@@ -20,7 +13,7 @@ class CreateFilterCommand extends BarracksCommand {
     return !!(
       program.name && program.name !== true && 
       program.query && program.query !== true && 
-      isValidJson(program.query)
+      Validator.isJsonString(program.query)
     );
   }
 

@@ -44,6 +44,8 @@ describe('CreateVersionCommand', () => {
     createVersionCommand = new CreateVersionCommand();
     createVersionCommand.barracks = {};
     createVersionCommand.userConfiguration = {};
+    proxyIsJsonString = undefined;
+    roxyFileExists = undefined;
   });
 
   describe('#validateCommand(program)', () => {
