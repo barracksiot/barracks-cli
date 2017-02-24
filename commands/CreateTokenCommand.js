@@ -7,7 +7,11 @@ class CreateTokenCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(program.name && program.name !== true);
+    return !!(
+      program.name &&
+      program.name !== true &&
+      typeof program.name !== 'function'
+    );
   }
 
   execute(program) {

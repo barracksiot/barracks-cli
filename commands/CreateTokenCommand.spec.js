@@ -44,6 +44,15 @@ describe('CreateTokenCommand', () => {
       expect(result).to.be.false;
     });
 
+    it('should return false when function given for name', () => {
+      // Given
+      const program = { name: () => { return 'plop'; } };
+      // When
+      const result = createTokenCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
     it('should return true when all the options are valid and present', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions);

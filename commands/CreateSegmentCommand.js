@@ -18,7 +18,7 @@ class CreateSegmentCommand extends BarracksCommand {
 
   validateCommand(program) {
     return !!(
-      program.name && program.name !== true && 
+      program.name && program.name !== true && typeof program.name !== 'function' &&
       program.query && program.query !== true && 
       isValidJson(program.query)
     );
