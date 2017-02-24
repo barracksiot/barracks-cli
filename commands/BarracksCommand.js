@@ -82,6 +82,14 @@ class BarracksCommand {
     return true;
   }
 
+  validateOptionnalParams(program, optionnalParams) {
+    return optionnalParams.reduce((valid, item) => {
+      return valid &&
+        typeof program[item] !== 'function' &&
+        (!program[item] || (program[item] && program[item] !== true));
+    }, true);
+  }
+
   execute() {
     return Promise.reject('Need to be overridden');
   }
