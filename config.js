@@ -96,6 +96,18 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments/order'
       },
+      createToken: {
+        method: 'POST',
+        path: '/api/auth/tokens'
+      },
+      getTokens: {
+        method: 'GET',
+        path: '/api/auth/tokens'
+      },
+      revokeToken: {
+        method: 'PUT',
+        path: '/api/auth/tokens/:token/revoke'
+      },
       createComponent: {
         method: 'POST',
         path: '/api/member/components'

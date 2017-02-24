@@ -20,13 +20,17 @@ const barracks = program
   .command('create-segment', 'Create a new segment')
   .command('edit-segment', 'Edit an existing segment')
   .command('set-active-segments', 'Set active segments in priority order')
-  .command('check-update', 'Check for an update the same way a device would');
+  .command('check-update', 'Check for an update the same way a device would')
+  .parse(process.argv);
 
 if (config.experimental) {
   barracks
     .command('create-package', 'Create a new package')
     .command('create-filter', 'Create a filter')
-    .command('filters', 'List filters');
+    .command('filters', 'List filters')
+    .command('create-token', 'Create an API token')
+    .command('tokens', 'List all API tokens')
+    .command('revoke-token', 'Revoke the specified API token');
 }
 
 barracks.parse(process.argv);

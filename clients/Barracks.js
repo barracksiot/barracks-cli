@@ -446,6 +446,52 @@ class Barracks {
     });
   }
 
+  createToken(token, tokenConfiguration) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createToken', {
+        headers: {
+          'x-auth-token': token
+        },
+        body: tokenConfiguration
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
+  getTokens(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting tokens');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(
+        stream,
+        'getTokens',
+        { headers: { 'x-auth-token': token } },
+        'tokens'
+      );
+    });
+  }
+
+  revokeToken(authToken, tokenToRevoke) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('revokeToken', {
+        headers: {
+          'x-auth-token': authToken
+        },
+        pathVariables: {
+          token: tokenToRevoke
+        }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   createComponent(token, component) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('createComponent', {
