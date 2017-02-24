@@ -34,10 +34,6 @@ if (config.experimental) {
 }
 
 barracks.parse(process.argv);
->>>>>>> master
-
-
-
 
 process.on('SIGINT', () => {
   process.exit();
