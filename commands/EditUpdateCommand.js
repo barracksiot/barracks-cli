@@ -3,11 +3,28 @@ const BarracksCommand = require('./BarracksCommand');
 function extractOptions(program, fields) {
   const options = {};
   fields.forEach(field => {
-    if (program[field] && program[field] !== true && typeof program[field] !== 'function') {
+    if (program[field] && program[field] !== true) {
       options[field] = program[field];
     }
   });
   return options;
+}
+
+function buildDiff(program) {
+  const extractedOptions = extractOptions(program, ['uuid', 'title', 'description', 'segment', 'properties']);
+  const diff = Object.assign({}, extractedOptions, {
+    name: extractedOptions.title,
+    title: undefined,
+    properties: undefined
+  });
+
+  if (extractedOptions.properties) {
+    diff.additionalProperties = JSON.parse(extractedOptions.properties);
+  } else {
+    diff.additionalProperties = undefined;
+  }
+
+  return diff;
 }
 
 function removeEmptyAttributes(object) {
@@ -16,13 +33,7 @@ function removeEmptyAttributes(object) {
 
 function buildUpdateDiff(command, token, program) {
   return new Promise((resolve, reject) => {
-    const extractedOptions = extractOptions(program, ['uuid', 'title', 'description', 'segment', 'properties']);
-    const diff = Object.assign({}, extractedOptions, {
-      name: extractedOptions.title,
-      additionalProperties: JSON.parse(extractedOptions.properties),
-      title: undefined,
-      properties: undefined
-    });
+    const diff = buildDiff(program);
     if (diff.segment) {
       return command.barracks.getSegmentByName(token, diff.segment).then(segment => {
         resolve(removeEmptyAttributes(Object.assign({}, diff, { 
@@ -33,9 +44,15 @@ function buildUpdateDiff(command, token, program) {
         reject(err);
       });
     } else {
-      resolve(diff);
+      resolve(removeEmptyAttributes(diff));
     }
   });
+}
+
+function atLeastOneGiven(program, fields) {
+  return fields.reduce((found, item) => {
+      return found || !!program[item];
+    }, false);
 }
 
 class EditUpdateCommand extends BarracksCommand {
@@ -50,8 +67,11 @@ class EditUpdateCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
+    const options = ['title', 'description', 'segment', 'properties'];
     return !!(
-      program.uuid && program.uuid !== true
+      program.uuid && program.uuid !== true &&
+      this.validateOptionnalParams(program, options) &&
+      atLeastOneGiven(program, options)
     );
   }
 
