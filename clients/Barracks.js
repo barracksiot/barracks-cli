@@ -446,13 +446,13 @@ class Barracks {
     });
   }
 
-  createToken(token, newToken) {
+  createToken(token, tokenConfiguration) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('createToken', {
         headers: {
           'x-auth-token': token
         },
-        body: newToken
+        body: tokenConfiguration
       }).then(response => {
         resolve(response.body);
       }).catch(errResponse => {
