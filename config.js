@@ -105,8 +105,8 @@ module.exports = {
         path: '/api/auth/tokens'
       },
       revokeToken: {
-        method: 'POST',
-        path: '/api/auth/tokens/revoke'
+        method: 'PUT',
+        path: '/api/auth/tokens/:token/revoke'
       },
       createComponent: {
         method: 'POST',

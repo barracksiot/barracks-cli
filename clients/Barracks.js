@@ -481,7 +481,9 @@ class Barracks {
         headers: {
           'x-auth-token': authToken
         },
-        body: { value: tokenToRevoke }
+        pathVariables: {
+          token: tokenToRevoke
+        }
       }).then(response => {
         resolve(response.body);
       }).catch(errResponse => {

@@ -1594,7 +1594,7 @@ describe('Barracks', () => {
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
           headers: { 'x-auth-token': token },
-          body: { value: tokenToRevoke }
+          pathVariables: { token: tokenToRevoke }
         });
         done();
       });
@@ -1618,7 +1618,7 @@ describe('Barracks', () => {
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
           headers: { 'x-auth-token': token },
-          body: { value: tokenToRevoke }
+          pathVariables: { token: tokenToRevoke }
         });
         done();
       }).catch(err => {
