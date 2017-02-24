@@ -66,10 +66,8 @@ describe('DevicesCommand', () => {
 
   describe('#configureCommand(program)', () => {
 
-    const config = require('../config');
-
     afterEach(() => {
-      config.experimental = false;
+      devicesCommand.experimental = false;
     });
 
     it('should not display filter option when experimental is not enabled', () => {
@@ -92,7 +90,7 @@ describe('DevicesCommand', () => {
 
     it('should display filter option when experimental is enabled', () => {
       // Given
-      config.experimental = true;
+      devicesCommand.experimental = true;
       const options = [];
       const program = {
         option: (key, description) => {

@@ -14,6 +14,7 @@ class BarracksCommand {
       .parse(process.argv);
     this.userConfiguration = new UserConfiguration(config.userConfig);
     this.barracks = new Barracks(config.barracks);
+    this.experimental = config.experimental;
   }
 
   configureCommand(program) {

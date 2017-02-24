@@ -1,7 +1,6 @@
 const path = require('path');
 
 module.exports = {
-
   barracks: {
     baseUrl: process.env.BARRACKS_BASE_URL || 'https://app.barracks.io',
     endpoints: {
@@ -109,5 +108,5 @@ module.exports = {
     )
   },
   debug: process.env.DEBUG || false,
-  experimental: process.env.EXPERIMENTAL ? parseInt(process.env.EXPERIMENTAL) : false
+  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false)
 };
