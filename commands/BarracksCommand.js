@@ -14,6 +14,7 @@ class BarracksCommand {
       .parse(process.argv);
     this.userConfiguration = new UserConfiguration(config.userConfig);
     this.barracks = new Barracks(config.barracks);
+    this.experimental = config.experimental;
   }
 
   configureCommand(program) {
@@ -80,6 +81,14 @@ class BarracksCommand {
 
   validateCommand() {
     return true;
+  }
+
+  validateOptionnalParams(program, optionnalParams) {
+    return optionnalParams.reduce((valid, item) => {
+      return valid &&
+        typeof program[item] !== 'function' &&
+        (!program[item] || (program[item] && program[item] !== true));
+    }, true);
   }
 
   execute() {

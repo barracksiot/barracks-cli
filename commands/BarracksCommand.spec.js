@@ -318,6 +318,229 @@ describe('BarracksCommand', () => {
     });
   });
 
+  describe('#validateOptionnalParams()', () => {
+
+    let mockedBarracksCommand;
+
+    const minimumProgram = {
+      option: () => { return program; },
+      parse: () => { return program; }
+    };
+    let program = minimumProgram;
+    const MockedBarracksCommand = proxyquire('./BarracksCommand', {
+      commander: program
+    });
+
+    before(() => {
+      mockedBarracksCommand = new MockedBarracksCommand();
+    });
+
+    it('should return true when one optionnal argument and valid value given', () => {
+      // Given
+      const option1 = 'option1';
+      program = Object.assign({}, minimumProgram, { option1 });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when one optionnal argument and none given', () => {
+      //Given
+      program = Object.assign({}, minimumProgram);
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when one optionnal argument and no value given', () => {
+      //Given
+      program = Object.assign({}, minimumProgram, { option1: true });
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when one optionnal argument and function given', () => {
+      //Given
+      program = Object.assign({}, minimumProgram, { option1: () => { return 'plop'; } });
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return true when two optionnal arguments and valid value given', () => {
+      // Given
+      const option1 = 'option1';
+      const option2 = 'option2';
+      program = Object.assign({}, minimumProgram, { option1, option2 });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when two optionnal arguments and both missing', () => {
+      // Given
+      program = Object.assign({}, minimumProgram);
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when two optionnal arguments and one missing and second valid', () => {
+      // Given
+      const option1 = 'option1';
+      program = Object.assign({}, minimumProgram, { option1 });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when two optionnal arguments and one missing and second empty', () => {
+      // Given
+      const option1 = 'option1';
+      program = Object.assign({}, minimumProgram, { option1, option2: true });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when two optionnal arguments and both empty', () => {
+      // Given
+      const option1 = 'option1';
+      program = Object.assign({}, minimumProgram, { option1: true, option2: true });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when two optionnal arguments and one missing and second is function', () => {
+      // Given
+      const option1 = 'option1';
+      program = Object.assign({}, minimumProgram, { option2: () => { return 'plop'; }, option1 });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when two optionnal arguments and both are functions', () => {
+      // Given
+      program = Object.assign({}, minimumProgram, {
+        option1: () => { return 'plop'; },
+        option2: () => { return 'replop'; }
+      });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return true when many optionnal arguments and all given valid', () => {
+      // Given
+      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      program = Object.assign({}, minimumProgram, {
+        option1: 'qwerty',
+        option2: 'kjhgfd',
+        option3: 'ertytfghtred',
+        option4: '23445t',
+        option5: 'yudtyfthdgf'
+      });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when many optionnal arguments and all missing', () => {
+      // Given
+      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      program = Object.assign({}, minimumProgram);
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when many optionnal arguments and some missing', () => {
+      // Given
+      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      program = Object.assign({}, minimumProgram, {
+        option1: 'qwerty',
+        option3: 'ertytfghtred',
+        option5: 'yudtyfthdgf'
+      });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
+      
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when many optionnal arguments and one is empty', () => {
+      // Given
+      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      program = Object.assign({}, minimumProgram, {
+        option1: 'qwerty',
+        option2: true,
+        option3: 'ertytfghtred',
+        option4: '23445t',
+        option5: 'yudtyfthdgf'
+      });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when many optionnal arguments and one is a function', () => {
+      // Given
+      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      program = Object.assign({}, minimumProgram, {
+        option1: 'qwerty',
+        option2: 'dfghjkluytrdf',
+        option3: 'ertytfghtred',
+        option4: () => { return 'plop'; },
+        option5: 'yudtyfthdgf'
+      });
+
+      // When
+      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
+      
+      // Then
+      expect(result).to.be.false;
+    });
+  });
+
   describe('#execute()', () => {
 
     before(() => {
