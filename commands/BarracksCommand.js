@@ -9,12 +9,12 @@ const config = require('../config');
 class BarracksCommand {
 
   constructor() {
+    this.experimental = config.experimental;
+    this.userConfiguration = new UserConfiguration(config.userConfig);
+    this.barracks = new Barracks(config.barracks);
     this.configureCommand(program)
       .option('--json', 'Format result in json')
       .parse(process.argv);
-    this.userConfiguration = new UserConfiguration(config.userConfig);
-    this.barracks = new Barracks(config.barracks);
-    this.experimental = config.experimental;
   }
 
   configureCommand(program) {
