@@ -12,7 +12,7 @@ class CreatePackageCommand extends BarracksCommand {
   validateCommand(program) {
     return !!(
       program.reference && program.reference !== true && 
-      program.name && program.name !== true && 
+      program.name && program.name !== true && typeof program.name !== 'function' &&
       (!program.description || (program.description && program.description !== true))
     );
   }

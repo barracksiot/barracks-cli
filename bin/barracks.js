@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const config = require('../config.js');
 const pjson = require('../package.json');
- 
-program
+
+const barracks = program
   .version(pjson.version)
   .command('login', 'Authenticate to Barracks')
   .command('account', 'Get account information')
@@ -15,16 +16,24 @@ program
   .command('archive', 'Archive an update')
   .command('devices', 'List devices')
   .command('device', 'Get device history')
-  .command('create-filter', 'Create a filter')
-  .command('filters', 'List filters')
   .command('segments', 'Get active and inactive segments')
   .command('create-segment', 'Create a new segment')
   .command('edit-segment', 'Edit an existing segment')
   .command('set-active-segments', 'Set active segments in priority order')
-  .command('check-update', 'Check for an update the same way a device would')
-  .command('create-package', 'Create a new package')
-  .command('create-version', 'Create a package version')
-  .parse(process.argv);
+  .command('check-update', 'Check for an update the same way a device would');
+
+if (config.experimental) {
+  barracks
+    .command('create-package', 'Create a new package')
+    .command('create-version', 'Create a package version')
+    .command('create-filter', 'Create a filter')
+    .command('filters', 'List filters')
+    .command('create-token', 'Create an API token')
+    .command('tokens', 'List all API tokens')
+    .command('revoke-token', 'Revoke the specified API token');
+}
+
+barracks.parse(process.argv);
 
 process.on('SIGINT', () => {
   process.exit();

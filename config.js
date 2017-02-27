@@ -1,7 +1,6 @@
 const path = require('path');
 
 module.exports = {
-
   barracks: {
     baseUrl: process.env.BARRACKS_BASE_URL || 'https://app.barracks.io',
     endpoints: {
@@ -69,7 +68,7 @@ module.exports = {
         method: 'GET',
         path: '/api/member/filters/'
       },
-      getDevices: {
+      getSegmentDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices'
       },
@@ -97,6 +96,18 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments/order'
       },
+      createToken: {
+        method: 'POST',
+        path: '/api/auth/tokens'
+      },
+      getTokens: {
+        method: 'GET',
+        path: '/api/auth/tokens'
+      },
+      revokeToken: {
+        method: 'PUT',
+        path: '/api/auth/tokens/:token/revoke'
+      },
       createComponent: {
         method: 'POST',
         path: '/api/member/components'
@@ -112,5 +123,6 @@ module.exports = {
       process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/.barracks'
     )
   },
-  debug: process.env.DEBUG || false
+  debug: !!(process.env.DEBUG ? parseInt(process.env.DEBUG) : false),
+  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false)
 };

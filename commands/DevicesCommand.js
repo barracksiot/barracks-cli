@@ -41,9 +41,14 @@ class DevicesCommand extends BarracksCommand {
   }
 
   configureCommand(program) {
-    return program
-      .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only (Cannot be used with --filter).')
-      .option('--filter [filterName]', '(Optionnal) Apply a filter on the device list (Cannot be used with --segment).');
+    if (this.experimental) {
+      return program
+        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only (Cannot be used with --filter).')
+        .option('--filter [filterName]', '(Optionnal) Apply a filter on the device list (Cannot be used with --segment).');
+    } else {
+      return program
+        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only.');
+      }
   }
 
   execute(program) {

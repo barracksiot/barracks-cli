@@ -64,6 +64,52 @@ describe('DevicesCommand', () => {
     });
   });
 
+  describe('#configureCommand(program)', () => {
+
+    afterEach(() => {
+      devicesCommand.experimental = false;
+    });
+
+    it('should not display filter option when experimental is not enabled', () => {
+      // Given
+      const options = [];
+      const program = {
+        option: (key, description) => {
+          options.push({ [key]: description });
+          return program;
+        }
+      };
+      // When
+      const result = devicesCommand.configureCommand(program);
+
+      // Then
+      expect(result).to.be.equal(program);
+      expect(options).to.have.length(1);
+      expect(options[0]).to.have.property('--segment [segmentName]');
+    });
+
+    it('should display filter option when experimental is enabled', () => {
+      // Given
+      devicesCommand.experimental = true;
+      const options = [];
+      const program = {
+        option: (key, description) => {
+          options.push({ [key]: description });
+          return program;
+        }
+      };
+      // When
+      const result = devicesCommand.configureCommand(program);
+
+      // Then
+      expect(result).to.be.equal(program);
+      expect(options).to.have.length(2);
+      expect(options[0]).to.have.property('--segment [segmentName]');
+      expect(options[1]).to.have.property('--filter [filterName]');
+    });
+
+  });
+
   describe('#execute(program)', () => {
 
     const query = { eq: { unitId: 'plop' } };

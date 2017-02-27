@@ -9,11 +9,12 @@ const config = require('../config');
 class BarracksCommand {
 
   constructor() {
+    this.experimental = config.experimental;
+    this.userConfiguration = new UserConfiguration(config.userConfig);
+    this.barracks = new Barracks(config.barracks);
     this.configureCommand(program)
       .option('--json', 'Format result in json')
       .parse(process.argv);
-    this.userConfiguration = new UserConfiguration(config.userConfig);
-    this.barracks = new Barracks(config.barracks);
   }
 
   configureCommand(program) {
@@ -83,10 +84,13 @@ class BarracksCommand {
   }
 
   validateOptionnalParams(program, optionnalParams) {
+    optionnalParams.forEach(param => {
+      if (typeof program[param] === 'function') {
+        program[param] = undefined;
+      }
+    });
     return optionnalParams.reduce((valid, item) => {
-      return valid &&
-        typeof program[item] !== 'function' &&
-        (!program[item] || (program[item] && program[item] !== true));
+      return valid && (!program[item] || (program[item] && program[item] !== true));
     }, true);
   }
 
