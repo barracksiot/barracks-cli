@@ -345,6 +345,7 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
     });
 
     it('should return true when one optionnal argument and none given', () => {
@@ -363,15 +364,17 @@ describe('BarracksCommand', () => {
       const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
       // Then
       expect(result).to.be.false;
+      expect(program.option1).to.be.equals(true);
     });
 
-    it('should return false when one optionnal argument and function given', () => {
+    it('should return true and remove function when one optionnal argument and function given', () => {
       //Given
       program = Object.assign({}, minimumProgram, { option1: () => { return 'plop'; } });
       // When
       const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
       // Then
-      expect(result).to.be.false;
+      expect(result).to.be.true;
+      expect(program.option1).to.be.equals(undefined);
     });
 
     it('should return true when two optionnal arguments and valid value given', () => {
@@ -385,6 +388,8 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(option2);
     });
 
     it('should return true when two optionnal arguments and both missing', () => {
@@ -406,6 +411,7 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
     });
 
     it('should return false when two optionnal arguments and one missing and second empty', () => {
@@ -418,6 +424,8 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.false;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(true);
     });
 
     it('should return false when two optionnal arguments and both empty', () => {
@@ -430,9 +438,11 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.false;
+      expect(program.option1).to.be.equals(true);
+      expect(program.option2).to.be.equals(true);
     });
 
-    it('should return false when two optionnal arguments and one missing and second is function', () => {
+    it('should return true and clear function when two optionnal arguments and one missing and second is function', () => {
       // Given
       const option1 = 'option1';
       program = Object.assign({}, minimumProgram, { option2: () => { return 'plop'; }, option1 });
@@ -441,10 +451,12 @@ describe('BarracksCommand', () => {
       const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
       
       // Then
-      expect(result).to.be.false;
+      expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(undefined);
     });
 
-    it('should return false when two optionnal arguments and both are functions', () => {
+    it('should return true and clear functions when two optionnal arguments and both are functions', () => {
       // Given
       program = Object.assign({}, minimumProgram, {
         option1: () => { return 'plop'; },
@@ -455,18 +467,25 @@ describe('BarracksCommand', () => {
       const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
       
       // Then
-      expect(result).to.be.false;
+      expect(result).to.be.true;
+      expect(program.option1).to.be.equals(undefined);
+      expect(program.option2).to.be.equals(undefined);
     });
 
     it('should return true when many optionnal arguments and all given valid', () => {
       // Given
       const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      const option1 = 'qwerty';
+      const option2 = 'kjhgfd';
+      const option3 = 'ertytfghtred';
+      const option4 = '23445t';
+      const option5 = 'yudtyfthdgf';
       program = Object.assign({}, minimumProgram, {
-        option1: 'qwerty',
-        option2: 'kjhgfd',
-        option3: 'ertytfghtred',
-        option4: '23445t',
-        option5: 'yudtyfthdgf'
+        option1,
+        option2,
+        option3,
+        option4,
+        option5
       });
 
       // When
@@ -474,6 +493,11 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(option2);
+      expect(program.option3).to.be.equals(option3);
+      expect(program.option4).to.be.equals(option4);
+      expect(program.option5).to.be.equals(option5);
     });
 
     it('should return true when many optionnal arguments and all missing', () => {
@@ -491,10 +515,13 @@ describe('BarracksCommand', () => {
     it('should return true when many optionnal arguments and some missing', () => {
       // Given
       const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      const option1 = 'qwerty';
+      const option3 = 'ertytfghtred';
+      const option5 = 'yudtyfthdgf';
       program = Object.assign({}, minimumProgram, {
-        option1: 'qwerty',
-        option3: 'ertytfghtred',
-        option5: 'yudtyfthdgf'
+        option1,
+        option3,
+        option5
       });
 
       // When
@@ -502,17 +529,25 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option3).to.be.equals(option3);
+      expect(program.option5).to.be.equals(option5);
     });
 
     it('should return false when many optionnal arguments and one is empty', () => {
       // Given
       const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      const option1 = 'qwerty';
+      const option2 = true;
+      const option3 = 'ertytfghtred';
+      const option4 = '23445t';
+      const option5 = 'yudtyfthdgf';
       program = Object.assign({}, minimumProgram, {
-        option1: 'qwerty',
-        option2: true,
-        option3: 'ertytfghtred',
-        option4: '23445t',
-        option5: 'yudtyfthdgf'
+        option1,
+        option2,
+        option3,
+        option4,
+        option5
       });
 
       // When
@@ -520,24 +555,39 @@ describe('BarracksCommand', () => {
       
       // Then
       expect(result).to.be.false;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(option2);
+      expect(program.option3).to.be.equals(option3);
+      expect(program.option4).to.be.equals(option4);
+      expect(program.option5).to.be.equals(option5);
     });
 
-    it('should return false when many optionnal arguments and one is a function', () => {
+    it('should return true and clear function when many optionnal arguments and one is a function', () => {
       // Given
       const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+      const option1 = 'qwerty';
+      const option2 = 'dfghjkluytrdf';
+      const option3 = 'ertytfghtred';
+      const option4 = () => { return 'plop'; };
+      const option5 = 'yudtyfthdgf';
       program = Object.assign({}, minimumProgram, {
-        option1: 'qwerty',
-        option2: 'dfghjkluytrdf',
-        option3: 'ertytfghtred',
-        option4: () => { return 'plop'; },
-        option5: 'yudtyfthdgf'
+        option1,
+        option2,
+        option3,
+        option4,
+        option5,
       });
 
       // When
       const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
       
       // Then
-      expect(result).to.be.false;
+      expect(result).to.be.true;
+      expect(program.option1).to.be.equals(option1);
+      expect(program.option2).to.be.equals(option2);
+      expect(program.option3).to.be.equals(option3);
+      expect(program.option4).to.be.equals(undefined);
+      expect(program.option5).to.be.equals(option5);
     });
   });
 

@@ -84,10 +84,13 @@ class BarracksCommand {
   }
 
   validateOptionnalParams(program, optionnalParams) {
+    optionnalParams.forEach(param => {
+      if (typeof program[param] === 'function') {
+        program[param] = undefined;
+      }
+    });
     return optionnalParams.reduce((valid, item) => {
-      return valid &&
-        typeof program[item] !== 'function' &&
-        (!program[item] || (program[item] && program[item] !== true));
+      return valid && (!program[item] || (program[item] && program[item] !== true));
     }, true);
   }
 
