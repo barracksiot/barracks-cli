@@ -1387,15 +1387,21 @@ describe('Barracks', () => {
       },
       formData: {
         version: {
-          id: version.id,
-          name: version.name,
-          description: version.description,
-          metadata: version.metadata
+          value: JSON.stringify({
+            id: version.id,
+            name: version.name,
+            description: version.description,
+            metadata: version.metadata
+          }),
+          options: {
+            contentType: 'application/json'
+          }
         },
         file: {
           value: filename,
           options: {
-            filename: filename
+            filename: filename,
+            contentType: 'application/octet-stream'
           }
         }
       },

@@ -515,15 +515,21 @@ class Barracks {
         },
         formData: {
           version: {
-            id: version.id,
-            name: version.name,
-            description: version.description,
-            metadata: version.metadata
+            value: JSON.stringify({
+              id: version.id,
+              name: version.name,
+              description: version.description,
+              metadata: version.metadata
+            }),
+            options: {
+              contentType: 'application/json'
+            }
           },
           file: {
             value: fs.createReadStream(version.file),
             options: {
-              filename: path.basename(version.file)
+              filename: path.basename(version.file),
+              contentType: 'application/octet-stream'
             }
           }
         },
