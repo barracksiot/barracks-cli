@@ -43,6 +43,7 @@
   "dependencies": {
     "barracks-sdk": "0.0.2",
     "commander": "2.9.0",
+    "in-stream": "^0.1.7",
     "mkdirp": "0.5.1",
     "pjson": "1.0.7",
     "prettyjson": "1.1.3",
