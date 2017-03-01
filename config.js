@@ -111,6 +111,10 @@ module.exports = {
       createComponent: {
         method: 'POST',
         path: '/api/member/components'
+      },
+      createVersion: {
+        method: 'POST',
+        path: '/api/member/components/:componentRef/versions'
       }
     }
   },

@@ -507,6 +507,43 @@ class Barracks {
     });
   }
 
+  createVersion(token, version) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createVersion', {
+        headers: {
+          'x-auth-token': token
+        },
+        formData: {
+          version: {
+            value: JSON.stringify({
+              id: version.id,
+              name: version.name,
+              description: version.description,
+              metadata: version.metadata
+            }),
+            options: {
+              contentType: 'application/json'
+            }
+          },
+          file: {
+            value: fs.createReadStream(version.file),
+            options: {
+              filename: path.basename(version.file),
+              contentType: 'application/octet-stream'
+            }
+          }
+        },
+        pathVariables: {
+          componentRef: version.component
+        }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);

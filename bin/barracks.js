@@ -25,6 +25,7 @@ const barracks = program
 if (config.experimental) {
   barracks
     .command('create-package', 'Create a new package')
+    .command('create-package-version', 'Create a package version')
     .command('create-filter', 'Create a filter')
     .command('filters', 'List filters')
     .command('create-token', 'Create an API token')

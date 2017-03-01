@@ -1346,6 +1346,116 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#createVersion()', () => {
+
+
+    const filename = 'file.txt';
+    const filePath = 'path/to/file.txt';
+    const version = {
+      id: '2.0',
+      name: 'version 2',
+      component: 'ref.package',
+      file: filePath,
+      description: 'description',
+      metadata: JSON.stringify({ data: 'value' })
+    };
+
+    let spyCreateReadStream;
+    const proxyCreateReadStream = (path) => {
+      spyCreateReadStream(path);
+      return filename;
+    };
+    
+    let spyBasename;
+    const proxyBasename = (path) => {
+      spyBasename(path);
+      return filename;
+    };
+
+    const ProxifiedBarracks = proxyquire('./Barracks', {
+      fs: { createReadStream: (path) => {
+        return proxyCreateReadStream(path);
+      }},
+      path: { basename: (path) => {
+        return proxyBasename(path);
+      }}
+    });
+
+    const options = { 
+      headers: { 
+        'x-auth-token': token
+      },
+      formData: {
+        version: {
+          value: JSON.stringify({
+            id: version.id,
+            name: version.name,
+            description: version.description,
+            metadata: version.metadata
+          }),
+          options: {
+            contentType: 'application/json'
+          }
+        },
+        file: {
+          value: filename,
+          options: {
+            filename: filename,
+            contentType: 'application/octet-stream'
+          }
+        }
+      },
+      pathVariables: {
+        componentRef: version.component
+      }
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const proxyBarracks = new ProxifiedBarracks();
+      const error = { message: 'request failed' };
+      spyCreateReadStream = sinon.spy();
+      spyBasename = sinon.spy();
+      proxyBarracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      proxyBarracks.createVersion(token, version).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createVersion',
+          options
+        );
+        done();
+      });
+    });
+
+    it('should return the serveur response body when request is successful', done => {
+      // Given
+      const proxyBarracks = new ProxifiedBarracks();
+      const response = { body: 'youpi created' };
+      spyCreateReadStream = sinon.spy();
+      spyBasename = sinon.spy();
+
+      proxyBarracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      proxyBarracks.createVersion(token, version).then(result => {
+        expect(result).to.be.equals(response.body);
+        expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createVersion',
+          options
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#checkUpdate()', () => {
 
     it('should reject an error if client fail', done => {

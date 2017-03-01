@@ -2,8 +2,8 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const chaiAsPromised = require("chai-as-promised");
-const CreateFilterCommand = require('./CreateFilterCommand');
+const chaiAsPromised = require('chai-as-promised');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -11,6 +11,20 @@ chai.use(sinonChai);
 describe('CreateFilterCommand', () => {
 
   let createFilterCommand;
+  let proxyIsJsonString;
+  let proxyFileExists;
+
+  const CreateFilterCommand = proxyquire('./CreateFilterCommand', {
+    '../utils/Validator': {
+      isJsonString: (str) => {
+        return proxyIsJsonString(str);
+      },
+      fileExists: (path) => {
+        return proxyFileExists(path);
+      }
+    }
+  });
+
   const token = 'i8uhkj.token.65ryft';
   const programWithValidOptions = {
     name: 'FilterName',
@@ -52,6 +66,8 @@ describe('CreateFilterCommand', () => {
     createFilterCommand = new CreateFilterCommand();
     createFilterCommand.barracks = {};
     createFilterCommand.userConfiguration = {};
+    proxyIsJsonString = undefined;
+    roxyFileExists = undefined;
   });
 
   describe('#validateCommand(program)', () => {
@@ -59,21 +75,26 @@ describe('CreateFilterCommand', () => {
     it('should return true when all the options are valid and present', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return true;
+      }
 
       // When
       const result = createFilterCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithValidOptions.query);
     });
 
     it('should return false when name is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { name: undefined });
-
       // When
       const result = createFilterCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
@@ -92,23 +113,29 @@ describe('CreateFilterCommand', () => {
     it('should return false when query is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { query: undefined });
-
       // When
       const result = createFilterCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
 
     it('should return false when query is not a valid JSON', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { query: 'Not { a } json' });
+      const query = 'Not { a } json';
+      const program = Object.assign({}, programWithValidOptions, { query });
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return false;
+      }
 
       // When
       const result = createFilterCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(query);
     });
 
   });

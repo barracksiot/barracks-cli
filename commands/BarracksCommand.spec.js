@@ -607,4 +607,93 @@ describe('BarracksCommand', () => {
       });
     });
   });
+
+  describe('#render()', () => {
+
+    let mockedBarracksCommand;
+    let spyRender;
+    let spyJsonRender;
+
+    const mockedRender = (data) => {
+      spyRender(data);
+    };
+    const mockedJsonRender = (data) => {
+      spyJsonRender(data);
+    };
+    const program = {
+      option: () => { return program; },
+      parse: () => { return program; }
+    };
+    const MockedBarracksCommand = proxyquire('./BarracksCommand', {
+      '../renderers/prettyRenderer': (data) => {
+        mockedRender(data);
+      },
+      '../renderers/jsonRenderer': (data) => {
+        mockedJsonRender(data);
+      },
+      commander: program
+    });
+
+    before(() => {
+      mockedBarracksCommand = new MockedBarracksCommand();
+    });
+
+    it('should print error if arguments are missing', () => {
+      // Given
+      const originalConsoleError = console.error;
+      console.error = sinon.spy();
+      mockedBarracksCommand.validateCommand = sinon.stub().returns(false);
+
+      // When
+      mockedBarracksCommand.render();
+
+      // Then
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
+      expect(console.error).to.have.been.calledOnce;
+      expect(console.error).to.have.been.calledWithExactly(
+        'Mandatory arguments are missing or invalid. Use --help for more information.'
+      );
+      console.error = originalConsoleError;
+    });
+
+    it('should call renderer if execution successful', () => {
+      // Given
+      const executeResponse = { the: 'response' };
+      spyRender = sinon.spy();
+      mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
+      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+
+      // When
+      mockedBarracksCommand.render();
+
+      // Then
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(spyRender).to.have.been.calledOnce;
+      expect(spyRender).to.have.been.calledWithExactly(executeResponse);
+    });
+
+    it('should call json renderer if execution successful and json flag', () => {
+      // Given
+      const executeResponse = { the: 'response' };
+      program.json = true;
+      spyJsonRender = sinon.spy();
+      mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
+      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+
+      // When
+      mockedBarracksCommand.render();
+
+      // Then
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(spyJsonRender).to.have.been.calledOnce;
+      expect(spyJsonRender).to.have.been.calledWithExactly(executeResponse);
+    });
+  });
 });

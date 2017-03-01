@@ -84,4 +84,16 @@ describe('jsonRenderer', () => {
     });
   });
 
+  it('should resolve and display nothing if result is undefined', done => {
+    // Given
+    const promise = Promise.resolve();
+
+    // When / Then
+    jsonRenderer(promise).then(() => {
+      expect(console.log).to.not.have.been.calledOnce;
+      done();
+    }).catch(err => {
+      done(err);
+    });
+  });
 });

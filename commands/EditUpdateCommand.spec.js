@@ -3,7 +3,7 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
-const EditUpdateCommand = require('./EditUpdateCommand');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -11,6 +11,21 @@ chai.use(sinonChai);
 describe('EditUpdateCommand', () => {
 
   let editUpdateCommand;
+  let createFilterCommand;
+  let proxyIsJsonString;
+  let proxyFileExists;
+
+  const EditUpdateCommand = proxyquire('./EditUpdateCommand', {
+    '../utils/Validator': {
+      isJsonString: (str) => {
+        return proxyIsJsonString(str);
+      },
+      fileExists: (path) => {
+        return proxyFileExists(path);
+      }
+    }
+  });
+
   const token = 'i8uhkj.token.65ryft';
   const updateUuid = '234567898765432345678';
   const title = 'My Update';
@@ -89,6 +104,31 @@ describe('EditUpdateCommand', () => {
 
       // Then
       expect(result).to.be.true;
+      expect(editUpdateCommand.validateOptionnalParams).to.have.been.calledOnce;
+      expect(editUpdateCommand.validateOptionnalParams).to.have.been.calledWithExactly(
+        sinon.match.any,
+        ['title', 'description', 'segment', 'properties']
+      );
+    });
+
+    it('should return false when invalid JSON given as properties', () => {
+      // Given
+      const invalidProperties = 'srtdg{ ekrjhg}';
+      const program = Object.assign({}, minimalProgram, { properties: invalidProperties });
+      editUpdateCommand.validateOptionnalParams = sinon.stub().returns(true);
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return false;
+      }
+     
+      // When
+      const result = editUpdateCommand.validateCommand(program);
+
+      // Then
+      expect(result).to.be.false;
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(invalidProperties);
       expect(editUpdateCommand.validateOptionnalParams).to.have.been.calledOnce;
       expect(editUpdateCommand.validateOptionnalParams).to.have.been.calledWithExactly(
         sinon.match.any,

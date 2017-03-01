@@ -2,8 +2,8 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const chaiAsPromised = require("chai-as-promised");
-const CreateUpdateCommand = require('./CreateUpdateCommand');
+const chaiAsPromised = require('chai-as-promised');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -11,6 +11,20 @@ chai.use(sinonChai);
 describe('CreateUpdateCommand', () => {
 
   let createUpdateCommand;
+  let proxyIsJsonString;
+  let proxyFileExists;
+
+  const CreateUpdateCommand = proxyquire('./CreateUpdateCommand', {
+    '../utils/Validator': {
+      isJsonString: (str) => {
+        return proxyIsJsonString(str);
+      },
+      fileExists: (path) => {
+        return proxyFileExists(path);
+      }
+    }
+  });
+
   const token = 'i8uhkj.token.65ryft';
   const programWithValidOptions = {
     title: 'Title',
@@ -25,6 +39,8 @@ describe('CreateUpdateCommand', () => {
     createUpdateCommand = new CreateUpdateCommand();
     createUpdateCommand.barracks = {};
     createUpdateCommand.userConfiguration = {};
+    proxyIsJsonString = undefined;
+    roxyFileExists = undefined;
   });
 
   describe('#validateCommand(program)', () => {
@@ -32,21 +48,33 @@ describe('CreateUpdateCommand', () => {
     it('should return true when all the options are present', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
+      const spyFileExists = sinon.spy();
+      proxyFileExists = (path) => {
+        spyFileExists(path);
+        return true;
+      }
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return true;
+      }
 
       // When
       const result = createUpdateCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
+      expect(spyFileExists).to.have.been.calledOnce;
+      expect(spyFileExists).to.have.been.calledWithExactly(programWithValidOptions.package);
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithValidOptions.properties);
     });
-  
+
     it('should return false when the title is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { title: undefined });
-
       // When
       const result = createUpdateCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
@@ -54,21 +82,33 @@ describe('CreateUpdateCommand', () => {
     it('should return true when the description is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { description: undefined });
+      const spyFileExists = sinon.spy();
+      proxyFileExists = (path) => {
+        spyFileExists(path);
+        return true;
+      }
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return true;
+      }
 
       // When
       const result = createUpdateCommand.validateCommand(program);
-
+      
       // Then
       expect(result).to.be.true;
+      expect(spyFileExists).to.have.been.calledOnce;
+      expect(spyFileExists).to.have.been.calledWithExactly(programWithValidOptions.package);
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithValidOptions.properties);
     });
 
     it('should return false when the versionId is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { versionId: undefined });
-
       // When
       const result = createUpdateCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
@@ -76,58 +116,82 @@ describe('CreateUpdateCommand', () => {
     it('should return true when the properties are missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { properties: undefined });
+      const spyFileExists = sinon.spy();
+      proxyFileExists = (path) => {
+        spyFileExists(path);
+        return true;
+      }
 
       // When
       const result = createUpdateCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
+      expect(spyFileExists).to.have.been.calledOnce;
+      expect(spyFileExists).to.have.been.calledWithExactly(programWithValidOptions.package);
     });
 
     it('should return false when the properties are not in valid JSON format', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { properties: "{plop:plop}" });
+      const properties = 'pl{op:plop}';
+      const program = Object.assign({}, programWithValidOptions, { properties });
+      const spyFileExists = sinon.spy();
+      proxyFileExists = (path) => {
+        spyFileExists(path);
+        return true;
+      }
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (str) => {
+        spyIsJsonString(str);
+        return false;
+      }
 
       // When
       const result = createUpdateCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
+      expect(spyFileExists).to.have.been.calledOnce;
+      expect(spyFileExists).to.have.been.calledWithExactly(programWithValidOptions.package);
+      expect(spyIsJsonString).to.have.been.calledOnce;
+      expect(spyIsJsonString).to.have.been.calledWithExactly(properties);
     });
 
     it('should return false when the package is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { 'package': undefined });
-
       // When
       const result = createUpdateCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
 
     it('should return false when the package is not a valid path', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { 'package': '@ws5r' });
+      package = '@ws5r';
+      const program = Object.assign({}, programWithValidOptions, { package });
+      const spyFileExists = sinon.spy();
+      proxyFileExists = (path) => {
+        spyFileExists(path);
+        return true;
+      }
 
       // When
       const result = createUpdateCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
+      expect(spyFileExists).to.have.been.calledOnce;
+      expect(spyFileExists).to.have.been.calledWithExactly(package);
     });
 
     it('should return false when the segment is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { segment: undefined });
-
       // When
       const result = createUpdateCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
-
   });
 
   describe('#execute(program)', () => {

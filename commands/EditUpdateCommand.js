@@ -1,3 +1,4 @@
+const Validator = require('../utils/Validator');
 const BarracksCommand = require('./BarracksCommand');
 
 function extractOptions(program, fields) {
@@ -71,7 +72,8 @@ class EditUpdateCommand extends BarracksCommand {
     return !!(
       program.uuid && program.uuid !== true &&
       this.validateOptionnalParams(program, options) &&
-      atLeastOneGiven(program, options)
+      atLeastOneGiven(program, options) &&
+      (!program.properties || Validator.isJsonString(program.properties))
     );
   }
 

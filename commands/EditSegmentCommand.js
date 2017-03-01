@@ -1,12 +1,5 @@
+const Validator = require('../utils/Validator');
 const BarracksCommand = require('./BarracksCommand');
-
-function isValidJson(json) {
-  try {
-    return !!JSON.parse(json);
-  } catch (e) {
-    return false;
-  }
-}
 
 function extractOptions(program, fields) {
   const options = {};
@@ -42,7 +35,7 @@ class EditSegmentCommand extends BarracksCommand {
         !program.query || 
         (
           program.query !== true && 
-          isValidJson(program.query)
+          Validator.isJsonString(program.query)
         )
       )
     );
