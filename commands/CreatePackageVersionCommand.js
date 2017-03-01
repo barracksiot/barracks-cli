@@ -1,7 +1,7 @@
 const Validator = require('../utils/Validator');
 const BarracksCommand = require('./BarracksCommand');
 
-class CreateVersionCommand extends BarracksCommand {
+class CreatePackageVersionCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
@@ -38,4 +38,4 @@ class CreateVersionCommand extends BarracksCommand {
   }
 }
 
-module.exports = CreateVersionCommand;
+module.exports = CreatePackageVersionCommand;

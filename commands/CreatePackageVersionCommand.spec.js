@@ -8,13 +8,13 @@ const proxyquire = require('proxyquire').noCallThru();
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('CreateVersionCommand', () => {
+describe('CreatePackageVersionCommand', () => {
 
-  let createVersionCommand;
+  let createPackageVersionCommand;
   let proxyIsJsonString;
   let proxyFileExists;
 
-  const CreateVersionCommand = proxyquire('./CreateVersionCommand', {
+  const CreatePackageVersionCommand = proxyquire('./CreatePackageVersionCommand', {
     '../utils/Validator': {
       isJsonString: (str) => {
         return proxyIsJsonString(str);
@@ -41,9 +41,9 @@ describe('CreateVersionCommand', () => {
   const programWithDescriptionAndMetadata = { versionId, name, packageReference, file, description, metadata: JSON.stringify(metadata) };
 
   before(() => {
-    createVersionCommand = new CreateVersionCommand();
-    createVersionCommand.barracks = {};
-    createVersionCommand.userConfiguration = {};
+    createPackageVersionCommand = new CreatePackageVersionCommand();
+    createPackageVersionCommand.barracks = {};
+    createPackageVersionCommand.userConfiguration = {};
     proxyIsJsonString = undefined;
     roxyFileExists = undefined;
   });
@@ -54,7 +54,7 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = {};
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
@@ -63,7 +63,7 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = { versionId };
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
@@ -72,7 +72,7 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = { name };
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
@@ -81,7 +81,7 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = { packageReference };
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
@@ -90,7 +90,7 @@ describe('CreateVersionCommand', () => {
       // Given
       const program = { packageReference };
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
@@ -105,7 +105,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
@@ -123,7 +123,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
@@ -141,7 +141,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
@@ -159,7 +159,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
@@ -182,7 +182,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
@@ -208,7 +208,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
@@ -233,7 +233,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
@@ -258,7 +258,7 @@ describe('CreateVersionCommand', () => {
       }
 
       // When
-      const result = createVersionCommand.validateCommand(program);
+      const result = createPackageVersionCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
@@ -277,18 +277,18 @@ describe('CreateVersionCommand', () => {
       const componentId = '09876543sdfghjkl';
       const component = { name: packageReference, id: componentId };
       const error = 'creation failed';
-      createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.reject(error));
+      createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      createVersionCommand.execute(program).then(result => {
+      createPackageVersionCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
           token,
           {
             id: versionId,
@@ -309,16 +309,16 @@ describe('CreateVersionCommand', () => {
       const componentId = '09876543sdfghjkl';
       const component = { name: packageReference, id: componentId };
       const response = { id: 'wertyui', component: packageReference };
-      createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
+      createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      createVersionCommand.execute(program).then(result => {
+      createPackageVersionCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
           token,
           {
             id: versionId,
@@ -341,16 +341,16 @@ describe('CreateVersionCommand', () => {
       const componentId = '09876543sdfghjkl';
       const component = { name: packageReference, id: componentId };
       const response = { id: 'wertyui', component: packageReference };
-      createVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
+      createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      createVersionCommand.execute(program).then(result => {
+      createPackageVersionCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledOnce;
-        expect(createVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
+        expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
           token,
           {
             id: versionId,
