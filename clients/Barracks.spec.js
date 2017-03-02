@@ -1467,7 +1467,6 @@ describe('Barracks', () => {
 
   describe('#createVersion()', () => {
 
-
     const filename = 'file.txt';
     const filePath = 'path/to/file.txt';
     const version = {
@@ -1573,6 +1572,90 @@ describe('Barracks', () => {
         done(err);
       });
     });
+  });
+
+  describe('#createDeploymentPlan()', () => {
+
+    const packageRef = 'ze.ref';
+    const validPlan = {
+      packageRef,
+      data: {
+        some: 'value',
+        someOther: 'value'
+      }
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createDeploymentPlan(token, validPlan).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createDeploymentPlan',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef
+            },
+            body: validPlan
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the plan created', done => {
+      // Given
+      const plan = Object.assign({}, validPlan, { id: 'kjcxse456tyhjkloiuytrfd' });
+      const response = { body: plan };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createDeploymentPlan(token, plan).then(result => {
+        expect(result).to.be.equals(response.body);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createDeploymentPlan',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef
+            },
+            body: plan
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   });
 
   describe('#checkUpdate()', () => {

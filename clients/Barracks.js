@@ -544,6 +544,24 @@ class Barracks {
     });
   }
 
+  createDeploymentPlan(token, plan) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createDeploymentPlan', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          componentRef: plan.packageRef
+        },
+        body: plan
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);

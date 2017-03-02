@@ -115,6 +115,10 @@ module.exports = {
       createVersion: {
         method: 'POST',
         path: '/api/member/components/:componentRef/versions'
+      },
+      createDeploymentPlan: {
+        method: 'POST',
+        path: '/api/member/components/:componentRef/deployment-plan'
       }
     }
   },

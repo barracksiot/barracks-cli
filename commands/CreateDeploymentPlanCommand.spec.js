@@ -308,7 +308,7 @@ describe('CreateDeploymentPlanCommand', () => {
       });
     });
 
-    it('should forward to client and return result when file contains valid JSON data', done => {
+    it('should forward to client and return result when file contains valid JSON data but no component ref', done => {
       // Given
       const program = { file };
       const plan = { 'a-valid': 'json string' };
