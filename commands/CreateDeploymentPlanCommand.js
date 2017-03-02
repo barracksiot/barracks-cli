@@ -3,13 +3,21 @@ const Validator = require('../utils/Validator');
 const inStream = require('in-stream');
 const fs = require('fs');
 
+function getDeploymentPlanFromString(data, resolve, reject) {
+  if (Validator.isJsonString(data)) {
+    resolve(JSON.parse(data));
+  } else {
+    reject('Deployment plan must be described by a valid JSON');
+  }
+}
+
 function readDeploymentPlanFromFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, (err, data) => {
       if (err) {
         reject(err);
       }
-      resolve(data);
+      getDeploymentPlanFromString(data, resolve, reject);
     });
   });
 }
@@ -23,7 +31,7 @@ function readDeploymentPlanFromStdin() {
     });
 
     inStream.on('close', () => {
-      resolve(streamContent);
+      getDeploymentPlanFromString(streamContent, resolve, reject);
     });
 
     inStream.on('error', error => {
