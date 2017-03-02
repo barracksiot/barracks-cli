@@ -110,6 +110,14 @@ describe('CreateDeploymentPlanCommand', () => {
 
   describe('#execute(program)', () => {
 
+    const validPlan = {
+      packageRef: 'ze-ref',
+      data: {
+        some: 'value',
+        someOther: 'value'
+      }
+    };
+
     it('should reject an error if input stream return an error', done => {
       // Given
       const program = {};
@@ -169,11 +177,47 @@ describe('CreateDeploymentPlanCommand', () => {
       });
     });
 
-    it('should forward to client and return result when input stream give valid JSON data', done => {
+    it('should reject when JSON plan do not contain a component reference', done => {
       // Given
       const program = {};
       const plan = { 'a-valid': 'json string' };
       const data = '{ "a-valid": "json string" }';
+      const response = 'youpi';
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (data) => {
+        spyIsJsonString(data);
+        return true;
+      };
+      spyOnData = sinon.spy();
+      spyOnClose = sinon.spy();
+      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+
+      setTimeout(() => {
+        proxyInStream.emit('data', data);
+        proxyInStream.emit('close');
+      }, 50);
+
+      // When / Then
+      createDeploymentPlanCommand.execute(program).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
+        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(spyOnData).to.have.been.calledOnce;
+        expect(spyOnData).to.have.been.calledWithExactly(data);
+        expect(spyOnClose).to.have.been.calledOnce;
+        expect(spyOnClose).to.have.been.calledWithExactly();
+        expect(spyIsJsonString).to.have.been.calledOnce;
+        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        done();
+      });
+    });
+
+    it('should forward to client and return result when input stream give valid JSON data', done => {
+      // Given
+      const program = {};
+      const data = JSON.stringify(validPlan);
       const response = 'youpi';
       const spyIsJsonString = sinon.spy();
       proxyIsJsonString = (data) => {
@@ -202,7 +246,7 @@ describe('CreateDeploymentPlanCommand', () => {
         expect(spyIsJsonString).to.have.been.calledOnce;
         expect(spyIsJsonString).to.have.been.calledWithExactly(data);
         expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, plan);
+        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
       }).catch(err => {
         done(err);
@@ -281,6 +325,38 @@ describe('CreateDeploymentPlanCommand', () => {
         return true;
       };
       createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+
+      // When / Then
+      createDeploymentPlanCommand.execute(program).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
+        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(spyReadFile).to.have.been.calledOnce;
+        expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
+        expect(spyIsJsonString).to.have.been.calledOnce;
+        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        done();
+      });
+    });
+
+    it('should forward to client and return result when file contains valid JSON data', done => {
+      // Given
+      const program = { file };
+      const data = JSON.stringify(validPlan);
+      const response = 'youpi';
+      const spyReadFile = sinon.spy();
+      proxyReadFile = (file, callback) => {
+        spyReadFile(file, callback);
+        callback(undefined, data);
+      };
+      const spyIsJsonString = sinon.spy();
+      proxyIsJsonString = (data) => {
+        spyIsJsonString(data);
+        return true;
+      };
+      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createDeploymentPlanCommand.barracks.createDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
@@ -293,12 +369,11 @@ describe('CreateDeploymentPlanCommand', () => {
         expect(spyIsJsonString).to.have.been.calledOnce;
         expect(spyIsJsonString).to.have.been.calledWithExactly(data);
         expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, plan);
+        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
       }).catch(err => {
         done(err);
       });
     });
-
   });
 });
