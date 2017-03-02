@@ -32,7 +32,7 @@ function readDeploymentPlanFromStdin() {
     let streamContent = '';
 
     inStream.on('data', chunk => {
-      streamContent += chunk.toString('utf16');
+      streamContent += chunk.toString('utf8');
     });
 
     inStream.on('close', () => {
