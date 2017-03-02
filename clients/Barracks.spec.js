@@ -1639,23 +1639,6 @@ describe('Barracks', () => {
         done(err);
       });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   });
 
   describe('#checkUpdate()', () => {
