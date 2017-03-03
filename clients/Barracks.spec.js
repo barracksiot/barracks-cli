@@ -411,7 +411,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'getUpdates',
           options,
-          'detailedUpdates'
+          'updates'
         );
         done();
       }).catch(err => {
@@ -439,7 +439,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'updatesBySegmentId',
           options,
-          'detailedUpdates'
+          'updates'
         );
         done();
       }).catch(err => {
@@ -1195,7 +1195,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'getDeviceEvents',
           options,
-          'deviceEvents',
+          'events',
           sinon.match.func
         );
         done();
