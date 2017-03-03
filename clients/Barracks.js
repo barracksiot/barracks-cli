@@ -54,7 +54,7 @@ class Barracks {
           'x-auth-token': token
         }
       },
-      'detailedUpdates');
+      'updates');
     });
   }
 
@@ -70,7 +70,7 @@ class Barracks {
           segmentId
         }
       },
-      'detailedUpdates');
+      'updates');
     });
   }
 
@@ -414,7 +414,7 @@ class Barracks {
         pathVariables: {
           unitId
         }
-      }, 'deviceEvents', events => 
+      }, 'events', events => 
         fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
       );
       bufferStream.onPageReceived(events => {
