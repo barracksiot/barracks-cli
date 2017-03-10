@@ -6,10 +6,10 @@ const fs = require('fs');
 function getDeploymentPlanFromString(data, resolve, reject) {
   if (Validator.isJsonString(data)) {
     const plan = JSON.parse(data);
-    if (plan.packageRef) {
+    if (plan.package) {
       resolve(plan);
     } else {
-      reject('Missing mandatory attribute "packageRef" in deployment plan');
+      reject('Missing mandatory attribute "package" in deployment plan');
     }
   } else {
     reject('Deployment plan must be described by a valid JSON');

@@ -1578,7 +1578,7 @@ describe('Barracks', () => {
 
     const packageRef = 'ze.ref';
     const validPlan = {
-      packageRef,
+      package: packageRef,
       data: {
         some: 'value',
         someOther: 'value'

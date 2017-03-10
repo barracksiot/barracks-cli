@@ -551,7 +551,7 @@ class Barracks {
           'x-auth-token': token
         },
         pathVariables: {
-          componentRef: plan.packageRef
+          componentRef: plan.package
         },
         body: plan
       }).then(response => {
