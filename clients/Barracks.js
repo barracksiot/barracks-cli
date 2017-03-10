@@ -507,6 +507,20 @@ class Barracks {
     });
   }
 
+  getComponents(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting components');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getComponents', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'components');
+    });
+  }
+
   createVersion(token, version) {
     return new Promise((resolve, reject) => {
       this.client.sendEndpointRequest('createVersion', {
