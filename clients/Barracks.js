@@ -54,7 +54,7 @@ class Barracks {
           'x-auth-token': token
         }
       },
-      'detailedUpdates');
+      'updates');
     });
   }
 
@@ -70,7 +70,7 @@ class Barracks {
           segmentId
         }
       },
-      'detailedUpdates');
+      'updates');
     });
   }
 
@@ -414,7 +414,7 @@ class Barracks {
         pathVariables: {
           unitId
         }
-      }, 'deviceEvents', events => 
+      }, 'events', events => 
         fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
       );
       bufferStream.onPageReceived(events => {
@@ -559,6 +559,23 @@ class Barracks {
       }).catch(errResponse => {
         reject(errResponse.message);
       });
+    });
+  }
+
+  getComponentVersions(token, componentRef) {
+    return new Promise(resolve => {
+      logger.debug('Getting versions for components', componentRef);
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(
+        stream,
+        'getComponentVersions',
+        {
+          headers: { 'x-auth-token': token },
+          pathVariables: { componentRef }
+        },
+        'versions'
+      );
     });
   }
 

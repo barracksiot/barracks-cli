@@ -358,7 +358,7 @@ describe('CreatePackageVersionCommand', () => {
             component: packageReference,
             file,
             description,
-            metadata: JSON.stringify(metadata)
+            metadata: metadata
           }
         );
         done();

@@ -32,7 +32,7 @@ class CreatePackageVersionCommand extends BarracksCommand {
         component: program.packageReference,
         file: program.file,
         description: program.description,
-        metadata: program.metadata
+        metadata: program.metadata ? JSON.parse(program.metadata) : undefined
       });
     });
   }

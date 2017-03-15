@@ -411,7 +411,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'getUpdates',
           options,
-          'detailedUpdates'
+          'updates'
         );
         done();
       }).catch(err => {
@@ -439,7 +439,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'updatesBySegmentId',
           options,
-          'detailedUpdates'
+          'updates'
         );
         done();
       }).catch(err => {
@@ -1195,7 +1195,7 @@ describe('Barracks', () => {
           new PageableStream(),
           'getDeviceEvents',
           options,
-          'deviceEvents',
+          'events',
           sinon.match.func
         );
         done();
@@ -1795,6 +1795,155 @@ describe('Barracks', () => {
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
           versionId,
           customClientData
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#createToken()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const newToken = { name: 'My API token' };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createToken(token, newToken).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
+          headers: { 'x-auth-token': token },
+          body: newToken
+        });
+        done();
+      });
+    });
+
+    it('should return the token created', done => {
+      // Given
+      const newToken = { name: 'My API token' };
+      const newTokenFull = { name: 'My API token', value: 'mnbvcxzasdfghjklpoiuytrewq' };
+      const response = { body: newTokenFull };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createToken(token, newToken).then(result => {
+        expect(result).to.be.equals(newTokenFull);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
+          headers: { 'x-auth-token': token },
+          body: newToken
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#getTokens()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const options = { headers: {
+        'x-auth-token': token
+      }}
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getTokens(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getTokens',
+          options,
+          'tokens'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#revokeToken()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const tokenToRevoke = '1234567890987654321234567890';
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.revokeToken(token, tokenToRevoke).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { token: tokenToRevoke }
+        });
+        done();
+      });
+    });
+
+    it('should return the token revoked', done => {
+      // Given
+      const tokenToRevoke = '1234567890987654321234567890';
+      const revokedToken = {
+        id: 'sdfghjhgfdsdfghgfdsdfgh',
+        name: 'My API token',
+        value: tokenToRevoke,
+        revoked: true
+      };
+      const response = { body: revokedToken };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.revokeToken(token, tokenToRevoke).then(result => {
+        expect(result).to.be.equals(revokedToken);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { token: tokenToRevoke }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#getComponentVersions()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const componentRef = 'my.component.ref';
+      const options = {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: { componentRef }
+      };
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getComponentVersions(token, componentRef).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getComponentVersions',
+          options,
+          'versions'
         );
         done();
       }).catch(err => {
