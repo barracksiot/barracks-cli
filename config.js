@@ -119,6 +119,7 @@ module.exports = {
       getComponents: {
         method: 'GET',
         path: '/api/member/components'
+      },
       getComponentVersions: {
         method: 'GET',
         path: '/api/member/components/:componentRef/versions'
