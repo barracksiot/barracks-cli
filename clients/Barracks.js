@@ -558,6 +558,23 @@ class Barracks {
     });
   }
 
+  getComponentVersions(token, componentRef) {
+    return new Promise(resolve => {
+      logger.debug('Getting versions for components', componentRef);
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(
+        stream,
+        'getComponentVersions',
+        {
+          headers: { 'x-auth-token': token },
+          pathVariables: { componentRef }
+        },
+        'versions'
+      );
+    });
+  }
+
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);

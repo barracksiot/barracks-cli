@@ -1763,6 +1763,36 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getComponentVersions()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const componentRef = 'my.component.ref';
+      const options = {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: { componentRef }
+      };
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getComponentVersions(token, componentRef).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getComponentVersions',
+          options,
+          'versions'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#checkUpdateAndDownload()', () => {
 
     const baseUrl = 'base/url';
