@@ -45,11 +45,17 @@ class Barracks {
     });
   }
 
-  setGoogleAnalyticsId(token, googleId) {
+  setGoogleAnalyticsTrackingId(token, googleId) {
     return new Promise((resolve, reject) => {
       logger.debug('Setting Google Analytics Id:', googleId);
-      this.client.sendEndpointRequest('setGoogleAnalyticsId', {
-        body: { value: googleId }
+      this.client.sendEndpointRequest('setGoogleAnalyticsTrackingId',
+      {
+        headers: {
+          'x-auth-token': token
+        },
+        body: {
+          value: googleId
+        }
       }).then(response => {
         logger.debug('GA Id setted successful.');
         resolve(response.body);

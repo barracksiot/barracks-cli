@@ -1,10 +1,10 @@
 const BarracksCommand = require('./BarracksCommand');
 
-class SetGoogleAnalyticsIdCommand extends BarracksCommand {
+class SetGoogleAnalyticsTrackingIdCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .arguments('<ga-id>');
+      .arguments('<ga-tracking-id>');
   }
 
   validateCommand(program) {
@@ -13,9 +13,9 @@ class SetGoogleAnalyticsIdCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.setGoogleAnalyticsId(token, program.args[0]);
+      return this.barracks.setGoogleAnalyticsTrackingId(token, program.args[0]);
     });
   }
 }
 
-module.exports = SetGoogleAnalyticsIdCommand;
+module.exports = SetGoogleAnalyticsTrackingIdCommand;

@@ -12,7 +12,7 @@ module.exports = {
         method: 'GET',
         path: '/api/auth/me'
       },
-      setGoogleAnalyticsId: {
+      setGoogleAnalyticsTrackingId: {
         method: 'PUT',
         path: '/api/auth/me/gaTrackingId'
       },

@@ -32,7 +32,7 @@ if (config.experimental) {
     .command('create-token', 'Create an API token')
     .command('tokens', 'List all API tokens')
     .command('revoke-token', 'Revoke the specified API token')
-    .command('set-google-analytics-id', 'Set your Google Analytics Id');
+    .command('set-ga-tracking-id', 'Set your Google Analytics tracking Id');
 }
 
 barracks.parse(process.argv);
