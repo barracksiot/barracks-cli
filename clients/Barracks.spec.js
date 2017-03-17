@@ -1346,8 +1346,34 @@ describe('Barracks', () => {
     });
   });
 
-  describe('#createVersion()', () => {
+  describe('#getComponent()', () => {
 
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const options = {
+        headers: { 'x-auth-token': token }
+      };
+
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getComponents(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getComponents',
+          options,
+          'components'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#createVersion()', () => {
 
     const filename = 'file.txt';
     const filePath = 'path/to/file.txt';

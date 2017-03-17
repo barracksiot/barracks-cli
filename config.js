@@ -116,6 +116,10 @@ module.exports = {
         method: 'POST',
         path: '/api/member/components/:componentRef/versions'
       },
+      getComponents: {
+        method: 'GET',
+        path: '/api/member/components'
+      },
       getComponentVersions: {
         method: 'GET',
         path: '/api/member/components/:componentRef/versions'
