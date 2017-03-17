@@ -45,6 +45,21 @@ class Barracks {
     });
   }
 
+  setGoogleAnalyticsId(token, googleId) {
+    return new Promise((resolve, reject) => {
+      logger.debug('Setting Google Analytics Id:', googleId);
+      this.client.sendEndpointRequest('setGoogleAnalyticsId', {
+        body: { value: googleId }
+      }).then(response => {
+        logger.debug('GA Id setted successful.');
+        resolve(response.body);
+      }).catch(errResponse => {
+        logger.debug('GA Id set failure.');
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getUpdates(token) {
     return new Promise(resolve => {
       const stream = new PageableStream();

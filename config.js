@@ -12,6 +12,10 @@ module.exports = {
         method: 'GET',
         path: '/api/auth/me'
       },
+      setGoogleAnalyticsId: {
+        method: 'PUT',
+        path: '/api/auth/me/gaTrackingId'
+      },
       getUpdates: {
         method: 'GET',
         path: '/api/member/updates?size=20'

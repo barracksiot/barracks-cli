@@ -31,7 +31,8 @@ if (config.experimental) {
     .command('filters', 'List filters')
     .command('create-token', 'Create an API token')
     .command('tokens', 'List all API tokens')
-    .command('revoke-token', 'Revoke the specified API token');
+    .command('revoke-token', 'Revoke the specified API token')
+    .command('set-google-analytics-id', 'Set your Google Analytics Id');
 }
 
 barracks.parse(process.argv);
