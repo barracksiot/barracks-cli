@@ -1346,7 +1346,7 @@ describe('Barracks', () => {
     });
   });
 
-  describe('#createComponent()', () => {
+  describe('#getComponent()', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
