@@ -45,6 +45,27 @@ class Barracks {
     });
   }
 
+  setGoogleAnalyticsTrackingId(token, googleId) {
+    return new Promise((resolve, reject) => {
+      logger.debug('Setting Google Analytics Id:', googleId);
+      this.client.sendEndpointRequest('setGoogleAnalyticsTrackingId',
+      {
+        headers: {
+          'x-auth-token': token
+        },
+        body: {
+          value: googleId
+        }
+      }).then(response => {
+        logger.debug('GA Id setted successful.');
+        resolve(response.body);
+      }).catch(errResponse => {
+        logger.debug('GA Id set failure.');
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getUpdates(token) {
     return new Promise(resolve => {
       const stream = new PageableStream();
@@ -504,6 +525,20 @@ class Barracks {
       }).catch(errResponse => {
         reject(errResponse.message);
       });
+    });
+  }
+
+  getComponents(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting components');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.client.retrieveAllPages(stream, 'getComponents', {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'components');
     });
   }
 

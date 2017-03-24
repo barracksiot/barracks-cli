@@ -290,6 +290,56 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#setGoogleAnalyticsId()', () => {
+
+    const analyticsId = 'UA-12345678-1';
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.setGoogleAnalyticsTrackingId(token, analyticsId).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'setGoogleAnalyticsTrackingId',
+          {
+            headers: { 'x-auth-token': token },
+            body: { value: analyticsId }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the server response when request success', done => {
+      // Given
+      const account = { apiKey: 'qwertyuiop', username: 'coucou', gaTrackingId: analyticsId };
+      const response = { body: account };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.setGoogleAnalyticsTrackingId(token, analyticsId).then(result => {
+        expect(result).to.be.equals(account);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'setGoogleAnalyticsTrackingId',
+          {
+            headers: { 'x-auth-token': token },
+            body: { value: analyticsId }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getSegment()', () => {
 
     const existingSegment = {
@@ -1457,6 +1507,33 @@ describe('Barracks', () => {
             headers: { 'x-auth-token': token },
             body: component
           }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#getComponent()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const options = {
+        headers: { 'x-auth-token': token }
+      };
+
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getComponents(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getComponents',
+          options,
+          'components'
         );
         done();
       }).catch(err => {

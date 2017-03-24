@@ -13,9 +13,9 @@ describe('CreateTokenCommand', () => {
   let createTokenCommand;
 
   const authToken = '123456WS';
-  const tokenName = 'My API Token';
+  const tokenLabel = 'My API Token';
   const programWithValidOptions = {
-    name: tokenName
+    label: tokenLabel
   };
 
   before(() => {
@@ -35,18 +35,18 @@ describe('CreateTokenCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when no value given for name', () => {
+    it('should return false when no value given for label', () => {
       // Given
-      const program = { name: true };
+      const program = { label: true };
       // When
       const result = createTokenCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when function given for name', () => {
+    it('should return false when function given for label', () => {
       // Given
-      const program = { name: () => { return 'plop'; } };
+      const program = { label: () => { return 'plop'; } };
       // When
       const result = createTokenCommand.validateCommand(program);
       // Then
@@ -82,7 +82,7 @@ describe('CreateTokenCommand', () => {
         expect(createTokenCommand.barracks.createToken).to.have.been.calledOnce;
         expect(createTokenCommand.barracks.createToken).to.have.been.calledWithExactly(
           authToken,
-          { name: tokenName }
+          { label: tokenLabel }
         );
         done();
       });
@@ -91,7 +91,7 @@ describe('CreateTokenCommand', () => {
     it('should return the created token when request succeed', done => {
       // Given
       const token = {
-        name: tokenName,
+        label: tokenLabel,
         value: 'qwertyuioplkjhgfdsazxcvbnm'
       };
       const program = Object.assign({}, programWithValidOptions);
@@ -106,7 +106,7 @@ describe('CreateTokenCommand', () => {
         expect(createTokenCommand.barracks.createToken).to.have.been.calledOnce;
         expect(createTokenCommand.barracks.createToken).to.have.been.calledWithExactly(
           authToken,
-          { name: tokenName }
+          { label: tokenLabel }
         );
         done();
       }).catch(err => {

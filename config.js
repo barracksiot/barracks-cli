@@ -12,6 +12,10 @@ module.exports = {
         method: 'GET',
         path: '/api/auth/me'
       },
+      setGoogleAnalyticsTrackingId: {
+        method: 'PUT',
+        path: '/api/auth/me/gaTrackingId'
+      },
       getUpdates: {
         method: 'GET',
         path: '/api/member/updates?size=20'
@@ -119,6 +123,10 @@ module.exports = {
       createDeploymentPlan: {
         method: 'POST',
         path: '/api/member/components/:componentRef/deployment-plan'
+      },
+      getComponents: {
+        method: 'GET',
+        path: '/api/member/components'
       },
       getComponentVersions: {
         method: 'GET',

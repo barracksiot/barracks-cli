@@ -3,20 +3,20 @@ const BarracksCommand = require('./BarracksCommand');
 class CreateTokenCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program.option('--name [value]', 'The name of the token');
+    return program.option('--label [value]', 'The label of the token');
   }
 
   validateCommand(program) {
     return !!(
-      program.name &&
-      program.name !== true &&
-      typeof program.name !== 'function'
+      program.label &&
+      program.label !== true &&
+      typeof program.label !== 'function'
     );
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.createToken(token, { name: program.name });
+      return this.barracks.createToken(token, { label: program.label });
     });
   }
 }
