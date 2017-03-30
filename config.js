@@ -120,6 +120,10 @@ module.exports = {
         method: 'POST',
         path: '/api/member/components/:componentRef/versions'
       },
+      createDeploymentPlan: {
+        method: 'POST',
+        path: '/api/member/components/:componentRef/deployment-plan'
+      },
       getComponents: {
         method: 'GET',
         path: '/api/member/components'

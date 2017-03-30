@@ -579,6 +579,24 @@ class Barracks {
     });
   }
 
+  createDeploymentPlan(token, plan) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('createDeploymentPlan', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          componentRef: plan.package
+        },
+        body: plan
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getComponentVersions(token, componentRef) {
     return new Promise(resolve => {
       logger.debug('Getting versions for components', componentRef);

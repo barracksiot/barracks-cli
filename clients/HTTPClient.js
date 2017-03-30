@@ -1,6 +1,8 @@
+const logger = require('../utils/logger');
 const request = require('request-promise');
 
 function sendRequest(method, uri, options) {
+  logger.debug('Sending request to', uri);
   return request(Object.assign({}, {
     method: method,
     uri: uri,
