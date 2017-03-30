@@ -3,17 +3,19 @@ const Validator = require('../utils/Validator');
 const inStream = require('in-stream');
 const fs = require('fs');
 
-function getDeploymentPlanFromString(data, resolve, reject) {
-  if (Validator.isJsonString(data)) {
-    const plan = JSON.parse(data);
-    if (plan.package) {
-      resolve(plan);
+function getDeploymentPlanFromString(data) {
+  return new Promise((resolve, reject) => {
+    if (Validator.isJsonString(data)) {
+      const plan = JSON.parse(data);
+      if (plan.package) {
+        resolve(plan);
+      } else {
+        reject('Missing mandatory attribute "package" in deployment plan');
+      }
     } else {
-      reject('Missing mandatory attribute "package" in deployment plan');
+      reject('Deployment plan must be described by a valid JSON');
     }
-  } else {
-    reject('Deployment plan must be described by a valid JSON');
-  }
+  });
 }
 
 function readDeploymentPlanFromFile(file) {
@@ -22,7 +24,11 @@ function readDeploymentPlanFromFile(file) {
       if (err) {
         reject(err);
       }
-      getDeploymentPlanFromString(data, resolve, reject);
+      getDeploymentPlanFromString(data).then(plan => {
+        resolve(plan);
+      }).catch(err => {
+        reject(err);
+      });
     });
   });
 }
@@ -36,7 +42,11 @@ function readDeploymentPlanFromStdin() {
     });
 
     inStream.on('close', () => {
-      getDeploymentPlanFromString(streamContent, resolve, reject);
+      getDeploymentPlanFromString(streamContent).then(plan => {
+        resolve(plan);
+      }).catch(err => {
+        reject(err);
+      });
     });
 
     inStream.on('error', error => {
