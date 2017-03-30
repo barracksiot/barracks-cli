@@ -10,11 +10,3 @@ deploy:
   on:
     tags: true
     repo: barracksiot/barracks-cli
-deploy:
-  provider: releases
-  email: bargenson@gmail.com
-  api_key:
-    secure: VTrqcB3d0y7jQWb3JuLO2TZTczArGnkOzJsik0vBVv17VB/nZyNkPlGfv1zdIIe5x3hMRwP2V/ual+MMEldLhMnGPI8359XYx6D/NAv+P8MmjwbsVbwo8hRG0ctXlDzHI9ni07zh6UaGsh/XiMEtm1sp1ZSzv8LMjNRetOEvP67SicqGvxD2mZHur30s8Fn0qTleamJddYVluJpvsCLYetobeGEghq+aS3l5A1zbnNDHsV54doyfBRjxMO05Awc8md84i4pZTbAGYFpGRxxkmCW6cyUzgWQnIlKUWSypDslwNRJOCzVIZwaXj8uyrnXCk/Bp0eZiooU5CiMjbLMoF2QMxd94vDyIxju/pYnq+yhMsTTdEHm2ZPZCJxdyMbqc0HscvouPi2va6MYXq3XRtR80kDvlAIWYWMJ8pPuSnlSRFUrk5AtQ6MygJeJxyANc+b45uyHQ1PtfBZd3TLm+PNhEZVFEoe2CAvK6IVaNoac7rMLurM/g/vtjrwbCDFBXvMMEUKuhpiVTyuig0V8lRN8IyEhytFnbMmsdFj0D+/B479fpZYOUAq2lXoJ9CxVn/qaZDYTx8DD7e/mP1xm9xJRcwCPB+RuQqDPkqGdRjXcVhkxzVSCQUHR9fOg2LyI1WHOVoc1gfaYt2kSJZ5seKmvATrp5u++yKPIdvkAR1AU=
-  skip_cleanup: true
-  on:
-    tags: true
