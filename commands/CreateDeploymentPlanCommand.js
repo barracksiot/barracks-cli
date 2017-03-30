@@ -56,7 +56,7 @@ function getDeploymentPlan(program) {
 class CreateDeploymentPlanCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program.option('--file [path/to/file]', '(Optionnal) The path to the file containing the JSON describing the deployment plan');
+    return program.option('--file [path/to/file]', 'The path to the file containing the JSON describing the deployment plan. If not specified, the command will expect a stream containing the deploiement plan');
   }
 
   validateCommand(program) {
