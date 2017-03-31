@@ -31,6 +31,7 @@ if (config.experimental) {
     .command('package-versions', 'List versions of the specified package')
     .command('create-filter', 'Create a filter')
     .command('filters', 'List filters')
+    .command('delete-filter', 'Delete a filter')
     .command('create-token', 'Create an API token')
     .command('tokens', 'List all API tokens')
     .command('revoke-token', 'Revoke the specified API token')
