@@ -1015,6 +1015,49 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#deleteFilter()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const name = 'aFilter';
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.deleteFilter(token, name).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilter', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { filter: name }
+        });
+        done();
+      });
+    });
+
+    it('should return nothing when filter is deleted', done => {
+      // Given
+      const name = 'aFilter';
+      const response = { body: undefined };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.deleteFilter(token, name).then(result => {
+        expect(result).to.be.equals(undefined);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilter', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { filter: name }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getFilterByName()', () => {
 
     const filterName = 'myCoolFilter';

@@ -220,6 +220,23 @@ class Barracks {
     });
   }
 
+  deleteFilter(token, filter) {
+    return new Promise((resolve, reject) => {
+      this.client.sendEndpointRequest('deleteFilter', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          filter
+        }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getFilterByName(token, filterName) {
     return new Promise((resolve, reject) => {
       const buffer = new PageableStream();
