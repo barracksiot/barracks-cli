@@ -60,6 +60,10 @@ module.exports = {
         method: 'POST',
         path: '/api/member/filters'
       },
+      deleteFilter: {
+        method: 'DELETE',
+        path: '/api/member/filters/:filter'
+      },
       editSegment: {
         method: 'PUT',
         path: '/api/member/segments/:id'
