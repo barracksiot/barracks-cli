@@ -79,16 +79,22 @@ class BarracksCommand {
     return this.userConfiguration.saveAuthenticationToken(token);
   }
 
+  cleanupProgramOptions(program) {
+    program.options.map(option => {
+      return option.long.substring(2);
+    }).forEach(optionName => {
+      console.log(typeof program[optionName]);
+      if (typeof program[optionName] === 'function') {
+        program[optionName] = undefined;
+      }
+    });
+  }
+
   validateCommand() {
     return true;
   }
 
   validateOptionnalParams(program, optionnalParams) {
-    optionnalParams.forEach(param => {
-      if (typeof program[param] === 'function') {
-        program[param] = undefined;
-      }
-    });
     return optionnalParams.reduce((valid, item) => {
       return valid && (!program[item] || (program[item] && program[item] !== true));
     }, true);
@@ -99,6 +105,7 @@ class BarracksCommand {
   }
 
   render() {
+    this.cleanupProgramOptions(program);
     if (this.validateCommand(program)) {
       const result = this.execute(program);
       if (program.json) {
