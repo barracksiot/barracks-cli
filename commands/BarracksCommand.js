@@ -83,7 +83,6 @@ class BarracksCommand {
     program.options.map(option => {
       return option.long.substring(2);
     }).forEach(optionName => {
-      console.log(typeof program[optionName]);
       if (typeof program[optionName] === 'function') {
         program[optionName] = undefined;
       }
