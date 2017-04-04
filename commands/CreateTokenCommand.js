@@ -9,8 +9,7 @@ class CreateTokenCommand extends BarracksCommand {
   validateCommand(program) {
     return !!(
       program.label &&
-      program.label !== true &&
-      typeof program.label !== 'function'
+      program.label !== true
     );
   }
 

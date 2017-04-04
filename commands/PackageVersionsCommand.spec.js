@@ -44,15 +44,6 @@ describe('packageVersionsCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when reference is a function', () => {
-      // Given
-      const program = { packageReference: () => { return 'plop'; } };
-      // When
-      const result = packageVersionsCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
     it('should return true when valid reference given', () => {
       // Given
       const program = validProgram;

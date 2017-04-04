@@ -11,7 +11,7 @@ class CreateFilterCommand extends BarracksCommand {
 
   validateCommand(program) {
     return !!(
-      program.name && program.name !== true && typeof program.name !== 'function' &&
+      program.name && program.name !== true &&
       program.query && program.query !== true && 
       Validator.isJsonString(program.query)
     );
