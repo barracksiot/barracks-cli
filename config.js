@@ -144,5 +144,6 @@ module.exports = {
     )
   },
   debug: !!(process.env.DEBUG ? parseInt(process.env.DEBUG) : false),
-  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false)
+  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false),
+  v2Enabled: !!(process.env.BARRACKS_ENABLE_V2 ? parseInt(process.env.BARRACKS_ENABLE_V2) : false)
 };
