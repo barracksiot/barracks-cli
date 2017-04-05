@@ -84,9 +84,13 @@ module.exports = {
         method: 'GET',
         path: '/api/member/filters?size=20'
       },
-      getDevices: {
+      getDevicesV1: {
         method: 'GET',
         path: '/api/member/devices?size=20'
+      },
+      getDevicesV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices?size=20'
       },
       getDevicesWithQuery: {
         method: 'GET',

@@ -28,6 +28,7 @@ describe('Barracks', () => {
   beforeEach(() => {
     barracks = new Barracks();
     barracks.client = {};
+    barracks.v2Enabled = false;
   });
 
   describe('#editUpdate()', () => {
@@ -1216,7 +1217,7 @@ describe('Barracks', () => {
 
   describe('#getDevices()', () => {
 
-    it('should return a stream object and deleguate to the client', done => {
+    it('should return a stream object and delegate to the client when v2 is not enabled', done => {
       // Given
       const options = {
         headers: { 'x-auth-token': token }
@@ -1230,9 +1231,34 @@ describe('Barracks', () => {
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDevices',
+          'getDevicesV1',
           options,
           'devices'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return a stream object and delegate to the client when v2 is enabled', done => {
+      // Given
+      barracks.v2Enabled = true ;
+      const options = {
+        headers: { 'x-auth-token': token }
+      };
+
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getDevices(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+            new PageableStream(),
+            'getDevicesV2',
+            options,
+            'devices'
         );
         done();
       }).catch(err => {

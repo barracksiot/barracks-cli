@@ -4,12 +4,14 @@ const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../utils/logger');
+const config = require('../config');
 
 class Barracks {
 
   constructor(options) {
     this.options = options;
     this.client = new HTTPClient(options);
+    this.v2Enabled = config.v2Enabled;
   }
 
   authenticate(username, password) {
@@ -388,7 +390,8 @@ class Barracks {
       logger.debug('Getting devices');
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevices', {
+      const endpointKey = this.v2Enabled ? 'getDevicesV2' : 'getDevicesV1';
+      this.client.retrieveAllPages(stream, endpointKey, {
         headers: {
           'x-auth-token': token
         }
