@@ -66,11 +66,25 @@ describe('DevicesCommand', () => {
 
   describe('#configureCommand(program)', () => {
 
-    afterEach(() => {
+    beforeEach(() => {
       devicesCommand.experimental = false;
+      devicesCommand.v2Enabled = false;
     });
 
-    it('should not display filter option when experimental is not enabled', () => {
+    it('should not display any option when v2 and experimental is not enabled', () => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const options = [];
+      const program = {};
+      // When
+      const result = devicesCommand.configureCommand(program);
+
+      // Then
+      expect(result).to.be.equal(program);
+      expect(options).to.have.length(0);
+    })
+
+    it('should not display filter option when v1 and experimental is not enabled', () => {
       // Given
       const options = [];
       const program = {
@@ -88,7 +102,7 @@ describe('DevicesCommand', () => {
       expect(options[0]).to.have.property('--segment [segmentName]');
     });
 
-    it('should display filter option when experimental is enabled', () => {
+    it('should display filter option when v1 and experimental is enabled', () => {
       // Given
       devicesCommand.experimental = true;
       const options = [];
@@ -123,6 +137,11 @@ describe('DevicesCommand', () => {
       name: segmentName,
       query
     };
+
+    beforeEach(() => {
+      devicesCommand.experimental = false;
+      devicesCommand.v2Enabled = false;
+    });
 
     it('should reject an error when a filter name is given and no filter found', done => {
       // Given
@@ -272,5 +291,65 @@ describe('DevicesCommand', () => {
         done(err);
       });
     });
+
+    it('should reject an error when no filter is given', done => {
+      // Given
+      const program = programWithNoOption;
+      devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.resolve(new PageableStream()));
+
+      // when / Then
+      devicesCommand.execute(program).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should reject an error when Client request fails', done => {
+      // Given
+      const program = programWithNoOption;
+      const error = 'Ceci est une erreur';
+      devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.reject(error));
+
+      // when / Then
+      devicesCommand.execute(program).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(error).to.be.equal(error);
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token);
+        done();
+      });
+    });
+
+    it('should return a PageableStream object when v2 is enabled and no filter is given', done => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const program = programWithNoOption;
+      devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.resolve(new PageableStream()));
+
+      // when / Then
+      devicesCommand.execute(program).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
   });
 });
