@@ -302,14 +302,9 @@ class Barracks {
   getSegmentByName(token, segmentName) {
     return new Promise((resolve, reject) => {
       this.getSegments(token).then(segments => {
-        console.log('-------------');
-        console.log(segments);
-        console.log('-------------');
-        const segment = segments.active.concat(segments.other, segments.inactive).find(segment => {
+        const segment = segments.active.concat(segments.inactive, segments.other).find(segment => {
           return segment.name === segmentName;
         });
-        console.log(segment);
-        console.log('-------------');
         if (segment) {
           resolve(segment);
         } else {
