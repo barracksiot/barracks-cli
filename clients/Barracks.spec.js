@@ -819,7 +819,7 @@ describe('Barracks', () => {
 
       // When / Then
       barracks.getSegmentByName(token, otherSegment.name).then(result => {
-        expect(result).to.be.equals(segment);
+        expect(result).to.be.equals(otherSegment);
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
