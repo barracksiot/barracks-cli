@@ -680,6 +680,27 @@ class Barracks {
       });
     });
   }
+
+  getPackage(token, componentRef) {
+    return new Promise((resolve, reject) => {
+      logger.debug('Getting package from its reference', componentRef);
+      this.client.sendEndpointRequest('getPackage', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          componentRef
+        }
+      }).then(response => {
+        const myPackage = response.body;
+        logger.debug('Package retrieved:', myPackage);
+        resolve(myPackage);
+      }).catch(errResponse => {
+        logger.debug('Failed to retrieve package');
+        reject(errResponse.message);
+      });
+    });
+  }
 }
 
 module.exports = Barracks;
