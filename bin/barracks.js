@@ -15,7 +15,8 @@ if (config.v2Enabled) {
       .command('packages', 'List packages')
       .command('create-package-version', 'Create a package version')
       .command('create-deployment-plan', 'Create a deployment plan for a package')
-      .command('package-versions', 'List versions of the specified package');
+      .command('package-versions', 'List versions of the specified package')
+      .command('deployment-plan', 'Get a deployment plan from component reference');
 
   if (config.experimental) {
     barracks.command('create-token', 'Create an API token')
