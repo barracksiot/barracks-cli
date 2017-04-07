@@ -15,7 +15,8 @@ if (config.v2Enabled) {
       .command('packages', 'List packages')
       .command('create-package-version', 'Create a package version')
       .command('create-deployment-plan', 'Create a deployment plan for a package')
-      .command('package-versions', 'List versions of the specified package');
+      .command('package-versions', 'List versions of the specified package')
+      .command('package', 'Get a package from its reference');
 
   if (config.experimental) {
     barracks.command('create-token', 'Create an API token')
@@ -37,7 +38,8 @@ if (config.v2Enabled) {
       .command('create-segment', 'Create a new segment')
       .command('edit-segment', 'Edit an existing segment')
       .command('set-active-segments', 'Set active segments in priority order')
-      .command('check-update', 'Check for an update the same way a device would');
+      .command('check-update', 'Check for an update the same way a device would')
+      .command('package', 'Get a package from its reference');
 
   if (config.experimental) {
     barracks.command('create-filter', 'Create a filter')
