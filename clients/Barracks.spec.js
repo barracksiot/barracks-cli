@@ -2219,4 +2219,57 @@ describe('Barracks', () => {
       });
     });
   });
+
+  describe('#getDeploymentPlan()', () => {
+    const packageRef = 'ze.ref';
+    const validDeploymentPlan = {
+      package: packageRef,
+      data: {
+        some: 'value',
+        someOther: 'value'
+      }
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getDeploymentPlan', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            componentRef: validDeploymentPlan.package
+          }
+        });
+        done();
+      });
+    });
+
+    it('should return a deployment plan when request succeed', done => {
+      // Given
+      const response = { body: validDeploymentPlan };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
+        expect(result).to.be.equals(validDeploymentPlan);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getDeploymentPlan', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            componentRef: validDeploymentPlan.package
+          }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  })
 });
