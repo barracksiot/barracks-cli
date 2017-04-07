@@ -699,7 +699,7 @@ class Barracks {
         logger.debug('Failed to retrieve DeploymentPlan');
         reject(errResponse.message);
       });
-    })
+    });
   }
 }
 

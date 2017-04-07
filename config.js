@@ -142,7 +142,7 @@ module.exports = {
       },
       getDeploymentPlan: {
         method: 'GET',
-        path: '/v2/api/member/components/:componentRef/versions'
+        path: '/api/member/components/:componentRef/deployment-plan'
       }
     }
   },
