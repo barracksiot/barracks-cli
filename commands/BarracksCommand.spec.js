@@ -318,6 +318,125 @@ describe('BarracksCommand', () => {
     });
   });
 
+  describe('#cleanupProgramOptions()', () => {
+
+    let mockedBarracksCommand;
+
+    const minimumProgram = {
+      option: () => { return program; },
+      parse: () => { return program; }
+    };
+    let program = minimumProgram;
+    const MockedBarracksCommand = proxyquire('./BarracksCommand', {
+      commander: program
+    });
+
+    beforeEach(() => {
+      mockedBarracksCommand = new MockedBarracksCommand();
+    });
+
+    it('should not alter the program if one option empty', () => {
+      // Given
+      const optionLabel = 'anOption';
+      const program = Object.assign({}, minimumProgram, {
+        options: [{
+          long: `--${optionLabel}`
+        }]
+      });
+      const programBefore = Object.assign({}, program);
+
+      // When
+      mockedBarracksCommand.cleanupProgramOptions(program);
+      
+      // Then
+      expect(program).to.deep.equals(programBefore);
+    });
+
+    it('should not alter the program if one option given as string', () => {
+      // Given
+      const optionLabel = 'anOption';
+      const program = Object.assign({}, minimumProgram, {
+        [optionLabel]: 'anOptionValue',
+        options: [{
+          long: `--${optionLabel}`
+        }]
+      });
+      const programBefore = Object.assign({}, program);
+
+      // When
+      mockedBarracksCommand.cleanupProgramOptions(program);
+      
+      // Then
+      expect(program).to.deep.equals(programBefore);
+    });
+
+    it('should not alter the program if one option given as boolean', () => {
+      // Given
+      const optionLabel = 'anOption';
+      const program = Object.assign({}, minimumProgram, {
+        [optionLabel]: true,
+        options: [{
+          long: `--${optionLabel}`
+        }]
+      });
+      const programBefore = Object.assign({}, program);
+
+      // When
+      mockedBarracksCommand.cleanupProgramOptions(program);
+      
+      // Then
+      expect(program).to.deep.equals(programBefore);
+    });
+
+    it('should replace option that is a function if a function is given', () => {
+      // Given
+      const optionLabel = 'anOption';
+      const program = Object.assign({}, minimumProgram, {
+        [optionLabel]: () => {},
+        options: [{
+          long: `--${optionLabel}`
+        }]
+      });
+      const programExpected = Object.assign({}, program, {
+        [optionLabel]: undefined,
+      });
+
+      // When
+      mockedBarracksCommand.cleanupProgramOptions(program);
+      
+      // Then
+      expect(program).to.deep.equals(programExpected);
+    });
+
+    it('should replace only options given as function when many options given', () => {
+      // Given
+      const emptyOptionLabel = 'emptyOption';
+      const stringOptionLabel = 'stringOption';
+      const booleanOptionLabel = 'booleanOption';
+      const functionOptionLabel = 'functionOption';
+      const program = Object.assign({}, minimumProgram, {
+        [stringOptionLabel]: 'aStringValue',
+        [booleanOptionLabel]: true,
+        [functionOptionLabel]: () => {},
+        options: [
+          { long: `--${emptyOptionLabel}` },
+          { long: `--${stringOptionLabel}` },
+          { long: `--${booleanOptionLabel}` },
+          { long: `--${functionOptionLabel}` }
+        ]
+      });
+      const programExpected = Object.assign({}, program, {
+        [functionOptionLabel]: undefined,
+      });
+
+      // When
+      mockedBarracksCommand.cleanupProgramOptions(program);
+      
+      // Then
+      expect(program).to.deep.equals(programExpected);
+    });
+  });
+  
   describe('#validateOptionnalParams()', () => {
 
     let mockedBarracksCommand;
@@ -331,7 +450,7 @@ describe('BarracksCommand', () => {
       commander: program
     });
 
-    before(() => {
+    beforeEach(() => {
       mockedBarracksCommand = new MockedBarracksCommand();
     });
 
@@ -365,16 +484,6 @@ describe('BarracksCommand', () => {
       // Then
       expect(result).to.be.false;
       expect(program.option1).to.be.equals(true);
-    });
-
-    it('should return true and remove function when one optionnal argument and function given', () => {
-      //Given
-      program = Object.assign({}, minimumProgram, { option1: () => { return 'plop'; } });
-      // When
-      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1' ]);
-      // Then
-      expect(result).to.be.true;
-      expect(program.option1).to.be.equals(undefined);
     });
 
     it('should return true when two optionnal arguments and valid value given', () => {
@@ -440,36 +549,6 @@ describe('BarracksCommand', () => {
       expect(result).to.be.false;
       expect(program.option1).to.be.equals(true);
       expect(program.option2).to.be.equals(true);
-    });
-
-    it('should return true and clear function when two optionnal arguments and one missing and second is function', () => {
-      // Given
-      const option1 = 'option1';
-      program = Object.assign({}, minimumProgram, { option2: () => { return 'plop'; }, option1 });
-
-      // When
-      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
-      
-      // Then
-      expect(result).to.be.true;
-      expect(program.option1).to.be.equals(option1);
-      expect(program.option2).to.be.equals(undefined);
-    });
-
-    it('should return true and clear functions when two optionnal arguments and both are functions', () => {
-      // Given
-      program = Object.assign({}, minimumProgram, {
-        option1: () => { return 'plop'; },
-        option2: () => { return 'replop'; }
-      });
-
-      // When
-      const result = mockedBarracksCommand.validateOptionnalParams(program, [ 'option1', 'option2' ]);
-      
-      // Then
-      expect(result).to.be.true;
-      expect(program.option1).to.be.equals(undefined);
-      expect(program.option2).to.be.equals(undefined);
     });
 
     it('should return true when many optionnal arguments and all given valid', () => {
@@ -561,34 +640,6 @@ describe('BarracksCommand', () => {
       expect(program.option4).to.be.equals(option4);
       expect(program.option5).to.be.equals(option5);
     });
-
-    it('should return true and clear function when many optionnal arguments and one is a function', () => {
-      // Given
-      const optionnalFields = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
-      const option1 = 'qwerty';
-      const option2 = 'dfghjkluytrdf';
-      const option3 = 'ertytfghtred';
-      const option4 = () => { return 'plop'; };
-      const option5 = 'yudtyfthdgf';
-      program = Object.assign({}, minimumProgram, {
-        option1,
-        option2,
-        option3,
-        option4,
-        option5,
-      });
-
-      // When
-      const result = mockedBarracksCommand.validateOptionnalParams(program, optionnalFields);
-      
-      // Then
-      expect(result).to.be.true;
-      expect(program.option1).to.be.equals(option1);
-      expect(program.option2).to.be.equals(option2);
-      expect(program.option3).to.be.equals(option3);
-      expect(program.option4).to.be.equals(undefined);
-      expect(program.option5).to.be.equals(option5);
-    });
   });
 
   describe('#execute()', () => {
@@ -634,7 +685,7 @@ describe('BarracksCommand', () => {
       commander: program
     });
 
-    before(() => {
+    beforeEach(() => {
       mockedBarracksCommand = new MockedBarracksCommand();
     });
 
@@ -642,12 +693,15 @@ describe('BarracksCommand', () => {
       // Given
       const originalConsoleError = console.error;
       console.error = sinon.spy();
+      mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(false);
 
       // When
       mockedBarracksCommand.render();
 
       // Then
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
       expect(console.error).to.have.been.calledOnce;
@@ -661,6 +715,7 @@ describe('BarracksCommand', () => {
       // Given
       const executeResponse = { the: 'response' };
       spyRender = sinon.spy();
+      mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
 
@@ -668,6 +723,8 @@ describe('BarracksCommand', () => {
       mockedBarracksCommand.render();
 
       // Then
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
@@ -681,6 +738,7 @@ describe('BarracksCommand', () => {
       const executeResponse = { the: 'response' };
       program.json = true;
       spyJsonRender = sinon.spy();
+      mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
 
@@ -688,6 +746,8 @@ describe('BarracksCommand', () => {
       mockedBarracksCommand.render();
 
       // Then
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.execute).to.have.been.calledOnce;

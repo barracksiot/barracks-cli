@@ -73,16 +73,7 @@ describe('CreatePackageCommand', () => {
       // Then
       expect(result).to.be.false;
     });
-
-    it('should return false when name option given as function', () => {
-      // Given
-      const program = Object.assign({}, validProgram, { name: () => { return 'plop'; } });
-      // When
-      const result = createPackageCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
+    
     it('should return false when empty description option given', () => {
       // Given
       const program = Object.assign({}, validProgram, { description: true });
