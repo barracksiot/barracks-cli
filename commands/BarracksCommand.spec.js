@@ -659,6 +659,30 @@ describe('BarracksCommand', () => {
     });
   });
 
+  describe('#error(program)', () => {
+
+    it('should print error and display help', () => {
+      // Given
+      const originalConsoleError = console.error;
+      const program = {
+        help: sinon.spy()
+      };
+      console.error = sinon.spy();
+
+      // When
+      barracksCommand.error(program);
+
+      // Then
+      expect(program.help).to.have.been.calledOnce;
+      expect(console.error).to.have.been.calledOnce;
+      expect(console.error).to.have.been.calledWithExactly(
+        'Mandatory arguments are missing or invalid.'
+      );
+      console.error = originalConsoleError;
+    });
+
+  });
+
   describe('#render()', () => {
 
     let mockedBarracksCommand;
@@ -673,7 +697,8 @@ describe('BarracksCommand', () => {
     };
     const program = {
       option: () => { return program; },
-      parse: () => { return program; }
+      parse: () => { return program; },
+      help: () => {}
     };
     const MockedBarracksCommand = proxyquire('./BarracksCommand', {
       '../renderers/prettyRenderer': (data) => {
@@ -689,12 +714,11 @@ describe('BarracksCommand', () => {
       mockedBarracksCommand = new MockedBarracksCommand();
     });
 
-    it('should print error if arguments are missing', () => {
+    it('should cal error if arguments are missing', () => {
       // Given
-      const originalConsoleError = console.error;
-      console.error = sinon.spy();
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(false);
+      mockedBarracksCommand.error = sinon.spy();
 
       // When
       mockedBarracksCommand.render();
@@ -704,11 +728,8 @@ describe('BarracksCommand', () => {
       expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
-      expect(console.error).to.have.been.calledOnce;
-      expect(console.error).to.have.been.calledWithExactly(
-        'Mandatory arguments are missing or invalid. Use --help for more information.'
-      );
-      console.error = originalConsoleError;
+      expect(mockedBarracksCommand.error).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.error).to.have.been.calledWithExactly(program);
     });
 
     it('should call renderer if execution successful', () => {

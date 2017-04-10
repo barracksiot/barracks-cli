@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const EditUpdateCommand = require('../commands/EditUpdateCommand');
+new EditUpdateCommand().render();

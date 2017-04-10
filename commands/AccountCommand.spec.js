@@ -29,7 +29,7 @@ describe('AccountCommand', () => {
   describe('#execute()', () => {
 
     before(() => {
-      accountCommand = new AccountCommand();
+      accountCommand = new AccountCommand({});
       accountCommand.barracks = {};
       accountCommand.userConfiguration = {};
     });

@@ -12,25 +12,25 @@ function extractOptions(program, fields) {
 }
 
 function buildSegmentDiff(program) {
-  const extractedOptions = extractOptions(program, ['id', 'name', 'query']);
+  const extractedOptions = extractOptions(program, ['name', 'query']);
   if (extractedOptions.query) {
     extractedOptions.query = JSON.parse(extractedOptions.query);
   }
-  return extractedOptions;
+  return Object.assign({}, extractedOptions, { id: program.args[0] });
 }
 
 class EditSegmentCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--id [segment id]', 'The ID of the segment')
+      .arguments('<segment-id>', 'The ID of the segment')
       .option('--name [value]', '(Optionnal) The name of the segment')
       .option('--query [value]', '(Optionnal) The query expression in JSON');
   }
 
   validateCommand(program) {
     return !!(
-      program.id && program.id !== true && 
+      program.args[0] && program.args[0] !== true && 
       (
         !program.query || 
         (

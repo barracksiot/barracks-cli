@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const config = require('../config.js');
+const pjson = require('../package.json');
+
+const barracks = program
+  .command('ls', 'List packages')
+  .command('create', 'Create a package')
+  .command('version [cmd]', 'Manage versions')
+  .command('deployment-plan [cmd]', 'Manage deployment plans');
+
+barracks.parse(process.argv);
+
+process.on('SIGINT', () => {
+  process.exit();
+});

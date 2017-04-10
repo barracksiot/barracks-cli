@@ -32,7 +32,7 @@ describe('EditUpdateCommand', () => {
   const description = 'Description of my update';
   const segment = 'SegmentName';
   const properties = JSON.stringify({ data: 'value' });
-  const minimalProgram = { uuid: updateUuid };
+  const minimalProgram = { args: [updateUuid] };
 
   before(() => {
     editUpdateCommand = new EditUpdateCommand();
@@ -44,7 +44,7 @@ describe('EditUpdateCommand', () => {
 
     it('should return false when no option given', () => {
       // Given
-      const program = {};
+      const program = { args: [] };
       // When
       const result = editUpdateCommand.validateCommand(program);
       // Then
@@ -53,7 +53,7 @@ describe('EditUpdateCommand', () => {
 
     it('should return false when uuid given with no value', () => {
       // Given
-      const program = { uuid: true };
+      const program = { args: [] };
       // When
       const result = editUpdateCommand.validateCommand(program);
       // Then
@@ -155,7 +155,7 @@ describe('EditUpdateCommand', () => {
         expect(editUpdateCommand.barracks.editUpdate).to.have.been.calledWithExactly(
           token,
           {
-            uuid: updateUuid,
+            uuid: program.args[0],
             name: title
           }
         );
@@ -181,7 +181,7 @@ describe('EditUpdateCommand', () => {
         expect(editUpdateCommand.barracks.editUpdate).to.have.been.calledWithExactly(
           token,
           {
-            uuid: updateUuid,
+            uuid: program.args[0],
             description
           }
         );
@@ -231,7 +231,7 @@ describe('EditUpdateCommand', () => {
         expect(editUpdateCommand.barracks.editUpdate).to.have.been.calledWithExactly(
           token,
           {
-            uuid: updateUuid,
+            uuid: program.args[0],
             segmentId
           }
         );
@@ -257,7 +257,7 @@ describe('EditUpdateCommand', () => {
         expect(editUpdateCommand.barracks.editUpdate).to.have.been.calledWithExactly(
           token,
           {
-            uuid: updateUuid,
+            uuid: program.args[0],
             additionalProperties: JSON.parse(properties)
           }
         );
@@ -292,7 +292,7 @@ describe('EditUpdateCommand', () => {
         expect(editUpdateCommand.barracks.editUpdate).to.have.been.calledWithExactly(
           token,
           {
-            uuid: updateUuid,
+            uuid: program.args[0],
             name: title,
             description,
             segmentId,

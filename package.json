@@ -2,9 +2,8 @@
   "name": "barracks-cli",
   "version": "1.1.0",
   "description": "A CLI tool for Barracks",
-  "main": "index.js",
   "scripts": {
-    "start": "./bin/barracks.js",
+    "start": "./bin/barracks",
     "lint": "jshint **/**.js",
     "test": "npm run lint && npm run coverage && npm run check-coverage",
     "coverage": "DEBUG=true istanbul cover ./node_modules/mocha/bin/_mocha **/*.spec.js -- -R spec",
@@ -12,7 +11,7 @@
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "bin": {
-    "barracks": "bin/barracks.js"
+    "barracks": "bin/barracks"
   },
   "contributors": [
     {

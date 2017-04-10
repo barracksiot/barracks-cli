@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const SetActiveSegmentsCommand = require('../commands/SetActiveSegmentsCommand');
+new SetActiveSegmentsCommand().render();

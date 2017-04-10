@@ -12,8 +12,9 @@ function extractOptions(program, fields) {
 }
 
 function buildDiff(program) {
-  const extractedOptions = extractOptions(program, ['uuid', 'title', 'description', 'segment', 'properties']);
+  const extractedOptions = extractOptions(program, ['title', 'description', 'segment', 'properties']);
   const diff = Object.assign({}, extractedOptions, {
+    uuid: program.args[0],
     name: extractedOptions.title,
     title: undefined,
     properties: undefined
@@ -60,7 +61,7 @@ class EditUpdateCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--uuid [value]', 'The uuid of the update')
+      .arguments('<update-uuid>')
       .option('--title [value]', '(Optionnal) The title of the update')
       .option('--description [value]', '(Optionnal) The description of the update')
       .option('--segment [name]', '(Optionnal) The segment for which you want to create the update')
@@ -70,7 +71,7 @@ class EditUpdateCommand extends BarracksCommand {
   validateCommand(program) {
     const options = ['title', 'description', 'segment', 'properties'];
     return !!(
-      program.uuid && program.uuid !== true &&
+      program.args[0] && program.args[0] !== true &&
       this.validateOptionnalParams(program, options) &&
       atLeastOneGiven(program, options) &&
       (!program.properties || Validator.isJsonString(program.properties))
