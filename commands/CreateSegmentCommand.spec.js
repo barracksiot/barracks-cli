@@ -99,17 +99,6 @@ describe('CreateSegmentCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when name is function', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { name: () => { return 'plop'; } });
-
-      // When
-      const result = createSegmentCommand.validateCommand(program);
-
-      // Then
-      expect(result).to.be.false;
-    });
-
     it('should return false when query is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { query: undefined });
