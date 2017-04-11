@@ -4,7 +4,7 @@ class UpdatesCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--segment [name]', '(Optionnal) Filter by segment name');
+      .option('--segment [name]', '(Optional) Filter by segment name');
   }
 
   execute(program) {

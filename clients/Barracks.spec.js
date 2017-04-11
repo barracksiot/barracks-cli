@@ -117,7 +117,7 @@ describe('Barracks', () => {
         done(err);
       });
     });
-    
+
   });
 
   describe('#editSegment()', () => {
@@ -204,7 +204,7 @@ describe('Barracks', () => {
         done(err);
       });
     });
-    
+
   });
 
   describe('#authenticate()', () => {
@@ -389,7 +389,7 @@ describe('Barracks', () => {
         done(err);
       });
     });
-    
+
   });
 
   describe('#getUpdate()', () => {
@@ -441,7 +441,7 @@ describe('Barracks', () => {
         done(err);
       });
     });
-    
+
   });
 
   describe('#getUpdates()', () => {
@@ -604,7 +604,7 @@ describe('Barracks', () => {
           headers: { 'x-auth-token': token },
           pathVariables: {
             uuid,
-            time: date.toISOString() 
+            time: date.toISOString()
           }
         });
         done();
@@ -631,7 +631,7 @@ describe('Barracks', () => {
           headers: { 'x-auth-token': token },
           pathVariables: {
             uuid,
-            time: date.toISOString() 
+            time: date.toISOString()
           }
         });
         done();
@@ -741,6 +741,8 @@ describe('Barracks', () => {
 
   describe('#getSegmentByName()', () => {
 
+    const otherSegment = { id: 'other', name: 'Other'};
+
     it('should return an error message when request fails', done => {
       // Given
       const segmentName = 'segment prod';
@@ -758,7 +760,7 @@ describe('Barracks', () => {
       });
     });
 
-    it('should return an error if segment does not exists', done => {
+    it('should return an error if segment does not exist', done => {
       // Given
       const segmentName = 'segment prod';
       const response = {
@@ -766,7 +768,8 @@ describe('Barracks', () => {
           { id: 'zxcvbnm', name: 'segment' },
           { id: 'zxcvbnm', name: 'other segment' }
         ],
-        other: { id: 'other', name: 'Other' }
+        inactive: [],
+        other: otherSegment
       };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
@@ -774,7 +777,7 @@ describe('Barracks', () => {
       barracks.getSegmentByName(token, segmentName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('No matching active segment.');
+        expect(err).to.be.equals('No matching segment.');
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
@@ -785,7 +788,11 @@ describe('Barracks', () => {
       // Given
       const segmentName = 'segment prod';
       const segment = { id: 'lkjhgfdsa', name: segmentName };
-      const response = { active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ], other: { id: 'other', name: 'Other' } };
+      const response = {
+        active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ],
+        other: otherSegment,
+        inactive: []
+      };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
@@ -801,14 +808,12 @@ describe('Barracks', () => {
 
     it('should return other segment when name is other when request succeed', done => {
       // Given
-      const segmentName = 'Other';
-      const segment = { id: 'other', name: segmentName };
-      const response = { active: [ { id: 'zxcvbnm', name: 'other segment' } ], other: segment };
+      const response = { active: [ { id: 'zxcvbnm', name: 'other segment' } ], inactive: [], other: otherSegment };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.getSegmentByName(token, segmentName).then(result => {
-        expect(result).to.be.equals(segment);
+      barracks.getSegmentByName(token, otherSegment.name).then(result => {
+        expect(result).to.be.equals(otherSegment);
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
@@ -817,23 +822,84 @@ describe('Barracks', () => {
       });
     });
 
-    it('should not return specified segment when inactive', done => {
+    it('should return specified segment when inactive', done => {
       // Given
-      const segmentName = 'segment prod';
+      const segmentName = 'segment';
       const segment = { id: 'lkjhgfdsa', name: segmentName };
-      const response = { inactive: [ segment, { id: 'zxcvbnm', name: 'other segment' } ], active: [] };
+      const response = {
+        inactive: [ segment, { id: 'zxcvbnm', name: 'other segment' } ],
+        active: [],
+        other: otherSegment
+      };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       barracks.getSegmentByName(token, segmentName).then(result => {
-        done('Should have failed');
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
+        done();
       }).catch(err => {
+        done('err');
+      });
+    });
+
+    it('should return specified segment when inactive and active segments exist', done => {
+      // Given
+      const segmentName = 'segment prod';
+      const segment = { id: 'lkjhgfdsa', name: segmentName };
+      const response = {
+        inactive: [ segment, { id: 'zxcvbnm', name: 'other segment' } ],
+        active: [ { id: 'azdqshsd', name: 'wednesday segment' } ],
+        other: otherSegment
+      };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegmentByName(token, segmentName).then(result => {
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should reject an error when no inactive or active segment', done => {
+      // Given
+      const response = {
+        inactive: [],
+        active: [],
+        other: otherSegment
+      };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegmentByName(token, 'segmentname').then(result => {
+        done('Should not have worked');
+      }).catch(err => {
+        expect(err).to.be.equal('No matching segment.')
         expect(barracks.getSegments).to.have.been.calledOnce;
         expect(barracks.getSegments).to.have.been.calledWithExactly(token);
         done();
       });
     });
 
+    it('should return specified segment when no inactive segment', done => {
+      // Given
+      const segmentName = 'segment prod';
+      const segment = { id: 'lkjhgfdsa', name: segmentName };
+      const response = { inactive: [], active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ] };
+      barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getSegmentByName(token, segmentName).then(result => {
+        expect(barracks.getSegments).to.have.been.calledOnce;
+        expect(barracks.getSegments).to.have.been.calledWithExactly(token);
+        done();
+      }).catch(err => {
+        done(err)
+      });
+    });
   });
 
   describe('#getSegments()', () => {
@@ -1242,7 +1308,7 @@ describe('Barracks', () => {
   });
 
   describe('#getDevicesFilteredByQuery()', () => {
-    
+
     it('should return a stream object and deleguate to the client when query given', done => {
       // Given
       const query = { eq: { unitId: 'plop' } };
@@ -1274,7 +1340,7 @@ describe('Barracks', () => {
     it('should return a stream object and deleguate to the client', done => {
       // Given
       const unitId = 'myUnit';
-      const options = { 
+      const options = {
         headers: { 'x-auth-token': token },
         pathVariables: { unitId }
       };
@@ -1603,7 +1669,7 @@ describe('Barracks', () => {
       spyCreateReadStream(path);
       return filename;
     };
-    
+
     let spyBasename;
     const proxyBasename = (path) => {
       spyBasename(path);
@@ -1619,8 +1685,8 @@ describe('Barracks', () => {
       }}
     });
 
-    const options = { 
-      headers: { 
+    const options = {
+      headers: {
         'x-auth-token': token
       },
       formData: {
@@ -1782,7 +1848,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
         done('should have failed');
@@ -1820,7 +1886,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
         expect(result).to.be.equals('No update available');
@@ -1860,7 +1926,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
         expect(result).to.be.equals(response);
@@ -1901,7 +1967,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
         expect(result).to.be.equals(response);
@@ -2095,7 +2161,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {
         done('should have failed');
@@ -2130,7 +2196,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {
         expect(result).to.be.equals('No update available');
@@ -2169,7 +2235,7 @@ describe('Barracks', () => {
 
       barracks = new ProxifiedBarracks();
       barracks.options = { baseUrl };
-      
+
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {
         expect(result).to.be.equals(file);
