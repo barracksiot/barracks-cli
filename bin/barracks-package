@@ -8,7 +8,7 @@ const barracks = program
   .command('ls', 'List packages')
   .command('create', 'Create a package')
   .command('version [cmd]', 'Manage versions')
-  .command('deployment-plan [cmd]', 'Manage deployment plans');
+  .command('plan [cmd]', 'Manage deployment plans');
 
 barracks.parse(process.argv);
 
