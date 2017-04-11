@@ -92,17 +92,25 @@ module.exports = {
         method: 'GET',
         path: '/v2/api/member/devices?size=20'
       },
-      getDevicesWithQuery: {
+      getDevicesWithQueryV1: {
         method: 'GET',
         path: '/api/member/devices?size=20&query=:query'
+      },
+      getDevicesWithQueryV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices?size=20&query=:query'
+      },
+      getDeviceEventsV1: {
+        method: 'GET',
+        path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+      },
+      getDeviceEventsV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
       },
       editUpdate: {
         method: 'PUT',
         path: '/api/member/updates/:uuid'
-      },
-      getDeviceEvents: {
-        method: 'GET',
-        path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
       },
       setActiveSegments: {
         method: 'POST',
