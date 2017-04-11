@@ -27,7 +27,12 @@ describe('DevicesCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return true when no option given', () => {
+    beforeEach(() => {
+      devicesCommand.experimental = false;
+      devicesCommand.v2Enabled = false;
+    });
+
+    it('should return true when v1 and no option given', () => {
       // Given
       const program = programWithNoOption;
       // When
@@ -36,7 +41,17 @@ describe('DevicesCommand', () => {
       expect(result).to.be.true;
     });
 
-    it('should return true when only segment option given', () => {
+    it('should return true when v2 and no option given', () => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const program = programWithNoOption;
+      // When
+      const result = devicesCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return true when v1 and only segment option given', () => {
       // Given
       const program = programWithValidSegment;
       // When
@@ -45,7 +60,16 @@ describe('DevicesCommand', () => {
       expect(result).to.be.true;
     });
 
-    it('should return true when only filter option given', () => {
+    it('should return false when v1 and only segment option given with no value', () => {
+      // Given
+      const program = { segment: true };
+      // When
+      const result = devicesCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return true when v1 and only filter option given', () => {
       // Given
       const program = programWithValidFilter;
       // When
@@ -54,7 +78,36 @@ describe('DevicesCommand', () => {
       expect(result).to.be.true;
     });
 
-    it('should return false when both filter and segment options given', () => {
+    it('should return false when v1 and only filter option given with no value', () => {
+      // Given
+      const program = { filter: true };
+      // When
+      const result = devicesCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return true when v2 and only filter option given', () => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const program = programWithValidFilter;
+      // When
+      const result = devicesCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when v2 and only filter option given with no value', () => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const program = { filter: true };
+      // When
+      const result = devicesCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when v1 and both filter and segment options given', () => {
       // Given
       const program = Object.assign({}, programWithValidFilter, programWithValidSegment);
       // When
@@ -71,17 +124,24 @@ describe('DevicesCommand', () => {
       devicesCommand.v2Enabled = false;
     });
 
-    it('should not display any option when v2 and experimental is not enabled', () => {
+    it('should not display only filter option when v2 and experimental is not enabled', () => {
       // Given
       devicesCommand.v2Enabled = true;
       const options = [];
-      const program = {};
+      const program = {
+        option: (key, description) => {
+          options.push({ [key]: description });
+          return program;
+        }
+      };
+
       // When
       const result = devicesCommand.configureCommand(program);
 
       // Then
       expect(result).to.be.equal(program);
-      expect(options).to.have.length(0);
+      expect(options).to.have.length(1);
+      expect(options[0]).to.have.property('--filter [filterName]');
     })
 
     it('should not display filter option when v1 and experimental is not enabled', () => {
@@ -292,25 +352,6 @@ describe('DevicesCommand', () => {
       });
     });
 
-    it('should reject an error when no filter is given', done => {
-      // Given
-      const program = programWithNoOption;
-      devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      devicesCommand.barracks.getDevices = sinon.stub().returns(Promise.resolve(new PageableStream()));
-
-      // when / Then
-      devicesCommand.execute(program).then(result => {
-        expect(result).to.be.instanceOf(PageableStream);
-        expect(devicesCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledOnce;
-        expect(devicesCommand.barracks.getDevices).to.have.been.calledWithExactly(token);
-        done();
-      }).catch(err => {
-        done(err);
-      });
-    });
-
     it('should reject an error when Client request fails', done => {
       // Given
       const program = programWithNoOption;
@@ -351,5 +392,27 @@ describe('DevicesCommand', () => {
       });
     });
 
+    it('should return a PageableStream object when v2 is enabled and filter given', done => {
+      // Given
+      devicesCommand.v2Enabled = true;
+      const program = programWithValidFilter;
+      devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      devicesCommand.barracks.getFilterByName = sinon.stub().returns(Promise.resolve(filter));
+      devicesCommand.barracks.getDevicesFilteredByQuery = sinon.stub().returns(Promise.resolve(new PageableStream()));
+      
+      // when / Then
+      devicesCommand.execute(program).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(devicesCommand.barracks.getFilterByName).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevicesFilteredByQuery).to.have.been.calledWithExactly(token, query);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 });

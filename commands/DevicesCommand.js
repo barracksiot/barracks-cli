@@ -41,6 +41,10 @@ function configureCommandV1(program, experimental) {
   }
 }
 
+function configureCommandV2(program) {
+  return program.option('--filter [filterName]', '(Optional) Apply a filter on the device list (Cannot be used with --segment).');
+}
+
 class DevicesCommand extends BarracksCommand {
 
   validateCommand(program) {
@@ -53,7 +57,7 @@ class DevicesCommand extends BarracksCommand {
 
   configureCommand(program) {
     if (this.v2Enabled) {
-      return program;
+      return configureCommandV2(program);
     } else {
       return configureCommandV1(program, this.experimental);
     }
@@ -63,7 +67,7 @@ class DevicesCommand extends BarracksCommand {
     return this.getAuthenticationToken().then(token => {
       if (program.segment && !this.v2Enabled) {
         return getAllDevicesFromSegment(token, this.barracks, program.segment);
-      } else if (program.filter && !this.v2Enabled) {
+      } else if (program.filter) {
         return getAllDevicesFromFilter(token, this.barracks, program.filter);
       } else {
         return this.barracks.getDevices(token);
