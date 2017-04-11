@@ -695,9 +695,9 @@ class Barracks {
         const deploymentPlan = response.body;
         logger.debug('DeploymentPlan retrieved:', deploymentPlan);
         resolve(deploymentPlan);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('Failed to retrieve DeploymentPlan');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }

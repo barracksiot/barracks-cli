@@ -4,8 +4,7 @@ class DeploymentPlanCommand extends BarracksCommand {
   validateCommand(program) {
     return !!(
         program.packageReference &&
-        program.packageReference !== true &&
-        typeof program.packageReference !== 'function'
+        program.packageReference !== true
     );
   }
 
