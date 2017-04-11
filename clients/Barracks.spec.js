@@ -797,7 +797,7 @@ describe('Barracks', () => {
       const segmentName = 'segment prod';
       const segment = { id: 'lkjhgfdsa', name: segmentName };
       const response = {
-        active: [segment, { id: 'zxcvbnm', name: 'other segment' }],
+        active: [ segment, { id: 'zxcvbnm', name: 'other segment' } ],
         other: { id: 'other', name: 'Other' }
       };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
@@ -817,7 +817,7 @@ describe('Barracks', () => {
       // Given
       const segmentName = 'Other';
       const segment = { id: 'other', name: segmentName };
-      const response = { active: [{ id: 'zxcvbnm', name: 'other segment' }], other: segment };
+      const response = { active: [ { id: 'zxcvbnm', name: 'other segment' } ], other: segment };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
@@ -835,7 +835,7 @@ describe('Barracks', () => {
       // Given
       const segmentName = 'segment prod';
       const segment = { id: 'lkjhgfdsa', name: segmentName };
-      const response = { inactive: [segment, { id: 'zxcvbnm', name: 'other segment' }], active: [] };
+      const response = { inactive: [ segment, { id: 'zxcvbnm', name: 'other segment' } ], active: [] };
       barracks.getSegments = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
@@ -875,8 +875,8 @@ describe('Barracks', () => {
       const segment1 = { id: 'lkjhgfdsa', name: 'prod' };
       const segment2 = { id: 'qwertyuio', name: 'alpha' };
       const segment3 = { id: 'vyugyu', name: 'plop' };
-      const activeSegments = [segment1, segment2];
-      const inactiveSegments = [segment3];
+      const activeSegments = [ segment1, segment2 ];
+      const inactiveSegments = [ segment3 ];
       const body = { active: activeSegments, inactive: inactiveSegments };
       const response = { body };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
@@ -1342,8 +1342,8 @@ describe('Barracks', () => {
     it('should return the user segments', done => {
       // Given
       const segments = {
-        active: [buildSegment(1), buildSegment(2)],
-        inactive: [buildSegment(3), buildSegment(4)]
+        active: [ buildSegment(1), buildSegment(2) ],
+        inactive: [ buildSegment(3), buildSegment(4) ]
       };
       const response = { body: segments };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
@@ -1384,7 +1384,7 @@ describe('Barracks', () => {
 
   describe('#setActiveSegments()', () => {
 
-    const segmentIds = ['12345', '67890'];
+    const segmentIds = [ '12345', '67890' ];
 
     it('should return an error message when request fails', done => {
       // Given
