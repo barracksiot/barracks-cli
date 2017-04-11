@@ -306,11 +306,11 @@ describe('Barracks', () => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'setGoogleAnalyticsTrackingId',
-        {
-          headers: { 'x-auth-token': token },
-          body: { value: analyticsId }
-        }
+          'setGoogleAnalyticsTrackingId',
+          {
+            headers: { 'x-auth-token': token },
+            body: { value: analyticsId }
+          }
         );
         done();
       });
@@ -327,11 +327,11 @@ describe('Barracks', () => {
         expect(result).to.be.equals(account);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'setGoogleAnalyticsTrackingId',
-        {
-          headers: { 'x-auth-token': token },
-          body: { value: analyticsId }
-        }
+          'setGoogleAnalyticsTrackingId',
+          {
+            headers: { 'x-auth-token': token },
+            body: { value: analyticsId }
+          }
         );
         done();
       }).catch(err => {
@@ -460,10 +460,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getUpdates',
-        options,
-        'updates'
+          new PageableStream(),
+          'getUpdates',
+          options,
+          'updates'
         );
         done();
       }).catch(err => {
@@ -488,10 +488,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'updatesBySegmentId',
-        options,
-        'updates'
+          new PageableStream(),
+          'updatesBySegmentId',
+          options,
+          'updates'
         );
         done();
       }).catch(err => {
@@ -682,17 +682,17 @@ describe('Barracks', () => {
         expect(result).to.be.equals(response.body);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createPackage',
-        {
-          headers: { 'x-auth-token': token },
-          formData: {
-            versionId: versionId,
-            file: {
-              value: fileReadStream,
-              options: { filename: file }
+          'createPackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
             }
           }
-        }
         );
         expect(mockedCreateReadStream).to.have.been.calledOnce;
         expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
@@ -728,17 +728,17 @@ describe('Barracks', () => {
         expect(err).to.be.equals(response.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createPackage',
-        {
-          headers: { 'x-auth-token': token },
-          formData: {
-            versionId: versionId,
-            file: {
-              value: fileReadStream,
-              options: { filename: file }
+          'createPackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
             }
           }
-        }
         );
         expect(mockedCreateReadStream).to.have.been.calledOnce;
         expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
@@ -1158,11 +1158,11 @@ describe('Barracks', () => {
         expect(err).to.be.equals(error);
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
-        sinon.match(new PageableStream),
-        'getFilters',
-        { headers: { 'x-auth-token': token } },
-        'filters',
-        sinon.match.func
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
         );
         done();
       });
@@ -1191,11 +1191,11 @@ describe('Barracks', () => {
         expect(err).to.be.equals('No filter with name ' + filterName + ' found.');
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
-        sinon.match(new PageableStream),
-        'getFilters',
-        { headers: { 'x-auth-token': token } },
-        'filters',
-        sinon.match.func
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
         );
         done();
       });
@@ -1223,11 +1223,11 @@ describe('Barracks', () => {
         expect(result).to.be.equals(filter);
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
-        sinon.match(new PageableStream),
-        'getFilters',
-        { headers: { 'x-auth-token': token } },
-        'filters',
-        sinon.match.func
+          sinon.match(new PageableStream),
+          'getFilters',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
         );
         done();
       }).catch(err => {
@@ -1250,10 +1250,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getFilters',
-        options,
-        'filters'
+          new PageableStream(),
+          'getFilters',
+          options,
+          'filters'
         );
         done();
       }).catch(err => {
@@ -1278,10 +1278,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getSegmentDevices',
-        options,
-        'devices'
+          new PageableStream(),
+          'getSegmentDevices',
+          options,
+          'devices'
         );
         done();
       }).catch(err => {
@@ -1305,10 +1305,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getDevices',
-        options,
-        'devices'
+          new PageableStream(),
+          'getDevices',
+          options,
+          'devices'
         );
         done();
       }).catch(err => {
@@ -1333,10 +1333,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getDevicesWithQuery',
-        options,
-        'devices'
+          new PageableStream(),
+          'getDevicesWithQuery',
+          options,
+          'devices'
         );
         done();
       }).catch(err => {
@@ -1361,11 +1361,11 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledOnce;
         expect(barracks.client.retrievePagesUntilCondition).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getDeviceEvents',
-        options,
-        'events',
-        sinon.match.func
+          new PageableStream(),
+          'getDeviceEvents',
+          options,
+          'events',
+          sinon.match.func
         );
         done();
       }).catch(err => {
@@ -1522,10 +1522,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getTokens',
-        options,
-        'tokens'
+          new PageableStream(),
+          'getTokens',
+          options,
+          'tokens'
         );
         done();
       }).catch(err => {
@@ -1602,11 +1602,11 @@ describe('Barracks', () => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createComponent',
-        {
-          headers: { 'x-auth-token': token },
-          body: component
-        }
+          'createComponent',
+          {
+            headers: { 'x-auth-token': token },
+            body: component
+          }
         );
         done();
       });
@@ -1623,11 +1623,11 @@ describe('Barracks', () => {
         expect(result).to.be.equals(response.body);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createComponent',
-        {
-          headers: { 'x-auth-token': token },
-          body: component
-        }
+          'createComponent',
+          {
+            headers: { 'x-auth-token': token },
+            body: component
+          }
         );
         done();
       }).catch(err => {
@@ -1651,10 +1651,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getComponents',
-        options,
-        'components'
+          new PageableStream(),
+          'getComponents',
+          options,
+          'components'
         );
         done();
       }).catch(err => {
@@ -1745,8 +1745,8 @@ describe('Barracks', () => {
         expect(err).to.be.equals(error.message);
         expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createVersion',
-        options
+          'createVersion',
+          options
         );
         done();
       });
@@ -1766,8 +1766,8 @@ describe('Barracks', () => {
         expect(result).to.be.equals(response.body);
         expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(proxyBarracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createVersion',
-        options
+          'createVersion',
+          options
         );
         done();
       }).catch(err => {
@@ -1799,16 +1799,16 @@ describe('Barracks', () => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createDeploymentPlan',
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            componentRef: packageRef
-          },
-          body: validPlan
-        }
+          'createDeploymentPlan',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef
+            },
+            body: validPlan
+          }
         );
         done();
       });
@@ -1825,16 +1825,16 @@ describe('Barracks', () => {
         expect(result).to.be.equals(response.body);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-        'createDeploymentPlan',
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            componentRef: packageRef
-          },
-          body: plan
-        }
+          'createDeploymentPlan',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef
+            },
+            body: plan
+          }
         );
         done();
       }).catch(err => {
@@ -1877,8 +1877,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         done();
       });
@@ -1914,8 +1914,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         done();
       }).catch(err => {
@@ -1954,8 +1954,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         done();
       }).catch(err => {
@@ -1995,8 +1995,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        customClientData
+          versionId,
+          customClientData
         );
         done();
       }).catch(err => {
@@ -2065,10 +2065,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getTokens',
-        options,
-        'tokens'
+          new PageableStream(),
+          'getTokens',
+          options,
+          'tokens'
         );
         done();
       }).catch(err => {
@@ -2144,10 +2144,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-        new PageableStream(),
-        'getComponentVersions',
-        options,
-        'versions'
+          new PageableStream(),
+          'getComponentVersions',
+          options,
+          'versions'
         );
         done();
       }).catch(err => {
@@ -2193,8 +2193,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         done();
       });
@@ -2227,8 +2227,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         done();
       }).catch(err => {
@@ -2266,8 +2266,8 @@ describe('Barracks', () => {
         });
         expect(checkUpdateSpy).to.have.been.calledOnce;
         expect(checkUpdateSpy).to.have.been.calledWithExactly(
-        versionId,
-        undefined
+          versionId,
+          undefined
         );
         expect(downloadSpy).to.have.been.calledOnce;
         expect(downloadSpy).to.have.been.calledWithExactly();
