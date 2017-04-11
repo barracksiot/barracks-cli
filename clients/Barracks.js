@@ -19,7 +19,7 @@ class Barracks {
         body: { username, password }
       }).then(response => {
         logger.debug('Authentication successful.');
-        resolve(response.headers[ 'x-auth-token' ]);
+        resolve(response.headers['x-auth-token']);
       }).catch(errResponse => {
         logger.debug('Authentication failure.');
         reject(errResponse.message);
