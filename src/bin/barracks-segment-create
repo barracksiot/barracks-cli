@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const CreateSegmentCommand = require('../commands/segment/CreateSegmentCommand');
+new CreateSegmentCommand().render();

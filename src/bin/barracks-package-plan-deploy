@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const CreateDeploymentPlanCommand = require('../commands/package/CreateDeploymentPlanCommand');
+new CreateDeploymentPlanCommand().render();

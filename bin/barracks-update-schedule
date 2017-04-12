@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const ScheduleCommand = require('../commands/ScheduleCommand');
-new ScheduleCommand().render();

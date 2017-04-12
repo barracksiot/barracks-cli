@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const SegmentsCommand = require('../commands/SegmentsCommand');
-new SegmentsCommand().render();

@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const CreateFilterCommand = require('../commands/filter/CreateFilterCommand');
+new CreateFilterCommand().render();
