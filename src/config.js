@@ -138,27 +138,27 @@ module.exports = {
       },
       createComponent: {
         method: 'POST',
-        path: '/api/member/components'
+        path: '/v2/api/member/components'
       },
       createVersion: {
         method: 'POST',
-        path: '/api/member/components/:componentRef/versions'
+        path: '/v2/api/member/components/:componentRef/versions'
       },
       createDeploymentPlan: {
         method: 'POST',
-        path: '/api/member/components/:componentRef/deployment-plan'
+        path: '/v2/api/member/components/:componentRef/deployment-plan'
       },
       getComponents: {
         method: 'GET',
-        path: '/api/member/components'
+        path: '/v2/api/member/components'
       },
       getComponentVersions: {
         method: 'GET',
-        path: '/api/member/components/:componentRef/versions'
+        path: '/v2/api/member/components/:componentRef/versions'
       },
       getPackage: {
         method: 'GET',
-        path: '/api/member/components/:componentRef'
+        path: '/v2/api/member/components/:componentRef'
       }
     }
   },
