@@ -56,13 +56,29 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments'
       },
-      createFilter: {
+      createFilterV1: {
         method: 'POST',
         path: '/api/member/filters'
       },
-      deleteFilter: {
+      createFilterV2: {
+        method: 'POST',
+        path: '/v2/api/member/filters'
+      },
+      getFiltersV1: {
+        method: 'GET',
+        path: '/api/member/filters?size=20'
+      },
+      getFiltersV2: {
+        method: 'GET',
+        path: '/v2/api/member/filters?size=20'
+      },
+      deleteFilterV1: {
         method: 'DELETE',
         path: '/api/member/filters/:filter'
+      },
+      deleteFilterV2: {
+        method: 'DELETE',
+        path: '/v2/api/member/filters/:filter'
       },
       editSegment: {
         method: 'PUT',
@@ -75,10 +91,6 @@ module.exports = {
       getSegmentDevices: {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices'
-      },
-      getFilters: {
-        method: 'GET',
-        path: '/api/member/filters?size=20'
       },
       getDevicesV1: {
         method: 'GET',

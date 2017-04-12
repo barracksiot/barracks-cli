@@ -10,6 +10,7 @@ if (config.v2Enabled) {
   program.command('login', 'Authenticate to Barracks')
     .command('account', 'Get account information')
     .command('device [cmd]', 'Manage devices')
+    .command('filter [cmd]', 'Manage filters')
     .command('package [cmd]', 'Manage packages');
 
   if (config.experimental) {

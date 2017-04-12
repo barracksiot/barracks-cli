@@ -1053,7 +1053,7 @@ describe('Barracks', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilter', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV1', {
           headers: { 'x-auth-token': token },
           body: filter
         });
@@ -1072,7 +1072,50 @@ describe('Barracks', () => {
       barracks.createFilter(token, filter).then(result => {
         expect(result).to.be.equals(savedFilter);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilter', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV1', {
+          headers: { 'x-auth-token': token },
+          body: filter
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error message when request fails and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.createFilter(token, filter).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV2', {
+          headers: { 'x-auth-token': token },
+          body: filter
+        });
+        done();
+      });
+    });
+
+    it('should return the created filter and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const savedFilter = Object.assign({}, filter, { userId: '123456789' });
+      const response = { body: savedFilter };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.createFilter(token, filter).then(result => {
+        expect(result).to.be.equals(savedFilter);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV2', {
           headers: { 'x-auth-token': token },
           body: filter
         });
@@ -1097,7 +1140,7 @@ describe('Barracks', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilter', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV1', {
           headers: { 'x-auth-token': token },
           pathVariables: { filter: name }
         });
@@ -1115,7 +1158,49 @@ describe('Barracks', () => {
       barracks.deleteFilter(token, name).then(result => {
         expect(result).to.be.equals(undefined);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilter', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV1', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { filter: name }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error message when request fails and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const name = 'aFilter';
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.deleteFilter(token, name).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV2', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { filter: name }
+        });
+        done();
+      });
+    });
+
+    it('should return nothing when filter is deleted and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const name = 'aFilter';
+      const response = { body: undefined };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.deleteFilter(token, name).then(result => {
+        expect(result).to.be.equals(undefined);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV2', {
           headers: { 'x-auth-token': token },
           pathVariables: { filter: name }
         });
@@ -1151,7 +1236,7 @@ describe('Barracks', () => {
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
           sinon.match(new PageableStream),
-          'getFilters',
+          'getFiltersV1',
           { headers: { 'x-auth-token': token } },
           'filters',
           sinon.match.func
@@ -1184,7 +1269,7 @@ describe('Barracks', () => {
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
           sinon.match(new PageableStream),
-          'getFilters',
+          'getFiltersV1',
           { headers: { 'x-auth-token': token } },
           'filters',
           sinon.match.func
@@ -1216,7 +1301,106 @@ describe('Barracks', () => {
         expect(retrieveAllPagesSpy).to.have.been.calledOnce;
         expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
           sinon.match(new PageableStream),
-          'getFilters',
+          'getFiltersV1',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error if stream fail and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const error = 'stream failed';
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.fail(error);
+          return Promise.resolve();
+        });
+      };
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFiltersV2',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
+        done();
+      });
+    });
+
+    it('should return an error if filter does not exists and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } }
+      ];
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.write(response);
+          stream.lastPage();
+          return Promise.resolve();
+        });
+      };
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('No filter with name ' + filterName + ' found.');
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFiltersV2',
+          { headers: { 'x-auth-token': token } },
+          'filters',
+          sinon.match.func
+        );
+        done();
+      });
+    });
+
+    it('should return specified filter when request succeed and v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const response = [
+        { name: 'sdfghjkl', query: { eq: { unitId: 'plop' } } },
+        { name: 'zxcvbnm', query: { ne: { unitId: 'replop' } } },
+        filter
+      ];
+      const retrieveAllPagesSpy = sinon.spy();
+      barracks.client.retrievePagesUntilCondition = (stream, endpoint, options, embeddedKey, stopCondition) => {
+        return new Promise(resolve => {
+          retrieveAllPagesSpy(stream, endpoint, options, embeddedKey, stopCondition);
+          stream.write(response);
+          stream.lastPage();
+          return Promise.resolve();
+        });
+      };
+
+      // When / Then
+      barracks.getFilterByName(token, filterName).then(result => {
+        expect(result).to.be.equals(filter);
+        expect(retrieveAllPagesSpy).to.have.been.calledOnce;
+        expect(retrieveAllPagesSpy).to.have.been.calledWithExactly(
+          sinon.match(new PageableStream),
+          'getFiltersV2',
           { headers: { 'x-auth-token': token } },
           'filters',
           sinon.match.func
@@ -1243,7 +1427,31 @@ describe('Barracks', () => {
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getFilters',
+          'getFiltersV1',
+          options,
+          'filters'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should forward to the client with correct headers when v2 flag is enabled', done => {
+      // Given
+      barracks.v2Enabled = true;
+      const options = {
+        headers: { 'x-auth-token': token },
+      }
+      barracks.client.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      barracks.getFilters(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
+        expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getFiltersV2',
           options,
           'filters'
         );

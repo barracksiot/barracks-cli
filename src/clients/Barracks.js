@@ -209,7 +209,8 @@ class Barracks {
 
   createFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createFilter', {
+      const endpointKey = this.v2Enabled ? 'createFilterV2' : 'createFilterV1';
+      this.client.sendEndpointRequest(endpointKey, {
         headers: {
           'x-auth-token': token
         },
@@ -224,7 +225,8 @@ class Barracks {
 
   deleteFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('deleteFilter', {
+      const endpointKey = this.v2Enabled ? 'deleteFilterV2' : 'deleteFilterV1';
+      this.client.sendEndpointRequest(endpointKey, {
         headers: {
           'x-auth-token': token
         },
@@ -257,9 +259,10 @@ class Barracks {
         reject(error);
       });
 
+      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
       this.client.retrievePagesUntilCondition(
         buffer,
-        'getFilters',
+        endpointKey,
         { headers: { 'x-auth-token': token } },
         'filters',
         filters => filters.find(filter => filter.name === filterName)
@@ -272,7 +275,8 @@ class Barracks {
       logger.debug('Getting filters');
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getFilters', {
+      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
+      this.client.retrieveAllPages(stream, endpointKey, {
           headers: {
             'x-auth-token': token
           }
