@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const config = require('../config.js');
+const pjson = require('../../package.json');
+
+const barracks = program
+  .command('ls', 'List tokens')
+  .command('create', 'Create a token')
+  .command('revoke', 'Revoke a filter');
+
+barracks.parse(process.argv);
+
+process.on('SIGINT', () => {
+  process.exit();
+});

@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const PublishCommand = require('../commands/update/PublishCommand');
+new PublishCommand().render();

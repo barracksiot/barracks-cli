@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const UpdatesCommand = require('../commands/update/UpdatesCommand');
+new UpdatesCommand().render();
