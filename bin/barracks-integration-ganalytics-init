@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const SetGoogleAnalyticsTrackingIdCommand = require('../commands/SetGoogleAnalyticsTrackingIdCommand');
-new SetGoogleAnalyticsTrackingIdCommand().render();

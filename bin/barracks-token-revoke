@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const RevokeTokenCommand = require('../commands/RevokeTokenCommand');
-new RevokeTokenCommand().render();

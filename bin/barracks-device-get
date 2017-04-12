@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const DeviceCommand = require('../commands/DeviceCommand');
-new DeviceCommand().render();

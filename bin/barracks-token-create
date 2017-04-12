@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const CreateTokenCommand = require('../commands/CreateTokenCommand');
-new CreateTokenCommand().render();
