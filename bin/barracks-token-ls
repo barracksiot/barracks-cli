@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const TokensCommand = require('../commands/TokensCommand');
+new TokensCommand().render();

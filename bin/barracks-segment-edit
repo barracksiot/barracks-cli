@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const EditSegmentCommand = require('../commands/EditSegmentCommand');
+new EditSegmentCommand().render();

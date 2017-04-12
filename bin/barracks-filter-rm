@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const DeleteFilterCommand = require('../commands/DeleteFilterCommand');
+new DeleteFilterCommand().render();

@@ -1,7 +1,7 @@
 const prettyRenderer = require('../renderers/prettyRenderer');
 const jsonRenderer = require('../renderers/jsonRenderer');
-const program = require('commander');
 const read = require('read');
+const program = require('commander');
 const Barracks = require('../clients/Barracks');
 const UserConfiguration = require('../repositories/UserConfiguration');
 const config = require('../config');
@@ -113,8 +113,13 @@ class BarracksCommand {
         prettyRenderer(result);
       }
     } else {
-      console.error('Mandatory arguments are missing or invalid. Use --help for more information.');
+      this.error(program);
     }
+  }
+
+  error(program) {
+    console.error('Mandatory arguments are missing or invalid.');
+    program.help();
   }
 
 }

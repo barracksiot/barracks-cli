@@ -46,15 +46,15 @@ describe('EditSegmentCommand', () => {
     }
   };
   const programWithQuery = {
-    id: savedSegment.id,
+    args: [savedSegment.id],
     query: JSON.stringify(savedSegment.query)
   };
   const programWithName = {
-    id: savedSegment.id,
+    args: [savedSegment.id],
     name: 'Segmentounette'
   };
   const programWithAllOptions = {
-    id: savedSegment.id,
+    args: [savedSegment.id],
     name: 'Segmentounette',
     query: JSON.stringify(savedSegment.query)
   };
@@ -89,7 +89,7 @@ describe('EditSegmentCommand', () => {
 
     it('should return false when id is missing', () => {
       // Given
-      const program = Object.assign({}, programWithAllOptions, { id: undefined });
+      const program = Object.assign({}, programWithAllOptions, { args: [] });
       // When
       const result = editSegmentCommand.validateCommand(program);
       // Then
@@ -159,7 +159,7 @@ describe('EditSegmentCommand', () => {
         expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledOnce;
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
-          id: programWithAllOptions.id,
+          id: programWithAllOptions.args[0],
           name: programWithAllOptions.name,
           query: JSON.parse(programWithAllOptions.query)
         });
@@ -183,7 +183,7 @@ describe('EditSegmentCommand', () => {
         expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledOnce;
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
-          id: programWithAllOptions.id,
+          id: programWithAllOptions.args[0],
           query: JSON.parse(programWithAllOptions.query)
         });
         done();
@@ -206,7 +206,7 @@ describe('EditSegmentCommand', () => {
         expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledOnce;
         expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
-          id: programWithAllOptions.id,
+          id: programWithAllOptions.args[0],
           name: programWithAllOptions.name
         });
         done();
@@ -233,7 +233,7 @@ describe('EditSegmentCommand', () => {
           expect(editSegmentCommand.getAuthenticationToken).to.have.been.calledWithExactly();
           expect(editSegmentCommand.barracks.editSegment).to.have.been.calledOnce;
           expect(editSegmentCommand.barracks.editSegment).to.have.been.calledWithExactly(token, {
-            id: programWithAllOptions.id,
+            id: programWithAllOptions.args[0],
             name: programWithAllOptions.name,
             query: JSON.parse(programWithAllOptions.query)
           });

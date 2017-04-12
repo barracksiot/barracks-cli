@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const config = require('../config.js');
+const pjson = require('../package.json');
+
+program
+  .version(pjson.version)
+  .command('ls', 'List segments')
+  .command('create', 'Create a segment')
+  .command('edit', 'Edit a segment')
+  .command('set-active', 'Set active segments');
+
+program.parse(process.argv);
+
+process.on('SIGINT', () => {
+  process.exit();
+});

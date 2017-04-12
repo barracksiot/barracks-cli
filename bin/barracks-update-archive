@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const ArchiveCommand = require('../commands/ArchiveCommand');
+new ArchiveCommand().render();
