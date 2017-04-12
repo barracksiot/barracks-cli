@@ -714,7 +714,7 @@ describe('BarracksCommand', () => {
       mockedBarracksCommand = new MockedBarracksCommand();
     });
 
-    it('should cal error if arguments are missing', () => {
+    it('should call error if arguments are missing', () => {
       // Given
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(false);
