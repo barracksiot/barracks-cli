@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const PackageVersionsCommand = require('../commands/package/PackageVersionsCommand');
+new PackageVersionsCommand().render();
