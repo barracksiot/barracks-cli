@@ -686,6 +686,48 @@ class Barracks {
       });
     });
   }
+
+  getDeploymentPlan(token, componentRef) {
+    return new Promise((resolve, reject) => {
+      logger.debug('Getting DeploymentPlan for component', componentRef);
+      this.client.sendEndpointRequest('getDeploymentPlan', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          componentRef
+        }
+      }).then(response => {
+        const deploymentPlan = response.body;
+        logger.debug('DeploymentPlan retrieved:', deploymentPlan);
+        resolve(deploymentPlan);
+      }).catch(err => {
+        logger.debug('Failed to retrieve DeploymentPlan');
+        reject(err.message);
+      });
+    });
+  }
+
+  getPackage(token, componentRef) {
+    return new Promise((resolve, reject) => {
+      logger.debug('Getting package from its reference', componentRef);
+      this.client.sendEndpointRequest('getPackage', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          componentRef
+        }
+      }).then(response => {
+        const myPackage = response.body;
+        logger.debug('Package retrieved:', myPackage);
+        resolve(myPackage);
+      }).catch(errResponse => {
+        logger.debug('Failed to retrieve package');
+        reject(errResponse.message);
+      });
+    });
+  }
 }
 
 module.exports = Barracks;
