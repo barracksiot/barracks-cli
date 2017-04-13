@@ -44,7 +44,7 @@ $ barracks help
 You need to login to Barracks before using any other command:
 ```{r, engine='bash', count_lines}
 $ barracks login
-email: myaccount@barracks.io
+email: myaccount@mail.com
 password:
 Authentication successful
 ```
