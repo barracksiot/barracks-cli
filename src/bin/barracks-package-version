@@ -6,6 +6,7 @@ const pjson = require('../../package.json');
 
 const barracks = program
   .command('ls', 'List versions')
+  .command('get', 'Display detailed information of a version')
   .command('create', 'Create a version');
 
 barracks.parse(process.argv);
