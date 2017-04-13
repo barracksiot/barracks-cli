@@ -5,7 +5,7 @@ const config = require('../config.js');
 const pjson = require('../../package.json');
 
 const barracks = program
-  .command('create', 'Create a deployment plan')
+  .command('publish', 'Publish deployment plan for a package')
   .command('get', 'Display a deployment plan');
 
 barracks.parse(process.argv);

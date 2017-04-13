@@ -116,7 +116,7 @@ Currently, the following features are available through the CLI:
     * List all existing packages
     * Create a new package
     * Display detailed information of a package
-    * Create a deployment plan for a package
+    * Publish a deployment plan for a package
     * Display detailed information of a deployment plan
     * List all versions of a packages
     * Create a new version of a package
@@ -178,13 +178,13 @@ Create a version for a package
 $ barracks package version create --versionId v1 --name "App 1 - Version 1" --packageReference io.barracks.app1 --file ~/versions/app1_v1_.sh
 ```
 
-Create a deployment plan for a package
+Publish a deployment plan for a package
 ```{r, engine='bash', count_lines}
-$ barracks package plan create --file ~/ressources/app1_plan.json
+$ barracks package plan publish --file ~/ressources/app1_plan.json
 ```
 
 ```{r, engine='bash', count_lines}
-$ cat ~/ressources/app1_plan.json | barracks package plan create
+$ cat ~/ressources/app1_plan.json | barracks package plan publish
 ```
 
 
