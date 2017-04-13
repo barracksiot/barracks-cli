@@ -156,6 +156,10 @@ module.exports = {
         method: 'GET',
         path: '/v2/api/member/components/:componentRef/versions'
       },
+      getDeploymentPlan: {
+        method: 'GET',
+        path: '/v2/api/member/components/:componentRef/deployment-plan'
+      },
       getPackage: {
         method: 'GET',
         path: '/v2/api/member/components/:componentRef'
