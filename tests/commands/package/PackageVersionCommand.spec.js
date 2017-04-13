@@ -74,7 +74,7 @@ describe('packageVersionCommand', () => {
       const error = 'error';
       const program = validProgram;
       packageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packageVersionCommand.barracks.getComponentVersion = sinon.stub().returns(Promise.reject(error));
+      packageVersionCommand.barracks.getVersion = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
       packageVersionCommand.execute(program).then(result => {
@@ -83,8 +83,8 @@ describe('packageVersionCommand', () => {
         expect(err).to.be.equals(error);
         expect(packageVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packageVersionCommand.barracks.getComponentVersion).to.have.been.calledOnce;
-        expect(packageVersionCommand.barracks.getComponentVersion).to.have.been.calledWithExactly(token, packageReference, versionId);
+        expect(packageVersionCommand.barracks.getVersion).to.have.been.calledOnce;
+        expect(packageVersionCommand.barracks.getVersion).to.have.been.calledWithExactly(token, packageReference, versionId);
         done();
       });
     });
@@ -97,15 +97,15 @@ describe('packageVersionCommand', () => {
       };
       const program = validProgram;
       packageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packageVersionCommand.barracks.getComponentVersion = sinon.stub().returns(Promise.resolve(response));
+      packageVersionCommand.barracks.getVersion = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageVersionCommand.execute(program).then(result => {
         expect(result).to.deep.equals(response);
         expect(packageVersionCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packageVersionCommand.barracks.getComponentVersion).to.have.been.calledOnce;
-        expect(packageVersionCommand.barracks.getComponentVersion).to.have.been.calledWithExactly(token, packageReference, versionId);
+        expect(packageVersionCommand.barracks.getVersion).to.have.been.calledOnce;
+        expect(packageVersionCommand.barracks.getVersion).to.have.been.calledWithExactly(token, packageReference, versionId);
         done();
       }).catch(err => {
         done(err);

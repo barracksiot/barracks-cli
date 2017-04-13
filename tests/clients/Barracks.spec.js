@@ -2444,6 +2444,67 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getVersion()', () => {
+
+    const packageRef = 'io.barracks.package';
+    const versionId = '3.29.5';
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getVersion(token, packageRef, versionId).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'getVersion',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef,
+              versionId
+            }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return a token when request succeed', done => {
+      // Given
+      const version = { component: packageRef, id: versionId };
+      const response = { body: version };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getVersion(token, packageRef, versionId).then(result => {
+        expect(result).to.deep.equals(version);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
+          'getVersion',
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            pathVariables: {
+              componentRef: packageRef,
+              versionId
+            }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#checkUpdateAndDownload()', () => {
 
     const baseUrl = 'base/url';
