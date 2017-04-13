@@ -155,6 +155,10 @@ module.exports = {
       getComponentVersions: {
         method: 'GET',
         path: '/v2/api/member/components/:componentRef/versions'
+      },
+      getPackage: {
+        method: 'GET',
+        path: '/v2/api/member/components/:componentRef'
       }
     }
   },

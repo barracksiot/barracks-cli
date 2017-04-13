@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const PackageCommand = require('../commands/package/PackageCommand');
+new PackageCommand().render();

@@ -450,9 +450,11 @@ describe('Barracks', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
-      const options = { headers: {
-        'x-auth-token': token
-      }}
+      const options = {
+        headers: {
+          'x-auth-token': token
+        }
+      }
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
@@ -645,8 +647,16 @@ describe('Barracks', () => {
 
     beforeEach(() => {
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        fs: { createReadStream: file => { return mockedCreateReadStream(file) } },
-        path: { basename: file => { return mockedBasename(file) } }
+        fs: {
+          createReadStream: file => {
+            return mockedCreateReadStream(file)
+          }
+        },
+        path: {
+          basename: file => {
+            return mockedBasename(file)
+          }
+        }
       });
 
       barracks = new ProxifiedBarracks();
@@ -1530,10 +1540,10 @@ describe('Barracks', () => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(barracks.client.retrieveAllPages).to.have.been.calledOnce;
         expect(barracks.client.retrieveAllPages).to.have.been.calledWithExactly(
-            new PageableStream(),
-            'getDevicesV2',
-            options,
-            'devices'
+          new PageableStream(),
+          'getDevicesV2',
+          options,
+          'devices'
         );
         done();
       }).catch(err => {
@@ -1657,8 +1667,8 @@ describe('Barracks', () => {
     it('should return the user segments', done => {
       // Given
       const segments = {
-        active: [buildSegment(1), buildSegment(2)],
-        inactive: [buildSegment(3), buildSegment(4)]
+        active: [ buildSegment(1), buildSegment(2) ],
+        inactive: [ buildSegment(3), buildSegment(4) ]
       };
       const response = { body: segments };
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
@@ -1788,9 +1798,11 @@ describe('Barracks', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
-      const options = { headers: {
-        'x-auth-token': token
-      }}
+      const options = {
+        headers: {
+          'x-auth-token': token
+        }
+      }
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
@@ -1965,12 +1977,16 @@ describe('Barracks', () => {
     };
 
     const ProxifiedBarracks = proxyquire(barracksClientPath, {
-      fs: { createReadStream: (path) => {
-        return proxyCreateReadStream(path);
-      }},
-      path: { basename: (path) => {
-        return proxyBasename(path);
-      }}
+      fs: {
+        createReadStream: (path) => {
+          return proxyCreateReadStream(path);
+        }
+      },
+      path: {
+        basename: (path) => {
+          return proxyBasename(path);
+        }
+      }
     });
 
     const options = {
@@ -2128,7 +2144,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2166,7 +2182,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(undefined));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2206,7 +2222,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2247,7 +2263,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2325,9 +2341,11 @@ describe('Barracks', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
-      const options = { headers: {
-        'x-auth-token': token
-      }}
+      const options = {
+        headers: {
+          'x-auth-token': token
+        }
+      }
       barracks.client.retrieveAllPages = sinon.spy();
 
       // When / Then
@@ -2441,7 +2459,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2476,7 +2494,7 @@ describe('Barracks', () => {
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(undefined));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2515,7 +2533,7 @@ describe('Barracks', () => {
       const update = { download: downloadSpy };
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(update));
       const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        'barracks-sdk': function Constructor (options) {
+        'barracks-sdk': function Constructor(options) {
           constructorSpy(options);
           this.checkUpdate = checkUpdateSpy;
         }
@@ -2547,4 +2565,57 @@ describe('Barracks', () => {
       });
     });
   });
+
+  describe('#getPackage()', () => {
+    const packageRef = 'ze.ref';
+    const validPackage = {
+      id: "id",
+      user: "userId",
+      reference: packageRef,
+      description: "description",
+      name: "packageName"
+    };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getPackage(token, validPackage.reference).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getPackage', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            componentRef: validPackage.reference
+          }
+        });
+        done();
+      });
+    });
+
+    it('should return a package when request succeeds', done => {
+      // Given
+      const response = { body: validPackage };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getPackage(token, validPackage.reference).then(result => {
+        expect(result).to.be.equals(validPackage);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getPackage', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            componentRef: validPackage.reference
+          }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  })
 });
