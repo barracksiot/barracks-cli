@@ -3,17 +3,20 @@ const BarracksCommand = require('../BarracksCommand');
 class PackageVersionsCommand extends BarracksCommand {
 
   configureCommand(program) {
-      .arguments('<package-reference>')
-      .arguments('<version-id>');
+    return program
+      .option('--packageReference [value]', 'The reference of the package to get the versions from');
   }
 
   validateCommand(program) {
-    return !!(program.args && program.args.length === 2);
+    return !!(
+      program.packageReference &&
+      program.packageReference !== true
+    );
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.getComponentVersion(token, program.args[0], program.args[1]);
+      return this.barracks.getComponentVersions(token, program.packageReference);
     });
   }
 }
