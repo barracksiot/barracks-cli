@@ -4,12 +4,14 @@ const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../utils/logger');
+const config = require('../config');
 
 class Barracks {
 
   constructor(options) {
     this.options = options;
     this.client = new HTTPClient(options);
+    this.v2Enabled = config.v2Enabled;
   }
 
   authenticate(username, password) {
@@ -207,7 +209,8 @@ class Barracks {
 
   createFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createFilter', {
+      const endpointKey = this.v2Enabled ? 'createFilterV2' : 'createFilterV1';
+      this.client.sendEndpointRequest(endpointKey, {
         headers: {
           'x-auth-token': token
         },
@@ -222,7 +225,8 @@ class Barracks {
 
   deleteFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('deleteFilter', {
+      const endpointKey = this.v2Enabled ? 'deleteFilterV2' : 'deleteFilterV1';
+      this.client.sendEndpointRequest(endpointKey, {
         headers: {
           'x-auth-token': token
         },
@@ -255,9 +259,10 @@ class Barracks {
         reject(error);
       });
 
+      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
       this.client.retrievePagesUntilCondition(
         buffer,
-        'getFilters',
+        endpointKey,
         { headers: { 'x-auth-token': token } },
         'filters',
         filters => filters.find(filter => filter.name === filterName)
@@ -270,7 +275,8 @@ class Barracks {
       logger.debug('Getting filters');
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getFilters', {
+      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
+      this.client.retrieveAllPages(stream, endpointKey, {
           headers: {
             'x-auth-token': token
           }
@@ -388,12 +394,13 @@ class Barracks {
       logger.debug('Getting devices');
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevices', {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'devices');
+      const endpointKey = this.v2Enabled ? 'getDevicesV2' : 'getDevicesV1';
+      this.client.retrieveAllPages(stream, endpointKey, {
+        headers: {
+          'x-auth-token': token
+        }
+      },
+      'devices');
     });
   }
 
@@ -402,7 +409,8 @@ class Barracks {
       logger.debug('Getting devices with query:', query);
       const stream = new PageableStream();
       resolve(stream);
-      this.client.retrieveAllPages(stream, 'getDevicesWithQuery', {
+      const endpointKey = this.v2Enabled ? 'getDevicesWithQueryV2' : 'getDevicesWithQueryV1';
+      this.client.retrieveAllPages(stream, endpointKey, {
           headers: {
             'x-auth-token': token
           },
@@ -411,6 +419,36 @@ class Barracks {
           }
         },
         'devices');
+    });
+  }
+
+  getDeviceEvents(token, unitId, fromDate) {
+    return new Promise(resolve => {
+      const resultStream = new PageableStream();
+      const bufferStream = new PageableStream();
+      resolve(resultStream);
+      const endpointKey = this.v2Enabled ? 'getDeviceEventsV2' : 'getDeviceEventsV1';
+      this.client.retrievePagesUntilCondition(bufferStream, endpointKey, {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            unitId
+          }
+        }, 'events', events =>
+        fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
+      );
+      bufferStream.onPageReceived(events => {
+        const filteredEvents = events.filter(event =>
+          Date.parse(fromDate || 0) < Date.parse(event.receptionDate)
+        );
+        if (filteredEvents.length > 0) {
+          resultStream.write(filteredEvents);
+        }
+      });
+      bufferStream.onLastPage(() => {
+        resultStream.lastPage();
+      });
     });
   }
 
@@ -436,35 +474,6 @@ class Barracks {
       }).catch(errResponse => {
         logger.debug('Edit update failed:', errResponse);
         reject(errResponse.message);
-      });
-    });
-  }
-
-  getDeviceEvents(token, unitId, fromDate) {
-    return new Promise(resolve => {
-      const resultStream = new PageableStream();
-      const bufferStream = new PageableStream();
-      resolve(resultStream);
-      this.client.retrievePagesUntilCondition(bufferStream, 'getDeviceEvents', {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            unitId
-          }
-        }, 'events', events =>
-        fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
-      );
-      bufferStream.onPageReceived(events => {
-        const filteredEvents = events.filter(event =>
-          Date.parse(fromDate || 0) < Date.parse(event.receptionDate)
-        );
-        if (filteredEvents.length > 0) {
-          resultStream.write(filteredEvents);
-        }
-      });
-      bufferStream.onLastPage(() => {
-        resultStream.lastPage();
       });
     });
   }

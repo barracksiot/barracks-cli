@@ -10,6 +10,7 @@ class BarracksCommand {
 
   constructor() {
     this.experimental = config.experimental;
+    this.v2Enabled = config.v2Enabled;
     this.userConfiguration = new UserConfiguration(config.userConfig);
     this.barracks = new Barracks(config.barracks);
     this.configureCommand(program)

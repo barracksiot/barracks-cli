@@ -56,13 +56,29 @@ module.exports = {
         method: 'POST',
         path: '/api/member/segments'
       },
-      createFilter: {
+      createFilterV1: {
         method: 'POST',
         path: '/api/member/filters'
       },
-      deleteFilter: {
+      createFilterV2: {
+        method: 'POST',
+        path: '/v2/api/member/filters'
+      },
+      getFiltersV1: {
+        method: 'GET',
+        path: '/api/member/filters?size=20'
+      },
+      getFiltersV2: {
+        method: 'GET',
+        path: '/v2/api/member/filters?size=20'
+      },
+      deleteFilterV1: {
         method: 'DELETE',
         path: '/api/member/filters/:filter'
+      },
+      deleteFilterV2: {
+        method: 'DELETE',
+        path: '/v2/api/member/filters/:filter'
       },
       editSegment: {
         method: 'PUT',
@@ -76,25 +92,33 @@ module.exports = {
         method: 'GET',
         path: '/api/member/segments/:segmentId/devices'
       },
-      getFilters: {
-        method: 'GET',
-        path: '/api/member/filters?size=20'
-      },
-      getDevices: {
+      getDevicesV1: {
         method: 'GET',
         path: '/api/member/devices?size=20'
       },
-      getDevicesWithQuery: {
+      getDevicesV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices?size=20'
+      },
+      getDevicesWithQueryV1: {
         method: 'GET',
         path: '/api/member/devices?size=20&query=:query'
+      },
+      getDevicesWithQueryV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices?size=20&query=:query'
+      },
+      getDeviceEventsV1: {
+        method: 'GET',
+        path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+      },
+      getDeviceEventsV2: {
+        method: 'GET',
+        path: '/v2/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
       },
       editUpdate: {
         method: 'PUT',
         path: '/api/member/updates/:uuid'
-      },
-      getDeviceEvents: {
-        method: 'GET',
-        path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
       },
       setActiveSegments: {
         method: 'POST',
@@ -114,23 +138,23 @@ module.exports = {
       },
       createComponent: {
         method: 'POST',
-        path: '/api/member/components'
+        path: '/v2/api/member/components'
       },
       createVersion: {
         method: 'POST',
-        path: '/api/member/components/:componentRef/versions'
+        path: '/v2/api/member/components/:componentRef/versions'
       },
       createDeploymentPlan: {
         method: 'POST',
-        path: '/api/member/components/:componentRef/deployment-plan'
+        path: '/v2/api/member/components/:componentRef/deployment-plan'
       },
       getComponents: {
         method: 'GET',
-        path: '/api/member/components'
+        path: '/v2/api/member/components'
       },
       getComponentVersions: {
         method: 'GET',
-        path: '/api/member/components/:componentRef/versions'
+        path: '/v2/api/member/components/:componentRef/versions'
       }
     }
   },
@@ -140,5 +164,6 @@ module.exports = {
     )
   },
   debug: !!(process.env.DEBUG ? parseInt(process.env.DEBUG) : false),
-  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false)
+  experimental: !!(process.env.BARRACKS_ENABLE_EXPERIMENTAL ? parseInt(process.env.BARRACKS_ENABLE_EXPERIMENTAL) : false),
+  v2Enabled: !!(process.env.BARRACKS_ENABLE_V2 ? parseInt(process.env.BARRACKS_ENABLE_V2) : false)
 };

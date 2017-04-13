@@ -30,6 +30,21 @@ function checkExclusiveOptions(program) {
   return validFilter ? !validSegment : validSegment;
 }
 
+function configureCommandV1(program, experimental) {
+  if (experimental) {
+    return program
+        .option('--segment [segmentName]', '(Optional) Render devices from that segment only (Cannot be used with --filter).')
+        .option('--filter [filterName]', '(Optional) Apply a filter on the device list (Cannot be used with --segment).');
+  } else {
+    return program
+        .option('--segment [segmentName]', '(Optional) Render devices from that segment only.');
+  }
+}
+
+function configureCommandV2(program) {
+  return program.option('--filter [filterName]', '(Optional) Apply a filter on the device list (Cannot be used with --segment).');
+}
+
 class DevicesCommand extends BarracksCommand {
 
   validateCommand(program) {
@@ -41,19 +56,16 @@ class DevicesCommand extends BarracksCommand {
   }
 
   configureCommand(program) {
-    if (this.experimental) {
-      return program
-        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only (Cannot be used with --filter).')
-        .option('--filter [filterName]', '(Optionnal) Apply a filter on the device list (Cannot be used with --segment).');
+    if (this.v2Enabled) {
+      return configureCommandV2(program);
     } else {
-      return program
-        .option('--segment [segmentName]', '(Optionnal) Render devices from that segment only.');
-      }
+      return configureCommandV1(program, this.experimental);
+    }
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      if (program.segment) {
+      if (program.segment && !this.v2Enabled) {
         return getAllDevicesFromSegment(token, this.barracks, program.segment);
       } else if (program.filter) {
         return getAllDevicesFromFilter(token, this.barracks, program.filter);
