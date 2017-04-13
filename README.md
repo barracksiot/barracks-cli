@@ -115,7 +115,9 @@ Currently, the following features are available through the CLI:
 * Manage packages
     * List all existing packages
     * Create a new package
+    * Display detailed information of a package
     * Create a deployment plan for a package
+    * Display detailed information of a deployment plan
     * List all versions of a packages
     * Create a new version of a package
 
