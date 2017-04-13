@@ -6,9 +6,10 @@ ENV         BARRACKS_BASE_URL             "https://app.barracks.io"
 ENV         BARRACKS_ENABLE_V2            0
 ENV         BARRACKS_ENABLE_EXPERIMENTAL  0
 
-RUN         mkdir /barracks-cli && mkdir /barracks-cli/src
-COPY        src/ /barracks-cli/src/.
-COPY        package.json /barracks-cli/
-RUN         cd /barracks-cli/ && npm install
+COPY        package.json usr/local/lib/node_modules/barracks-cli/barracks-cli/
+RUN         cd /usr/local/lib/node_modules/barracks-cli/barracks-cli/ &&\
+            npm install &&\
+            ln -s /usr/local/lib/node_modules/barracks-cli/barracks-cli/src/bin/barracks /usr/local/bin/barracks
+COPY        src/ /usr/local/lib/node_modules/barracks-cli/barracks-cli/src/.
 
-ENTRYPOINT  ["/barracks-cli/src/bin/barracks"]
+ENTRYPOINT  ["barracks"]
