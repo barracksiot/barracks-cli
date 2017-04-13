@@ -7,7 +7,8 @@ const pjson = require('../../package.json');
 const barracks = program
   .command('ls', 'List filters')
   .command('create', 'Create a filter')
-  .command('rm', 'Remove a filter');
+  .command('rm', 'Remove a filter')
+  .command('get', 'Get a filter');
 
 barracks.parse(process.argv);
 
