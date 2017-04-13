@@ -26,22 +26,13 @@ $ barracks help
 
   Commands:
 
-    login                 Authenticate to Barracks
-    account               Get account information
-    updates               List updates
-    create-update         Create a new update
-    edit-update           Edit an existing update
-    publish               Publish an update
-    schedule              Publish an update
-    archive               Archive an update
-    devices               List devices
-    device                Get device history
-    segments              Get active and inactive segments
-    create-segment        Create a new segment
-    edit-segment          Edit an existing segment
-    set-active-segments   Set active segments in priority order
-    check-update          Check for an update the same way a device would
-    help [cmd]            display help for [cmd]
+    login          Authenticate to Barracks
+    account        Get account information
+    update [cmd]   Manage updates
+    device [cmd]   Manage devices
+    segment [cmd]  Manage segments
+    check-update   Check for an update the same way a device would
+    help [cmd]     display help for [cmd]
 
   Options:
 
@@ -57,50 +48,143 @@ email: myaccount@barracks.io
 password:
 Authentication successful
 ```
+### Barracks V2 support
 
+You can easily enable the CLI to use experimentals features of the new version of Barracks.
+To do so, just enable the V2 flag :
 ```{r, engine='bash', count_lines}
-$ barracks login --email myaccount@barracks.io --password <ACCOUNT_PASSWORD>
-Authentication successful
-```
-
-After that, you can use any of the other commands:
-```{r, engine='bash', count_lines}
-$ barracks create-update --title "My Update" --segment Other --versionId v0.0.14 --package /home/bargenson/packages/0.0.14/update.zip
+$ export BARRACKS_ENABLE_V2=1
 ```
 
-Examples of the check-update command:
+Now, you have access to all V2 features
 ```{r, engine='bash', count_lines}
-$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1"
+$ barracks help
+
+  Usage: barracks [options] [command]
+
+
+  Commands:
+
+    login          Authenticate to Barracks
+    account        Get account information
+    device [cmd]   Manage devices
+    filter [cmd]   Manage filters
+    package [cmd]  Manage packages
+    help [cmd]     display help for [cmd]
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
 ```
-```{r, engine='bash', count_lines}
-$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }'
-```
-```{r, engine='bash', count_lines}
-$ barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }' --download ~/Downloads/update.sh
-```
+
 
 ## Features
 
 Currently, the following features are available through the CLI:
+* Login to your Barracks account
 * Display account information
-* List updates
-* Create a new update
-* Edit an update in draft
-* Publish an update
-* Archive an update
-* Schedule an update
-* List registered devices
-* Retrieve device information
-* List segments
-* Change active segments
-* Create a new segment
-* Edit an existing segment
-* Simulate a device check for update
+* Manage updates
+    * List all updates
+    * Create a new update
+    * Edit an update draft
+    * Publish an update
+    * Archive an update
+    * Schedule an update
+* Manage devices
+    * List all registered devices
+    * List event history of a device
+* Manage segments
+    * List all segments
+    * Create a new segment
+    * Edit an existing segment
+    * Change active segments
+* Simulate a device checking for update
+
+### With Barracks V2 enabled
+
+* Login to your Barracks account
+* Display account information   
+* Manage devices
+    * List all registered devices
+    * List event history of a device
+* Manage filters
+    * List all filters
+    * Create a new filter
+    * Remove an existing filter
+* Manage packages
+    * List all existing packages
+    * Create a new package
+    * Create a deployment plan for a package
+    * List all versions of a packages
+    * Create a new version of a package
 
 ## Docs & Community
 
 * [Website and Documentation](https://barracks.io/)
 * [Github Organization](https://github.com/barracksiot) for other official tools
+
+## Examples
+
+Create a new update
+```{r, engine='bash', count_lines}
+$ barracks update create --title "My Update" --segment Other --versionId v0.0.14 --package /home/barracks/packages/0.0.14/update.zip
+```
+
+Get event history of a device
+```{r, engine='bash', count_lines}
+$ barracks device get "unit_qwerty1234"
+```
+
+Emulate a device checking for an update
+```{r, engine='bash', count_lines}
+barracks check-update --unitId EmulatedDeviceId --versionId "0.1"
+```
+
+```{r, engine='bash', count_lines}
+barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }'
+```
+
+```{r, engine='bash', count_lines}
+barracks check-update --unitId EmulatedDeviceId --versionId "0.1" --customClientData '{ "key1":"value1", "key2":"value2" }' --download ~/Downloads/update.sh
+```
+
+### With Barracks V2 enabled
+
+Get event history of a device
+```{r, engine='bash', count_lines}
+$ barracks device get "unit_qwerty1234"
+```
+
+Create a filter
+```{r, engine='bash', count_lines}
+$ barracks filter create --name "exampleFilter" --query '{ "regex": { "unitId": ".*qwerty.*" } }'
+```
+
+Get all devices matching a filter
+```{r, engine='bash', count_lines}
+$ barracks device ls --filter "exampleFilter"
+```
+
+Create a package
+```{r, engine='bash', count_lines}
+$ barracks package create --reference io.barracks.app1 --name "Barracks Appli 1"
+```
+
+Create a version for a package
+```{r, engine='bash', count_lines}
+$ barracks package version create --versionId v1 --name "App 1 - Version 1" --packageReference io.barracks.app1 --file ~/versions/app1_v1_.sh
+```
+
+Create a deployment plan for a package
+```{r, engine='bash', count_lines}
+$ barracks package plan create --file ~/ressources/app1_plan.json
+```
+
+```{r, engine='bash', count_lines}
+$ cat ~/ressources/app1_plan.json | barracks package plan create
+```
+
 
 ## License
 
