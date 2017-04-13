@@ -14,9 +14,9 @@ describe('packageVersionsCommand', () => {
   let packageVersionsCommand;
   const token = 'i8uhkj.token.65ryft';
   const packageReference = 'my.component.ref';
-  const validProgram = {
+  const validProgram = { args: [
     packageReference
-  };
+  ]};
 
   before(() => {
     packageVersionsCommand = new PackageVersionsCommand();
@@ -26,18 +26,9 @@ describe('packageVersionsCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return false when reference is missing', () => {
+    it('should return false when no argument given', () => {
       // Given
-      const program = {};
-      // When
-      const result = packageVersionsCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when reference has no value', () => {
-      // Given
-      const program = { packageReference: true };
+      const program = { args: [] };
       // When
       const result = packageVersionsCommand.validateCommand(program);
       // Then
