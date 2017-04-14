@@ -4,10 +4,17 @@ const program = require('commander');
 const config = require('../config.js');
 const pjson = require('../../package.json');
 
-const barracks = program
-  .version(pjson.version)
-  .command('ls', 'List devices')
-  .command('history', 'Display all events of a device');
+const barracks = program.version(pjson.version);
+
+if (config.v2Enabled) {
+  program.command('ls', 'List devices')
+    .command('get', 'Display detailed information of a device')
+    .command('history', 'Display all events of a device');
+} else {
+  program.command('ls', 'List devices')
+    .command('history', 'Display all events of a device');
+}
+
 
 barracks.parse(process.argv);
 
