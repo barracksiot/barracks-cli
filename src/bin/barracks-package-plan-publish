@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const PublishDeploymentPlanCommand = require('../commands/package/PublishDeploymentPlanCommand');
+new PublishDeploymentPlanCommand().render();

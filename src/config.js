@@ -148,7 +148,7 @@ module.exports = {
         method: 'POST',
         path: '/v2/api/member/components/:componentRef/versions'
       },
-      createDeploymentPlan: {
+      publishDeploymentPlan: {
         method: 'POST',
         path: '/v2/api/member/components/:componentRef/deployment-plan'
       },
@@ -167,6 +167,10 @@ module.exports = {
       getPackage: {
         method: 'GET',
         path: '/v2/api/member/components/:componentRef'
+      },
+      getFilter: {
+        method: 'GET',
+        path: '/v2/api/member/filters/:filter'
       }
     }
   },
