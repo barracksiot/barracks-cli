@@ -13,9 +13,9 @@ describe('packageCommand', () => {
   let packageCommand;
   const token = 'i8uhkj.token.65ryft';
   const packageReference = 'my.component.ref';
-  const validProgram = {
+  const validProgram = { args: [
     packageReference
-  };
+  ]};
 
   before(() => {
     packageCommand = new PackageCommand();
@@ -24,18 +24,10 @@ describe('packageCommand', () => {
   });
 
   describe('#validateCommand(program)', () => {
-    it('should return false when reference is missing', () => {
-      // Given
-      const program = {};
-      // When
-      const result = packageCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
 
-    it('should return false when reference has no value', () => {
+    it('should return false when no argument given', () => {
       // Given
-      const program = {packageReference: true};
+      const program = { args: [] };
       // When
       const result = packageCommand.validateCommand(program);
       // Then
@@ -50,7 +42,8 @@ describe('packageCommand', () => {
       // Then
       expect(result).to.be.true;
     });
-  })
+  });
+
   describe('#execute(program)', () => {
 
     it('should return an error when the client request fails', done => {
@@ -93,4 +86,4 @@ describe('packageCommand', () => {
       });
     });
   });
-})
+});

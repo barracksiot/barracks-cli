@@ -14,9 +14,9 @@ describe('deploymentPlanCommand', () => {
   let deploymentPlanCommand;
   const token = 'i8uhkj.token.65ryft';
   const packageReference = 'my.component.ref';
-  const validProgram = {
+  const validProgram = { args: [
     packageReference
-  };
+  ]};
 
   before(() => {
     deploymentPlanCommand = new DeploymentPlanCommand();
@@ -26,18 +26,9 @@ describe('deploymentPlanCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return false when reference is missing', () => {
+    it('should return false when no argument given', () => {
       // Given
-      const program = {};
-      // When
-      const result = deploymentPlanCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when reference has no value', () => {
-      // Given
-      const program = {packageReference: true};
+      const program = { args: []};
       // When
       const result = deploymentPlanCommand.validateCommand(program);
       // Then
