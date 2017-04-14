@@ -50,7 +50,7 @@ Authentication successful
 ```
 ### Barracks V2 support
 
-You can easily enable the CLI to use experimentals features of the new version of Barracks.
+Enable the V2 flag to access new features of Barracks.
 To do so, just enable the V2 flag :
 ```{r, engine='bash', count_lines}
 $ export BARRACKS_ENABLE_V2=1
