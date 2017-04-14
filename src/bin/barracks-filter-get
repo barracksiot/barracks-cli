@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-const GetFilterCommand = require('../commands/filter/GetFilterCommand');
-new GetFilterCommand().render();
+const FilterCommand = require('../commands/filter/FilterCommand');
+new FilterCommand().render();

@@ -21,7 +21,7 @@ describe('FiltersCommand', () => {
 
   describe('#execute()', () => {
 
-    it('should forward request to barrcks client', done => {
+    it('should forward request to barracks client', done => {
       // Given
       const response = [];
       filtersCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
