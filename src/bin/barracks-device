@@ -7,7 +7,7 @@ const pjson = require('../../package.json');
 const barracks = program
   .version(pjson.version)
   .command('ls', 'List devices')
-  .command('get', 'Display detailed information on a device');
+  .command('history', 'Display all events of a device');
 
 barracks.parse(process.argv);
 
