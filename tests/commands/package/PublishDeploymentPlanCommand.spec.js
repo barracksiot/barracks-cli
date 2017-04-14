@@ -10,9 +10,9 @@ const Stream = require('stream');
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('CreateDeploymentPlanCommand', () => {
+describe('PublishDeploymentPlanCommand', () => {
 
-  let createDeploymentPlanCommand;
+  let publishDeploymentPlanCommand;
   let proxyIsJsonString;
   let proxyFileExists;
   let proxyInStream = new Stream();
@@ -25,7 +25,7 @@ describe('CreateDeploymentPlanCommand', () => {
   const validProgram = { file };
 
   function getProxyCommand() {
-    return proxyquire('../../../src/commands/package/CreateDeploymentPlanCommand', {
+    return proxyquire('../../../src/commands/package/PublishDeploymentPlanCommand', {
       '../../utils/Validator': {
         isJsonString: (str) => {
           return proxyIsJsonString(str);
@@ -55,9 +55,9 @@ describe('CreateDeploymentPlanCommand', () => {
       spyOnError(error);
     });
     const Command = new getProxyCommand();
-    createDeploymentPlanCommand = new Command();
-    createDeploymentPlanCommand.barracks = {};
-    createDeploymentPlanCommand.userConfiguration = {};
+    publishDeploymentPlanCommand = new Command();
+    publishDeploymentPlanCommand.barracks = {};
+    publishDeploymentPlanCommand.userConfiguration = {};
   });
 
   describe('#validateCommand(program)', () => {
@@ -66,7 +66,7 @@ describe('CreateDeploymentPlanCommand', () => {
       // Given
       const program = {};
       // When
-      const result = createDeploymentPlanCommand.validateCommand(program);
+      const result = publishDeploymentPlanCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
     });
@@ -81,7 +81,7 @@ describe('CreateDeploymentPlanCommand', () => {
       };
 
       // When
-      const result = createDeploymentPlanCommand.validateCommand(program);
+      const result = publishDeploymentPlanCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.true;
@@ -99,7 +99,7 @@ describe('CreateDeploymentPlanCommand', () => {
       };
 
       // When
-      const result = createDeploymentPlanCommand.validateCommand(program);
+      const result = publishDeploymentPlanCommand.validateCommand(program);
 
       // Then
       expect(result).to.be.false;
@@ -123,19 +123,19 @@ describe('CreateDeploymentPlanCommand', () => {
       const program = {};
       const error = 'Stream error';
       spyOnError = sinon.spy();
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       setTimeout(() => {
         proxyInStream.emit('error', error);
       }, 50);
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnError).to.have.been.calledOnce;
         expect(spyOnError).to.have.been.calledWithExactly(error);
         done();
@@ -153,7 +153,7 @@ describe('CreateDeploymentPlanCommand', () => {
       };
       spyOnData = sinon.spy();
       spyOnClose = sinon.spy();
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       setTimeout(() => {
         proxyInStream.emit('data', data);
@@ -161,12 +161,12 @@ describe('CreateDeploymentPlanCommand', () => {
       }, 50);
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals('Deployment plan must be described by a valid JSON');
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnData).to.have.been.calledOnce;
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
@@ -190,7 +190,7 @@ describe('CreateDeploymentPlanCommand', () => {
       };
       spyOnData = sinon.spy();
       spyOnClose = sinon.spy();
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       setTimeout(() => {
         proxyInStream.emit('data', data);
@@ -198,12 +198,12 @@ describe('CreateDeploymentPlanCommand', () => {
       }, 50);
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnData).to.have.been.calledOnce;
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
@@ -226,8 +226,8 @@ describe('CreateDeploymentPlanCommand', () => {
       };
       spyOnData = sinon.spy();
       spyOnClose = sinon.spy();
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createDeploymentPlanCommand.barracks.createDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.barracks.publishDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
 
       setTimeout(() => {
         proxyInStream.emit('data', data);
@@ -235,18 +235,18 @@ describe('CreateDeploymentPlanCommand', () => {
       }, 50);
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnData).to.have.been.calledOnce;
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
         expect(spyOnClose).to.have.been.calledWithExactly();
         expect(spyIsJsonString).to.have.been.calledOnce;
         expect(spyIsJsonString).to.have.been.calledWithExactly(data);
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
       }).catch(err => {
         done(err);
@@ -262,15 +262,15 @@ describe('CreateDeploymentPlanCommand', () => {
         spyReadFile(file, callback);
         callback(error);
       };
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
         done();
@@ -291,15 +291,15 @@ describe('CreateDeploymentPlanCommand', () => {
         spyIsJsonString(data);
         return false;
       };
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals('Deployment plan must be described by a valid JSON');
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
         expect(spyIsJsonString).to.have.been.calledOnce;
@@ -324,15 +324,15 @@ describe('CreateDeploymentPlanCommand', () => {
         spyIsJsonString(data);
         return true;
       };
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
         expect(spyIsJsonString).to.have.been.calledOnce;
@@ -356,20 +356,20 @@ describe('CreateDeploymentPlanCommand', () => {
         spyIsJsonString(data);
         return true;
       };
-      createDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createDeploymentPlanCommand.barracks.createDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.barracks.publishDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      createDeploymentPlanCommand.execute(program).then(result => {
+      publishDeploymentPlanCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
         expect(spyIsJsonString).to.have.been.calledOnce;
         expect(spyIsJsonString).to.have.been.calledWithExactly(data);
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledOnce;
-        expect(createDeploymentPlanCommand.barracks.createDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
       }).catch(err => {
         done(err);

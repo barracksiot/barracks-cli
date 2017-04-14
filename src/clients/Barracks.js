@@ -593,9 +593,9 @@ class Barracks {
     });
   }
 
-  createDeploymentPlan(token, plan) {
+  publishDeploymentPlan(token, plan) {
     return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createDeploymentPlan', {
+      this.client.sendEndpointRequest('publishDeploymentPlan', {
         headers: {
           'x-auth-token': token
         },

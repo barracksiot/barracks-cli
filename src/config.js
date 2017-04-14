@@ -144,7 +144,7 @@ module.exports = {
         method: 'POST',
         path: '/v2/api/member/components/:componentRef/versions'
       },
-      createDeploymentPlan: {
+      publishDeploymentPlan: {
         method: 'POST',
         path: '/v2/api/member/components/:componentRef/deployment-plan'
       },
