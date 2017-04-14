@@ -1,6 +1,6 @@
 const BarracksCommand = require('../BarracksCommand');
 
-class DeviceHistoryCommand extends BarracksCommand {
+class DeviceCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program.arguments('<unit-id>');
@@ -17,4 +17,4 @@ class DeviceHistoryCommand extends BarracksCommand {
   }
 }
 
-module.exports = DeviceHistoryCommand;
+module.exports = DeviceCommand;
