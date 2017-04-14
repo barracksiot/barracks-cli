@@ -242,8 +242,8 @@ class Barracks {
   }
 
   getFilterByName(token, filterName) {
-    const endpointKey = this.v2Enabled ? 'getFilterV2' : 'getFilterV1';
     return new Promise((resolve, reject) => {
+      const endpointKey = this.v2Enabled ? 'getFilterV2' : 'getFilterV1';
       this.client.sendEndpointRequest(endpointKey, {
         headers: {
           'x-auth-token': token

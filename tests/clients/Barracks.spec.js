@@ -1228,30 +1228,40 @@ describe('Barracks', () => {
 
     it('should return an error if request fails', done => {
       // Given
-      const error = 'Error !';
-      barracks.getFilterByName = sinon.stub().returns(Promise.reject(error));
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(barracks.getFilterByName).to.have.been.calledOnce;
-        expect(barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV1', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            filter: filterName
+          }
+        });
         done();
       });
     });
 
-    it('should return specified filter when request succeed', done => {
+    it('should return specified filter when request succeeds', done => {
       // Given
-      const response = filter;
-      barracks.getFilterByName = sinon.stub().returns(Promise.resolve(response));
+      const response = { body: filter };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         expect(result).to.be.equals(filter);
-        expect(barracks.getFilterByName).to.have.been.calledOnce;
-        expect(barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV1', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            filter: filterName
+          }
+        });
         done();
       }).catch(err => {
         done(err);
@@ -1261,16 +1271,21 @@ describe('Barracks', () => {
     it('should return an error if v2Enabled and request fails', done => {
       // Given
       barracks.v2Enabled = true;
-      const error = 'Error !';
-      barracks.getFilterByName = sinon.stub().returns(Promise.reject(error));
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(barracks.getFilterByName).to.have.been.calledOnce;
-        expect(barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV2', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            filter: filterName
+          }
+        });
         done();
       });
     });
@@ -1278,14 +1293,19 @@ describe('Barracks', () => {
     it('should return specified filter when v2Enabled and request succeeds', done => {
       // Given
       barracks.v2Enabled = true;
-      const response = filter;
-      barracks.getFilterByName = sinon.stub().returns(Promise.resolve(response));
+      const response = { body: filter };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       barracks.getFilterByName(token, filterName).then(result => {
         expect(result).to.be.equals(filter);
-        expect(barracks.getFilterByName).to.have.been.calledOnce;
-        expect(barracks.getFilterByName).to.have.been.calledWithExactly(token, filterName);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV2', {
+          headers: { 'x-auth-token': token },
+          pathVariables: {
+            filter: filterName
+          }
+        });
         done();
       }).catch(err => {
         done(err);
