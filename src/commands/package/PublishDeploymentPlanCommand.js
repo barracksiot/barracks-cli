@@ -63,7 +63,7 @@ function getDeploymentPlan(program) {
   }
 }
 
-class CreateDeploymentPlanCommand extends BarracksCommand {
+class PublishDeploymentPlanCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program.option('--file [path/to/file]', 'The path to the file containing the JSON describing the deployment plan. If not specified, the command will expect a stream containing the deploiement plan');
@@ -79,9 +79,9 @@ class CreateDeploymentPlanCommand extends BarracksCommand {
       token = authToken;
       return getDeploymentPlan(program);
     }).then(plan => {
-      return this.barracks.createDeploymentPlan(token, plan);
+      return this.barracks.publishDeploymentPlan(token, plan);
     });
   }
 }
 
-module.exports = CreateDeploymentPlanCommand;
+module.exports = PublishDeploymentPlanCommand;
