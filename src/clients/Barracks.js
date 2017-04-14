@@ -22,9 +22,9 @@ class Barracks {
       }).then(response => {
         logger.debug('Authentication successful.');
         resolve(response.headers['x-auth-token']);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('Authentication failure.');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }
@@ -40,9 +40,9 @@ class Barracks {
         const account = response.body;
         logger.debug('Account information retrieved:', account);
         resolve(account);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('Account information request failure.');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }
@@ -61,9 +61,9 @@ class Barracks {
         }).then(response => {
         logger.debug('GA Id setted successful.');
         resolve(response.body);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('GA Id set failure.');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }
@@ -110,9 +110,9 @@ class Barracks {
         const update = response.body;
         logger.debug('Update information retrieved:', update);
         resolve(update);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('Update information request failure.');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }
@@ -128,8 +128,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -145,8 +145,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -163,8 +163,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -186,8 +186,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -201,8 +201,8 @@ class Barracks {
         body: segment
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -217,8 +217,8 @@ class Barracks {
         body: filter
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -235,8 +235,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -287,8 +287,8 @@ class Barracks {
         });
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -321,8 +321,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -338,9 +338,9 @@ class Barracks {
         const segments = response.body;
         logger.debug('User segments retrieved:', segments);
         resolve(segments);
-      }).catch(errResponse => {
-        logger.debug('Get user segments failed with:', errResponse);
-        reject(errResponse.message);
+      }).catch(err => {
+        logger.debug('Get user segments failed with:', err);
+        reject(err.message);
       });
     });
   }
@@ -354,8 +354,8 @@ class Barracks {
         body: update
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -480,9 +480,9 @@ class Barracks {
         const update = response.body;
         logger.debug('Edit update successful:', update);
         resolve(update);
-      }).catch(errResponse => {
-        logger.debug('Edit update failed:', errResponse);
-        reject(errResponse.message);
+      }).catch(err => {
+        logger.debug('Edit update failed:', err);
+        reject(err.message);
       });
     });
   }
@@ -496,8 +496,8 @@ class Barracks {
         body: segmentIds
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -511,8 +511,8 @@ class Barracks {
         body: tokenConfiguration
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -542,8 +542,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -557,8 +557,8 @@ class Barracks {
         body: component
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -608,8 +608,8 @@ class Barracks {
         }
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -626,8 +626,8 @@ class Barracks {
         body: plan
       }).then(response => {
         resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
+      }).catch(err => {
+        reject(err.message);
       });
     });
   }
@@ -646,6 +646,28 @@ class Barracks {
         },
         'versions'
       );
+    });
+  }
+
+  getVersion(token, componentRef, versionId) {
+    return new Promise((resolve, reject) => {
+      logger.debug(`Getting version ${versionId} of component ${componentRef}`);
+      this.client.sendEndpointRequest(
+        'getVersion',
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            componentRef,
+            versionId
+          }
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
     });
   }
 
@@ -731,9 +753,9 @@ class Barracks {
         const myPackage = response.body;
         logger.debug('Package retrieved:', myPackage);
         resolve(myPackage);
-      }).catch(errResponse => {
+      }).catch(err => {
         logger.debug('Failed to retrieve package');
-        reject(errResponse.message);
+        reject(err.message);
       });
     });
   }
