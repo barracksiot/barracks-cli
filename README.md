@@ -111,6 +111,7 @@ Currently, the following features are available through the CLI:
 * Manage filters
     * List all filters
     * Create a new filter
+    * Display filter information
     * Remove an existing filter
 * Manage packages
     * List all existing packages

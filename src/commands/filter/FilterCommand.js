@@ -7,8 +7,7 @@ class FilterCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    const hasFilterName = !!(program.args && program.args.length === 1 && program.args[0] !== true);
-    return hasFilterName;
+    return !!(program.args && program.args.length === 1 && program.args[0] !== true);
   }
 
   execute(program) {
