@@ -1238,7 +1238,7 @@ describe('Barracks', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV2', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilter', {
           headers: { 'x-auth-token': token },
           pathVariables: {
             filter: filterName
@@ -1258,7 +1258,7 @@ describe('Barracks', () => {
       barracks.getFilterByName(token, filterName).then(result => {
         expect(result).to.be.equals(filter);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilterV2', {
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getFilter', {
           headers: { 'x-auth-token': token },
           pathVariables: {
             filter: filterName
