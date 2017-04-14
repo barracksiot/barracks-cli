@@ -107,6 +107,7 @@ Currently, the following features are available through the CLI:
 * Display account information   
 * Manage devices
     * List all registered devices
+    * Display detailed information of a device
     * List event history of a device
 * Manage filters
     * List all filters

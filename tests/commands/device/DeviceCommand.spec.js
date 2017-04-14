@@ -9,12 +9,13 @@ const PageableStream = require('../../../src/clients/PageableStream');
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('deviceCommand', () => {
+describe('DeviceCommand', () => {
 
   let deviceCommand;
   const token = 'i8uhkj.token.65ryft';
+  const unitId = 'myCoolestUnit';
   const programWithValidOptions = {
-    args: ['unitIdTest']
+    args: [ unitId ]
   };
 
   before(() => {
@@ -25,57 +26,29 @@ describe('deviceCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return false when unit id is missing', () => {
+    it('should return false when no argument given', () => {
       // Given
-      const program = {};
-
+      const program = { args: [] };
       // When
       const result = deviceCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when fromDate format is invalid', () => {
+    it('should return false when more than one argument given', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { fromDate: 'notADate'});
-
+      const program = { args: ['aUnit', 'anotherUnit'] };
       // When
       const result = deviceCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when fromDate flag is present with no value', () => {
+    it('should return true when one argument given', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { fromDate: true});
-
+      const program = programWithValidOptions;
       // When
       const result = deviceCommand.validateCommand(program);
-
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return true when unit id is given', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions);
-
-      // When
-      const result = deviceCommand.validateCommand(program);
-
-      // Then
-      expect(result).to.be.true;
-    });
-
-    it('should return true when unit id and from date are given and fromDate format is valid', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { fromDate: '2014-12-30'});
-
-      // When
-      const result = deviceCommand.validateCommand(program);
-
       // Then
       expect(result).to.be.true;
     });
@@ -87,51 +60,41 @@ describe('deviceCommand', () => {
       // Given
       const errorMessage = 'error';
       const program = Object.assign({}, programWithValidOptions);
-      const bufferStream = new PageableStream();
       deviceCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      deviceCommand.barracks = {
-        getDeviceEvents: sinon.stub().returns(Promise.resolve(bufferStream))
-      };
+      deviceCommand.barracks.getDevice = sinon.stub().returns(Promise.reject(errorMessage));
 
       // When / Then
       deviceCommand.execute(program).then(result => {
-        expect(result).to.be.equals(bufferStream);
-        result.onError(err => {
-          expect(err).to.be.equals(errorMessage);
-          expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
-          expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
-          done();
-        });
-        bufferStream.fail(errorMessage);
+        done('should have failed');
       }).catch(err => {
-        done(err);
+        expect(err).to.be.equals(errorMessage);
+        expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(deviceCommand.barracks.getDevice).to.have.been.calledOnce;
+        expect(deviceCommand.barracks.getDevice).to.have.been.calledWithExactly(token, unitId);
+        done();
       });
     });
 
-    it('should return result of getDeviceEvents when request succeed', done => {
+    it('should return result of getDevice when request succeed', done => {
       // Given
-      const response = [{unitId: 'unit1'}, {unitId: 'unit2'}];
-      const program = Object.assign({}, programWithValidOptions);
-      const bufferStream = new PageableStream();
-      deviceCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      deviceCommand.barracks = {
-        getDeviceEvents: sinon.stub().returns(Promise.resolve(bufferStream))
+      const response = {
+        unitId,
+        lastEvent: {},
+        lastSeen: 'sometime before now'
       };
+      const program = Object.assign({}, programWithValidOptions);
+      deviceCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      deviceCommand.barracks.getDevice = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       deviceCommand.execute(program).then(result => {
-        expect(result).to.be.equals(bufferStream);
-        result.onPageReceived(data => {
-          expect(data).to.be.equals(response);
-          expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
-          expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
-          expect(deviceCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
-          done();
-        });
-        bufferStream.write(response);
+        expect(result).to.deep.equals(response);
+        expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(deviceCommand.barracks.getDevice).to.have.been.calledOnce;
+        expect(deviceCommand.barracks.getDevice).to.have.been.calledWithExactly(token, unitId);
+        done();
       }).catch(err => {
         done(err);
       });

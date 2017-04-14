@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const DeviceHistoryCommand = require('../commands/device/DeviceHistoryCommand');
+new DeviceHistoryCommand().render();

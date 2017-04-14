@@ -3,20 +3,16 @@ const BarracksCommand = require('../BarracksCommand');
 class DeviceCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program
-      .arguments('<unit-id>')
-      .option('--fromDate [\'YYYY-MM-DD\' | \'YYYY-MM-DD HH:mm\' | \'YYYY-MM-DDTHH:mm:ss.sssZ\']', '(Optionnal) The date from when to begin the history');
+    return program.arguments('<unit-id>');
   }
 
   validateCommand(program) {
-    const hasUnitId = !!(program.args && program.args.length === 1 && program.args[0] !== true);
-    const hasValidFromDate = !program.fromDate || !isNaN(Date.parse(program.fromDate));
-    return hasUnitId && hasValidFromDate;
+    return !!(program.args && program.args.length === 1);
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.getDeviceEvents(token, program.args[0], program.fromDate);
+      return this.barracks.getDevice(token, program.args[0]);
     });
   }
 }
