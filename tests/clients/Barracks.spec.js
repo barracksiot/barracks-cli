@@ -1552,6 +1552,54 @@ describe('Barracks', () => {
     });
   });
 
+  describe('#getDevice()', () => {
+
+    const unitId = 'anUnit';
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      barracks.getDevice(token, unitId).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getDevice', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { unitId }
+        });
+        done();
+      });
+    });
+
+    it('should return the device information when request succeed', done => {
+      // Given
+      const device = {
+        unitId,
+        lastEvent: {},
+        lastSeen: 'some date'
+      };
+      const response = { body: device };
+      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      barracks.getDevice(token, unitId).then(result => {
+        expect(result).to.deep.equals(device);
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
+        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly('getDevice', {
+          headers: { 'x-auth-token': token },
+          pathVariables: { unitId }
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getDevicesFilteredByQuery()', () => {
 
     it('should return a stream object and deleguate to the client when query given', done => {

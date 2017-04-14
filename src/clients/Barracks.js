@@ -404,6 +404,27 @@ class Barracks {
     });
   }
 
+  getDevice(token, unitId) {
+    return new Promise((resolve, reject) => {
+      logger.debug(`Getting device ${unitId}`);
+      this.client.sendEndpointRequest('getDevice', {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          unitId
+        }
+      }).then(response => {
+        const device = response.body;
+        logger.debug('Device information retrieved:', device);
+        resolve(device);
+      }).catch(err => {
+        logger.debug('get device request failure.');
+        reject(err.message);
+      });
+    });
+  }
+
   getDevicesFilteredByQuery(token, query) {
     return new Promise(resolve => {
       logger.debug('Getting devices with query:', query);

@@ -100,6 +100,10 @@ module.exports = {
         method: 'GET',
         path: '/v2/api/member/devices?size=20'
       },
+      getDevice: {
+        method: 'GET',
+        path: '/v2/api/member/devices/:unitId'
+      },
       getDevicesWithQueryV1: {
         method: 'GET',
         path: '/api/member/devices?size=20&query=:query'

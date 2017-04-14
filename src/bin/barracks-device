@@ -15,7 +15,6 @@ if (config.v2Enabled) {
     .command('history', 'Display all events of a device');
 }
 
-
 barracks.parse(process.argv);
 
 process.on('SIGINT', () => {
