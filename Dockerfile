@@ -1,4 +1,4 @@
-FROM        node:7.9.0
+FROM        node:7.9.0-alpine
 MAINTAINER  Grégoire Weber <gregoire@barracks.io>
 
 ENV         DEBUG                         0
