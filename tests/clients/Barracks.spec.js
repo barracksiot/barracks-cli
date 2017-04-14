@@ -2064,7 +2064,7 @@ describe('Barracks', () => {
     });
   });
 
-  describe('#createDeploymentPlan()', () => {
+  describe('#publishDeploymentPlan()', () => {
 
     const packageRef = 'ze.ref';
     const validPlan = {
@@ -2081,13 +2081,13 @@ describe('Barracks', () => {
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      barracks.createDeploymentPlan(token, validPlan).then(result => {
+      barracks.publishDeploymentPlan(token, validPlan).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createDeploymentPlan',
+          'publishDeploymentPlan',
           {
             headers: {
               'x-auth-token': token
@@ -2109,11 +2109,11 @@ describe('Barracks', () => {
       barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      barracks.createDeploymentPlan(token, plan).then(result => {
+      barracks.publishDeploymentPlan(token, plan).then(result => {
         expect(result).to.be.equals(response.body);
         expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
         expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createDeploymentPlan',
+          'publishDeploymentPlan',
           {
             headers: {
               'x-auth-token': token
