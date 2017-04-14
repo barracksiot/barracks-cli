@@ -3,9 +3,7 @@ const BarracksCommand = require('../BarracksCommand');
 class FilterCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program
-    .arguments('<filter-name>')
-    .option('');
+    return program.arguments('<filter-name>');
   }
 
   validateCommand(program) {

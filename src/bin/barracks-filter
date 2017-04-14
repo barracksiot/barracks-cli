@@ -4,11 +4,17 @@ const program = require('commander');
 const config = require('../config.js');
 const pjson = require('../../package.json');
 
-const barracks = program
-  .command('ls', 'List filters')
+const barracks = program.version(pjson.version);
+if (config.v2Enabled) {
+  barracks.command('ls', 'List filters')
+    .command('create', 'Create a filter')
+    .command('get', 'Get a filter')
+    .command('rm', 'Remove a filter');
+} else {
+  barracks.command('ls', 'List filters')
   .command('create', 'Create a filter')
-  .command('rm', 'Remove a filter')
-  .command('get', 'Get a filter');
+  .command('rm', 'Remove a filter');
+}
 
 barracks.parse(process.argv);
 
