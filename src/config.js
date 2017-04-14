@@ -163,6 +163,14 @@ module.exports = {
       getPackage: {
         method: 'GET',
         path: '/v2/api/member/components/:componentRef'
+      },
+      getFilterV1: {
+        method: 'GET',
+        path: '/api/member/filters/:filter'
+      },
+      getFilterV2: {
+        method: 'GET',
+        path: '/v2/api/member/filters/:filter'
       }
     }
   },

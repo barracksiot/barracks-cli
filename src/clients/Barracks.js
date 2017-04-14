@@ -242,31 +242,20 @@ class Barracks {
   }
 
   getFilterByName(token, filterName) {
+    const endpointKey = this.v2Enabled ? 'getFilterV2' : 'getFilterV1';
     return new Promise((resolve, reject) => {
-      const buffer = new PageableStream();
-      buffer.onPageReceived(page => {
-        const filter = page.find(filter => {
-          return filter.name === filterName;
-        });
-        if (filter) {
-          resolve(filter);
+      this.client.sendEndpointRequest(endpointKey, {
+        headers: {
+          'x-auth-token': token
+        },
+        pathVariables: {
+          filter: filterName
         }
+      }).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
       });
-      buffer.onLastPage(() => {
-        reject('No filter with name ' + filterName + ' found.');
-      });
-      buffer.onError(error => {
-        reject(error);
-      });
-
-      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
-      this.client.retrievePagesUntilCondition(
-        buffer,
-        endpointKey,
-        { headers: { 'x-auth-token': token } },
-        'filters',
-        filters => filters.find(filter => filter.name === filterName)
-      );
     });
   }
 
