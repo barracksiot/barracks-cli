@@ -3,6 +3,7 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
+const DeviceClient = require('./DeviceClient');
 const FilterClient = require('./FilterClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
@@ -18,6 +19,14 @@ function mergeAccountClient(barracksClient, options) {
   barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
   barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
+}
+
+function mergeDeviceClient(barracksClient, options) {
+  const deviceClient = new DeviceClient(options);
+  barracksClient.getDevice = deviceClient.getDevice.bind(deviceClient);
+  barracksClient.getDevices = deviceClient.getDevices.bind(deviceClient);
+  barracksClient.getDevicesFilteredByQuery = deviceClient.getDevicesFilteredByQuery.bind(deviceClient);
+  barracksClient.getDeviceEvents = deviceClient.getDeviceEvents.bind(deviceClient);
 }
 
 function mergeFilterClient(barracksClient, options) {
@@ -65,6 +74,7 @@ class BarracksClient {
     this.v2Enabled = config.v2Enabled;
 
     mergeAccountClient(this, options);
+    mergeDeviceClient(this, options);
     mergeFilterClient(this, options);
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
@@ -108,90 +118,6 @@ class BarracksClient {
           }
         },
         'devices');
-    });
-  }
-
-  getDevices(token) {
-    return new Promise(resolve => {
-      logger.debug('Getting devices');
-      const stream = new PageableStream();
-      resolve(stream);
-      const endpointKey = this.v2Enabled ? 'getDevicesV2' : 'getDevicesV1';
-      this.client.retrieveAllPages(stream, endpointKey, {
-        headers: {
-          'x-auth-token': token
-        }
-      },
-      'devices');
-    });
-  }
-
-  getDevice(token, unitId) {
-    return new Promise((resolve, reject) => {
-      logger.debug(`Getting device ${unitId}`);
-      this.client.sendEndpointRequest('getDevice', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          unitId
-        }
-      }).then(response => {
-        const device = response.body;
-        logger.debug('Device information retrieved:', device);
-        resolve(device);
-      }).catch(err => {
-        logger.debug('get device request failure.');
-        reject(err.message);
-      });
-    });
-  }
-
-  getDevicesFilteredByQuery(token, query) {
-    return new Promise(resolve => {
-      logger.debug('Getting devices with query:', query);
-      const stream = new PageableStream();
-      resolve(stream);
-      const endpointKey = this.v2Enabled ? 'getDevicesWithQueryV2' : 'getDevicesWithQueryV1';
-      this.client.retrieveAllPages(stream, endpointKey, {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            query: encodeURI(JSON.stringify(query))
-          }
-        },
-        'devices');
-    });
-  }
-
-  getDeviceEvents(token, unitId, fromDate) {
-    return new Promise(resolve => {
-      const resultStream = new PageableStream();
-      const bufferStream = new PageableStream();
-      resolve(resultStream);
-      const endpointKey = this.v2Enabled ? 'getDeviceEventsV2' : 'getDeviceEventsV1';
-      this.client.retrievePagesUntilCondition(bufferStream, endpointKey, {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            unitId
-          }
-        }, 'events', events =>
-        fromDate && events.some(event => Date.parse(event.receptionDate) < Date.parse(fromDate))
-      );
-      bufferStream.onPageReceived(events => {
-        const filteredEvents = events.filter(event =>
-          Date.parse(fromDate || 0) < Date.parse(event.receptionDate)
-        );
-        if (filteredEvents.length > 0) {
-          resultStream.write(filteredEvents);
-        }
-      });
-      bufferStream.onLastPage(() => {
-        resultStream.lastPage();
-      });
     });
   }
 
