@@ -1,6 +1,8 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
+const fs = require('fs');
+const path = require('path');
 
 class BarracksClient {
 
@@ -16,6 +18,29 @@ class BarracksClient {
           'x-auth-token': token
         },
         body: update
+      }).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
+    });
+  }
+
+  createUpdatePackage(token, updatePackage) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest('createUpdatePackage', {
+        headers: {
+          'x-auth-token': token
+        },
+        formData: {
+          versionId: updatePackage.versionId,
+          file: {
+            value: fs.createReadStream(updatePackage.file),
+            options: {
+              filename: path.basename(updatePackage.file)
+            }
+          }
+        }
       }).then(response => {
         resolve(response.body);
       }).catch(err => {

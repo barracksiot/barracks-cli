@@ -95,6 +95,7 @@ describe('Barracks', () => {
 
       // Then
       expect(barracksClient).to.have.property('createUpdate').and.to.be.a('function');
+      expect(barracksClient).to.have.property('createUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('editUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('getUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('getUpdates').and.to.be.a('function');
@@ -102,114 +103,6 @@ describe('Barracks', () => {
       expect(barracksClient).to.have.property('publishUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('archiveUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('scheduleUpdate').and.to.be.a('function');
-    });
-  });
-
-  describe('#createPackage()', () => {
-
-    beforeEach(() => {
-      const ProxifiedBarracks = proxyquire(barracksClientPath, {
-        fs: {
-          createReadStream: file => {
-            return mockedCreateReadStream(file)
-          }
-        },
-        path: {
-          basename: file => {
-            return mockedBasename(file)
-          }
-        }
-      });
-
-      barracks = new ProxifiedBarracks();
-    });
-
-    it('should return the package created', done => {
-      // Given
-      const segmentId = 'aSegment';
-      const options = {
-        headers: { 'x-auth-token': token },
-        pathVariables: { segmentId }
-      }
-      const response = { body: 'coucou' }
-      const fileReadStream = 'fileReadStream';
-      const file = 'file';
-      const versionId = 'version';
-      const package = { versionId, file };
-
-      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
-      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
-      mockedBasename = sinon.stub().returns(file);
-
-      // When / Then
-      barracks.createPackage(token, package).then(result => {
-        expect(result).to.be.equals(response.body);
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createPackage',
-          {
-            headers: { 'x-auth-token': token },
-            formData: {
-              versionId: versionId,
-              file: {
-                value: fileReadStream,
-                options: { filename: file }
-              }
-            }
-          }
-        );
-        expect(mockedCreateReadStream).to.have.been.calledOnce;
-        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
-        expect(mockedBasename).to.have.been.calledOnce;
-        expect(mockedBasename).to.have.been.calledWithExactly(file);
-        done();
-      }).catch(err => {
-        done(err);
-      });
-    });
-
-    it('should reject an error if request fails', done => {
-      // Given
-      const segmentId = 'aSegment';
-      const options = {
-        headers: { 'x-auth-token': token },
-        pathVariables: { segmentId }
-      }
-      const response = { message: 'error' }
-      const fileReadStream = 'fileReadStream';
-      const file = 'file';
-      const versionId = 'version';
-      const package = { versionId, file };
-
-      barracks.client.sendEndpointRequest = sinon.stub().returns(Promise.reject(response));
-      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
-      mockedBasename = sinon.stub().returns(file);
-
-      // When / Then
-      barracks.createPackage(token, package).then(result => {
-        done('shoud have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(response.message);
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledOnce;
-        expect(barracks.client.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createPackage',
-          {
-            headers: { 'x-auth-token': token },
-            formData: {
-              versionId: versionId,
-              file: {
-                value: fileReadStream,
-                options: { filename: file }
-              }
-            }
-          }
-        );
-        expect(mockedCreateReadStream).to.have.been.calledOnce;
-        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
-        expect(mockedBasename).to.have.been.calledOnce;
-        expect(mockedBasename).to.have.been.calledWithExactly(file);
-        done();
-      });
     });
   });
 

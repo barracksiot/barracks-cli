@@ -1,10 +1,11 @@
+const updateClientPath = '../../src/clients/UpdateClient';
 const PageableStream = require('../../src/clients/PageableStream');
 const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
-const UpdateClient = require('../../src/clients/UpdateClient');
+const UpdateClient = require(updateClientPath);
 const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
@@ -61,6 +62,114 @@ describe('UpdateClient', () => {
         done();
       }).catch(err => {
         done(err);
+      });
+    });
+  });
+
+  describe('#createUpdatePackage()', () => {
+
+    beforeEach(() => {
+      const ProxifiedClient = proxyquire(updateClientPath, {
+        fs: {
+          createReadStream: file => {
+            return mockedCreateReadStream(file)
+          }
+        },
+        path: {
+          basename: file => {
+            return mockedBasename(file)
+          }
+        }
+      });
+
+      updateClient = new ProxifiedClient();
+    });
+
+    it('should return the package created', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      const response = { body: 'coucou' }
+      const fileReadStream = 'fileReadStream';
+      const file = 'file';
+      const versionId = 'version';
+      const package = { versionId, file };
+
+      updateClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
+      mockedBasename = sinon.stub().returns(file);
+
+      // When / Then
+      updateClient.createUpdatePackage(token, package).then(result => {
+        expect(result).to.be.equals(response.body);
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createUpdatePackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
+            }
+          }
+        );
+        expect(mockedCreateReadStream).to.have.been.calledOnce;
+        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
+        expect(mockedBasename).to.have.been.calledOnce;
+        expect(mockedBasename).to.have.been.calledWithExactly(file);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should reject an error if request fails', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      const response = { message: 'error' }
+      const fileReadStream = 'fileReadStream';
+      const file = 'file';
+      const versionId = 'version';
+      const package = { versionId, file };
+
+      updateClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(response));
+      mockedCreateReadStream = sinon.stub().returns(fileReadStream);
+      mockedBasename = sinon.stub().returns(file);
+
+      // When / Then
+      updateClient.createUpdatePackage(token, package).then(result => {
+        done('shoud have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(response.message);
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          'createUpdatePackage',
+          {
+            headers: { 'x-auth-token': token },
+            formData: {
+              versionId: versionId,
+              file: {
+                value: fileReadStream,
+                options: { filename: file }
+              }
+            }
+          }
+        );
+        expect(mockedCreateReadStream).to.have.been.calledOnce;
+        expect(mockedCreateReadStream).to.have.been.calledWithExactly(file);
+        expect(mockedBasename).to.have.been.calledOnce;
+        expect(mockedBasename).to.have.been.calledWithExactly(file);
+        done();
       });
     });
   });

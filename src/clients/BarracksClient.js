@@ -58,6 +58,7 @@ function mergeTokenClient(barracksClient, options) {
 function mergeUpdateClient(barracksClient, options) {
   const updateClient = new UpdateClient(options);
   barracksClient.createUpdate = updateClient.createUpdate.bind(updateClient);
+  barracksClient.createUpdatePackage = updateClient.createUpdatePackage.bind(updateClient);
   barracksClient.editUpdate = updateClient.editUpdate.bind(updateClient);
   barracksClient.getUpdate = updateClient.getUpdate.bind(updateClient);
   barracksClient.getUpdates = updateClient.getUpdates.bind(updateClient);
@@ -80,29 +81,6 @@ class BarracksClient {
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
     mergeUpdateClient(this, options);
-  }
-
-  createPackage(token, updatePackage) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createPackage', {
-        headers: {
-          'x-auth-token': token
-        },
-        formData: {
-          versionId: updatePackage.versionId,
-          file: {
-            value: fs.createReadStream(updatePackage.file),
-            options: {
-              filename: path.basename(updatePackage.file)
-            }
-          }
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
   }
 
   createComponent(token, component) {

@@ -249,7 +249,7 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
-        createPackage: sinon.stub().returns(Promise.reject('Error'))
+        createUpdatePackage: sinon.stub().returns(Promise.reject('Error'))
       };
 
       // When / Then
@@ -260,8 +260,8 @@ describe('CreateUpdateCommand', () => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
         });
@@ -278,7 +278,7 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
-        createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
+        createUpdatePackage: sinon.stub().returns(Promise.resolve(updatePackage)),
         createUpdate: sinon.stub().returns(Promise.reject("Error"))
       };
 
@@ -290,8 +290,8 @@ describe('CreateUpdateCommand', () => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
         });
@@ -319,7 +319,7 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
-        createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
+        createUpdatePackage: sinon.stub().returns(Promise.resolve(updatePackage)),
         createUpdate: sinon.stub().returns(Promise.resolve(update))
       };
 
@@ -329,8 +329,8 @@ describe('CreateUpdateCommand', () => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
         });
@@ -360,7 +360,7 @@ describe('CreateUpdateCommand', () => {
       createUpdateCommand.barracks = {
         getAccount: sinon.stub().returns(Promise.resolve(account)),
         getSegmentByName: sinon.stub().returns(Promise.resolve(segment)),
-        createPackage: sinon.stub().returns(Promise.resolve(updatePackage)),
+        createUpdatePackage: sinon.stub().returns(Promise.resolve(updatePackage)),
         createUpdate: sinon.stub().returns(Promise.resolve(update))
       };
 
@@ -370,8 +370,8 @@ describe('CreateUpdateCommand', () => {
         expect(createUpdateCommand.barracks.getAccount).to.have.been.calledWithExactly(token);
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(createUpdateCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, program.segment);
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(createUpdateCommand.barracks.createPackage).to.have.been.calledWithExactly(token, {
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledOnce;
+        expect(createUpdateCommand.barracks.createUpdatePackage).to.have.been.calledWithExactly(token, {
           file: program.package,
           versionId: program.versionId
         });
