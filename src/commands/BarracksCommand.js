@@ -2,7 +2,7 @@ const prettyRenderer = require('../renderers/prettyRenderer');
 const jsonRenderer = require('../renderers/jsonRenderer');
 const read = require('read');
 const program = require('commander');
-const Barracks = require('../clients/Barracks');
+const Barracks = require('../clients/BarracksClient');
 const UserConfiguration = require('../repositories/UserConfiguration');
 const config = require('../config');
 

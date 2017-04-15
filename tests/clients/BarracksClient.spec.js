@@ -1,4 +1,4 @@
-const barracksClientPath = '../../src/clients/Barracks';
+const barracksClientPath = '../../src/clients/BarracksClient';
 const PageableStream = require('../../src/clients/PageableStream');
 const chai = require('chai');
 const expect = chai.expect;
