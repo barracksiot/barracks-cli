@@ -1,11 +1,33 @@
+/* jshint maxstatements: 100 */
+
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
+const UpdateClient = require('./UpdateClient');
 const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../utils/logger');
 const config = require('../config');
+
+function mergeAccountClient(barracksClient, options) {
+  const accountClient = new AccountClient(options);
+  barracksClient.authenticate = accountClient.authenticate;
+  barracksClient.getAccount = accountClient.getAccount;
+  barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId;
+}
+
+function mergeUpdateClient(barracksClient, options) {
+  const updateClient = new UpdateClient(options);
+  barracksClient.createUpdate = updateClient.createUpdate;
+  barracksClient.editUpdate = updateClient.editUpdate;
+  barracksClient.getUpdate = updateClient.getUpdate;
+  barracksClient.getUpdates = updateClient.getUpdates;
+  barracksClient.getUpdatesBySegmentId = updateClient.getUpdatesBySegmentId;
+  barracksClient.publishUpdate = updateClient.publishUpdate;
+  barracksClient.archiveUpdate = updateClient.archiveUpdate;
+  barracksClient.scheduleUpdate = updateClient.scheduleUpdate;
+}
 
 class BarracksClient {
 
@@ -14,111 +36,8 @@ class BarracksClient {
     this.client = new HTTPClient(options);
     this.v2Enabled = config.v2Enabled;
 
-    const accountClient = new AccountClient(options);
-    this.authenticate = accountClient.authenticate;
-    this.getAccount = accountClient.getAccount;
-    this.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId;
-  }
-
-  getUpdates(token) {
-    return new Promise(resolve => {
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(stream, 'getUpdates', {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'updates');
-    });
-  }
-
-  getUpdatesBySegmentId(token, segmentId) {
-    return new Promise(resolve => {
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(stream, 'updatesBySegmentId', {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            segmentId
-          }
-        },
-        'updates');
-    });
-  }
-
-  getUpdate(token, uuid) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('getUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
-        }
-      }).then(response => {
-        const update = response.body;
-        logger.debug('Update information retrieved:', update);
-        resolve(update);
-      }).catch(err => {
-        logger.debug('Update information request failure.');
-        reject(err.message);
-      });
-    });
-  }
-
-  publishUpdate(token, uuid) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('publishUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  archiveUpdate(token, uuid) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('archiveUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  scheduleUpdate(token, uuid, date) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('scheduleUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid,
-          time: date.toISOString()
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
+    mergeAccountClient(this, options);
+    mergeUpdateClient(this, options);
   }
 
   createPackage(token, updatePackage) {
@@ -297,21 +216,6 @@ class BarracksClient {
     });
   }
 
-  createUpdate(token, update) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: update
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
   getSegmentDevices(token, segmentId) {
     return new Promise(resolve => {
       logger.debug('Getting devices for segment:', segmentId);
@@ -409,32 +313,6 @@ class BarracksClient {
       });
       bufferStream.onLastPage(() => {
         resultStream.lastPage();
-      });
-    });
-  }
-
-  editUpdate(token, updateDiff) {
-    return new Promise((resolve, reject) => {
-      this.getUpdate(token, updateDiff.uuid).then(update => {
-        const newUpdate = Object.assign({}, update, { packageId: update.packageInfo.id }, updateDiff);
-        delete newUpdate.packageInfo;
-        logger.debug('Editing update:', newUpdate);
-        return this.client.sendEndpointRequest('editUpdate', {
-          headers: {
-            'x-auth-token': token
-          },
-          body: newUpdate,
-          pathVariables: {
-            uuid: newUpdate.uuid
-          }
-        });
-      }).then(response => {
-        const update = response.body;
-        logger.debug('Edit update successful:', update);
-        resolve(update);
-      }).catch(err => {
-        logger.debug('Edit update failed:', err);
-        reject(err.message);
       });
     });
   }
