@@ -175,6 +175,34 @@ describe('DeviceClient', () => {
     });
   });
 
+  describe('#getDevicesBySegment()', () => {
+
+    it('should return a stream object and deleguate to the client', done => {
+      // Given
+      const segmentId = 'aSegment';
+      const options = {
+        headers: { 'x-auth-token': token },
+        pathVariables: { segmentId }
+      }
+      deviceClient.httpClient.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      deviceClient.getDevicesBySegment(token, segmentId).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
+        expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          'getSegmentDevices',
+          options,
+          'devices'
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getDeviceEvents()', () => {
 
     it('should return a stream object and deleguate to the client', done => {

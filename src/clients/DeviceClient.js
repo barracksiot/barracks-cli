@@ -63,6 +63,23 @@ class DeviceClient {
     });
   }
 
+  getDevicesBySegment(token, segmentId) {
+    return new Promise(resolve => {
+      logger.debug('Getting devices for segment:', segmentId);
+      const stream = new PageableStream();
+      resolve(stream);
+      this.httpClient.retrieveAllPages(stream, 'getSegmentDevices', {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            segmentId
+          }
+        },
+        'devices');
+    });
+  }
+
   getDeviceEvents(token, unitId, fromDate) {
     return new Promise(resolve => {
       const resultStream = new PageableStream();

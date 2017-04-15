@@ -1,4 +1,4 @@
-/* jshint maxstatements: 100 */
+/* jshint maxstatements: 10 */
 
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
@@ -26,6 +26,7 @@ function mergeDeviceClient(barracksClient, options) {
   barracksClient.getDevice = deviceClient.getDevice.bind(deviceClient);
   barracksClient.getDevices = deviceClient.getDevices.bind(deviceClient);
   barracksClient.getDevicesFilteredByQuery = deviceClient.getDevicesFilteredByQuery.bind(deviceClient);
+  barracksClient.getDevicesBySegment = deviceClient.getDevicesBySegment.bind(deviceClient);
   barracksClient.getDeviceEvents = deviceClient.getDeviceEvents.bind(deviceClient);
 }
 
@@ -101,23 +102,6 @@ class BarracksClient {
       }).catch(err => {
         reject(err.message);
       });
-    });
-  }
-
-  getSegmentDevices(token, segmentId) {
-    return new Promise(resolve => {
-      logger.debug('Getting devices for segment:', segmentId);
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(stream, 'getSegmentDevices', {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            segmentId
-          }
-        },
-        'devices');
     });
   }
 
