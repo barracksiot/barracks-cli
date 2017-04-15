@@ -3,6 +3,7 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
+const FilterClient = require('./FilterClient');
 const SegmentClient = require('./SegmentClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDK = require('barracks-sdk');
@@ -16,6 +17,14 @@ function mergeAccountClient(barracksClient, options) {
   barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
   barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
+}
+
+function mergeFilterClient(barracksClient, options) {
+  const filterClient = new FilterClient(options);
+  barracksClient.createFilter = filterClient.createFilter.bind(filterClient);
+  barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
+  barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
+  barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);
 }
 
 function mergeSegmentClient(barracksClient, options) {
@@ -48,6 +57,7 @@ class BarracksClient {
     this.v2Enabled = config.v2Enabled;
 
     mergeAccountClient(this, options);
+    mergeFilterClient(this, options);
     mergeSegmentClient(this, options);
     mergeUpdateClient(this, options);
   }
@@ -72,72 +82,6 @@ class BarracksClient {
       }).catch(err => {
         reject(err.message);
       });
-    });
-  }
-
-  createFilter(token, filter) {
-    return new Promise((resolve, reject) => {
-      const endpointKey = this.v2Enabled ? 'createFilterV2' : 'createFilterV1';
-      this.client.sendEndpointRequest(endpointKey, {
-        headers: {
-          'x-auth-token': token
-        },
-        body: filter
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  deleteFilter(token, filter) {
-    return new Promise((resolve, reject) => {
-      const endpointKey = this.v2Enabled ? 'deleteFilterV2' : 'deleteFilterV1';
-      this.client.sendEndpointRequest(endpointKey, {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          filter
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getFilterByName(token, filterName) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('getFilter', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          filter: filterName
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(errResponse => {
-        reject(errResponse.message);
-      });
-    });
-  }
-
-  getFilters(token) {
-    return new Promise(resolve => {
-      logger.debug('Getting filters');
-      const stream = new PageableStream();
-      resolve(stream);
-      const endpointKey = this.v2Enabled ? 'getFiltersV2' : 'getFiltersV1';
-      this.client.retrieveAllPages(stream, endpointKey, {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'filters');
     });
   }
 

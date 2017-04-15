@@ -12,7 +12,7 @@ class FilterCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.getFilterByName(token, program.args[0]);
+      return this.barracks.getFilter(token, program.args[0]);
     });
   }
 }
