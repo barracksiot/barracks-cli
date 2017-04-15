@@ -13,7 +13,6 @@ describe('AccountClient', () => {
 
   let accountClient;
   const token = 'i8uhkj.token.65ryft';
-  const programWithValidOptions = {};
 
   beforeEach(() => {
     accountClient = new AccountClient();

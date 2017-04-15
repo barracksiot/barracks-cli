@@ -14,7 +14,6 @@ describe('UpdateClient', () => {
 
   let updateClient;
   const token = 'i8uhkj.token.65ryft';
-  const programWithValidOptions = {};
 
   beforeEach(() => {
     updateClient = new UpdateClient();

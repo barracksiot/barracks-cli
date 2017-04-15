@@ -20,7 +20,6 @@ describe('segmentClient', () => {
 
   let segmentClient;
   const token = 'i8uhkj.token.65ryft';
-  const programWithValidOptions = {};
 
   beforeEach(() => {
     segmentClient = new SegmentClient();
