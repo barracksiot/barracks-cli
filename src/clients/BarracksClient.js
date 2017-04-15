@@ -6,7 +6,7 @@ const path = require('path');
 const logger = require('../utils/logger');
 const config = require('../config');
 
-class Barracks {
+class BarracksClient {
 
   constructor(options) {
     this.options = options;
@@ -761,4 +761,4 @@ class Barracks {
   }
 }
 
-module.exports = Barracks;
+module.exports = BarracksClient;
