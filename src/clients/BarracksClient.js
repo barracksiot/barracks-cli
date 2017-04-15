@@ -3,6 +3,7 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
+const SegmentClient = require('./SegmentClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
@@ -16,6 +17,15 @@ function mergeAccountClient(barracksClient, options) {
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
   barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
 }
+
+function mergeSegmentClient(barracksClient, options) {
+  const segmentClient = new SegmentClient(options);
+  barracksClient.createSegment = segmentClient.createSegment.bind(segmentClient);
+  barracksClient.editSegment = segmentClient.editSegment.bind(segmentClient);
+  barracksClient.getSegmentByName = segmentClient.getSegmentByName.bind(segmentClient);
+  barracksClient.getSegment = segmentClient.getSegment.bind(segmentClient);
+  barracksClient.getSegments = segmentClient.getSegments.bind(segmentClient);
+  barracksClient.setActiveSegments = segmentClient.setActiveSegments.bind(segmentClient);
 }
 
 function mergeUpdateClient(barracksClient, options) {
@@ -38,6 +48,7 @@ class BarracksClient {
     this.v2Enabled = config.v2Enabled;
 
     mergeAccountClient(this, options);
+    mergeSegmentClient(this, options);
     mergeUpdateClient(this, options);
   }
 
@@ -56,21 +67,6 @@ class BarracksClient {
             }
           }
         }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  createSegment(token, segment) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createSegment', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: segment
       }).then(response => {
         resolve(response.body);
       }).catch(err => {
@@ -142,78 +138,6 @@ class BarracksClient {
           }
         },
         'filters');
-    });
-  }
-
-  editSegment(token, diff) {
-    return new Promise((resolve, reject) => {
-      this.getSegment(token, diff.id).then(segment => {
-        return this.client.sendEndpointRequest('editSegment', {
-          headers: {
-            'x-auth-token': token
-          },
-          body: Object.assign({}, segment, diff),
-          pathVariables: {
-            id: segment.id
-          }
-        });
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getSegmentByName(token, segmentName) {
-    return new Promise((resolve, reject) => {
-      this.getSegments(token).then(segments => {
-        const segment = segments.active.concat(segments.inactive, segments.other).find(segment => {
-          return segment.name === segmentName;
-        });
-        if (segment) {
-          resolve(segment);
-        } else {
-          reject('No matching segment.');
-        }
-      }).catch(err => {
-        reject(err);
-      });
-    });
-  }
-
-  getSegment(token, segmentId) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('getSegment', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          id: segmentId
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getSegments(token) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Getting user segments...');
-      this.client.sendEndpointRequest('getSegments', {
-        headers: {
-          'x-auth-token': token
-        }
-      }).then(response => {
-        const segments = response.body;
-        logger.debug('User segments retrieved:', segments);
-        resolve(segments);
-      }).catch(err => {
-        logger.debug('Get user segments failed with:', err);
-        reject(err.message);
-      });
     });
   }
 
@@ -314,21 +238,6 @@ class BarracksClient {
       });
       bufferStream.onLastPage(() => {
         resultStream.lastPage();
-      });
-    });
-  }
-
-  setActiveSegments(token, segmentIds) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('setActiveSegments', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: segmentIds
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
       });
     });
   }
