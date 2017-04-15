@@ -1,5 +1,6 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
+const AccountClient = require('./AccountClient');
 const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
 const path = require('path');
@@ -12,60 +13,11 @@ class BarracksClient {
     this.options = options;
     this.client = new HTTPClient(options);
     this.v2Enabled = config.v2Enabled;
-  }
 
-  authenticate(username, password) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Authenticating:', username);
-      this.client.sendEndpointRequest('login', {
-        body: { username, password }
-      }).then(response => {
-        logger.debug('Authentication successful.');
-        resolve(response.headers['x-auth-token']);
-      }).catch(err => {
-        logger.debug('Authentication failure.');
-        reject(err.message);
-      });
-    });
-  }
-
-  getAccount(token) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Getting account information for token:', token);
-      this.client.sendEndpointRequest('me', {
-        headers: {
-          'x-auth-token': token
-        }
-      }).then(response => {
-        const account = response.body;
-        logger.debug('Account information retrieved:', account);
-        resolve(account);
-      }).catch(err => {
-        logger.debug('Account information request failure.');
-        reject(err.message);
-      });
-    });
-  }
-
-  setGoogleAnalyticsTrackingId(token, googleId) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Setting Google Analytics Id:', googleId);
-      this.client.sendEndpointRequest('setGoogleAnalyticsTrackingId',
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          body: {
-            value: googleId
-          }
-        }).then(response => {
-        logger.debug('GA Id setted successful.');
-        resolve(response.body);
-      }).catch(err => {
-        logger.debug('GA Id set failure.');
-        reject(err.message);
-      });
-    });
+    const accountClient = new AccountClient(options);
+    this.authenticate = accountClient.authenticate;
+    this.getAccount = accountClient.getAccount;
+    this.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId;
   }
 
   getUpdates(token) {
