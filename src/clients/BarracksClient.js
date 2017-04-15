@@ -12,21 +12,22 @@ const config = require('../config');
 
 function mergeAccountClient(barracksClient, options) {
   const accountClient = new AccountClient(options);
-  barracksClient.authenticate = accountClient.authenticate;
-  barracksClient.getAccount = accountClient.getAccount;
-  barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId;
+  barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
+  barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
+  barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
+}
 }
 
 function mergeUpdateClient(barracksClient, options) {
   const updateClient = new UpdateClient(options);
-  barracksClient.createUpdate = updateClient.createUpdate;
-  barracksClient.editUpdate = updateClient.editUpdate;
-  barracksClient.getUpdate = updateClient.getUpdate;
-  barracksClient.getUpdates = updateClient.getUpdates;
-  barracksClient.getUpdatesBySegmentId = updateClient.getUpdatesBySegmentId;
-  barracksClient.publishUpdate = updateClient.publishUpdate;
-  barracksClient.archiveUpdate = updateClient.archiveUpdate;
-  barracksClient.scheduleUpdate = updateClient.scheduleUpdate;
+  barracksClient.createUpdate = updateClient.createUpdate.bind(updateClient);
+  barracksClient.editUpdate = updateClient.editUpdate.bind(updateClient);
+  barracksClient.getUpdate = updateClient.getUpdate.bind(updateClient);
+  barracksClient.getUpdates = updateClient.getUpdates.bind(updateClient);
+  barracksClient.getUpdatesBySegmentId = updateClient.getUpdatesBySegmentId.bind(updateClient);
+  barracksClient.publishUpdate = updateClient.publishUpdate.bind(updateClient);
+  barracksClient.archiveUpdate = updateClient.archiveUpdate.bind(updateClient);
+  barracksClient.scheduleUpdate = updateClient.scheduleUpdate.bind(updateClient);
 }
 
 class BarracksClient {
