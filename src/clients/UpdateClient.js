@@ -1,14 +1,12 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
-const config = require('../config');
 
 class BarracksClient {
 
   constructor(options) {
     this.options = options;
     this.httpClient = new HTTPClient(options);
-    this.v2Enabled = config.v2Enabled;
   }
 
   createUpdate(token, update) {
