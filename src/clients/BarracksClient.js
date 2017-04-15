@@ -5,6 +5,7 @@ const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
 const FilterClient = require('./FilterClient');
 const SegmentClient = require('./SegmentClient');
+const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDK = require('barracks-sdk');
 const fs = require('fs');
@@ -37,6 +38,13 @@ function mergeSegmentClient(barracksClient, options) {
   barracksClient.setActiveSegments = segmentClient.setActiveSegments.bind(segmentClient);
 }
 
+function mergeTokenClient(barracksClient, options) {
+  const tokenClient = new TokenClient(options);
+  barracksClient.createToken = tokenClient.createToken.bind(tokenClient);
+  barracksClient.getTokens = tokenClient.getTokens.bind(tokenClient);
+  barracksClient.revokeToken = tokenClient.revokeToken.bind(tokenClient);
+}
+
 function mergeUpdateClient(barracksClient, options) {
   const updateClient = new UpdateClient(options);
   barracksClient.createUpdate = updateClient.createUpdate.bind(updateClient);
@@ -59,6 +67,7 @@ class BarracksClient {
     mergeAccountClient(this, options);
     mergeFilterClient(this, options);
     mergeSegmentClient(this, options);
+    mergeTokenClient(this, options);
     mergeUpdateClient(this, options);
   }
 
@@ -182,52 +191,6 @@ class BarracksClient {
       });
       bufferStream.onLastPage(() => {
         resultStream.lastPage();
-      });
-    });
-  }
-
-  createToken(token, tokenConfiguration) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createToken', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: tokenConfiguration
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getTokens(token) {
-    return new Promise(resolve => {
-      logger.debug('Getting tokens');
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(
-        stream,
-        'getTokens',
-        { headers: { 'x-auth-token': token } },
-        'tokens'
-      );
-    });
-  }
-
-  revokeToken(authToken, tokenToRevoke) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('revokeToken', {
-        headers: {
-          'x-auth-token': authToken
-        },
-        pathVariables: {
-          token: tokenToRevoke
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
       });
     });
   }
