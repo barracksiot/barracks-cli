@@ -1,16 +1,14 @@
 /* jshint maxstatements: 10 */
 
-const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
 const DeviceClient = require('./DeviceClient');
 const FilterClient = require('./FilterClient');
+const PackageClient = require('./PackageClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDK = require('barracks-sdk');
-const fs = require('fs');
-const path = require('path');
 const logger = require('../utils/logger');
 const config = require('../config');
 
@@ -36,6 +34,18 @@ function mergeFilterClient(barracksClient, options) {
   barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
   barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
   barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);
+}
+
+function mergePackageClient(barracksClient, options) {
+  const packageClient = new PackageClient(options);
+  barracksClient.createComponent = packageClient.createComponent.bind(packageClient);
+  barracksClient.getPackage = packageClient.getPackage.bind(packageClient);
+  barracksClient.getComponents = packageClient.getComponents.bind(packageClient);
+  barracksClient.createVersion = packageClient.createVersion.bind(packageClient);
+  barracksClient.getVersion = packageClient.getVersion.bind(packageClient);
+  barracksClient.getComponentVersions = packageClient.getComponentVersions.bind(packageClient);
+  barracksClient.publishDeploymentPlan = packageClient.publishDeploymentPlan.bind(packageClient);
+  barracksClient.getDeploymentPlan = packageClient.getDeploymentPlan.bind(packageClient);
 }
 
 function mergeSegmentClient(barracksClient, options) {
@@ -78,132 +88,10 @@ class BarracksClient {
     mergeAccountClient(this, options);
     mergeDeviceClient(this, options);
     mergeFilterClient(this, options);
+    mergePackageClient(this, options);
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
     mergeUpdateClient(this, options);
-  }
-
-  createComponent(token, component) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createComponent', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: component
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getComponents(token) {
-    return new Promise(resolve => {
-      logger.debug('Getting components');
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(stream, 'getComponents', {
-          headers: {
-            'x-auth-token': token
-          }
-        },
-        'components');
-    });
-  }
-
-  createVersion(token, version) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('createVersion', {
-        headers: {
-          'x-auth-token': token
-        },
-        formData: {
-          version: {
-            value: JSON.stringify({
-              id: version.id,
-              name: version.name,
-              description: version.description,
-              metadata: version.metadata
-            }),
-            options: {
-              contentType: 'application/json'
-            }
-          },
-          file: {
-            value: fs.createReadStream(version.file),
-            options: {
-              filename: path.basename(version.file),
-              contentType: 'application/octet-stream'
-            }
-          }
-        },
-        pathVariables: {
-          componentRef: version.component
-        }
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  publishDeploymentPlan(token, plan) {
-    return new Promise((resolve, reject) => {
-      this.client.sendEndpointRequest('publishDeploymentPlan', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef: plan.package
-        },
-        body: plan
-      }).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
-  }
-
-  getComponentVersions(token, componentRef) {
-    return new Promise(resolve => {
-      logger.debug('Getting versions for components', componentRef);
-      const stream = new PageableStream();
-      resolve(stream);
-      this.client.retrieveAllPages(
-        stream,
-        'getComponentVersions',
-        {
-          headers: { 'x-auth-token': token },
-          pathVariables: { componentRef }
-        },
-        'versions'
-      );
-    });
-  }
-
-  getVersion(token, componentRef, versionId) {
-    return new Promise((resolve, reject) => {
-      logger.debug(`Getting version ${versionId} of component ${componentRef}`);
-      this.client.sendEndpointRequest(
-        'getVersion',
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          pathVariables: {
-            componentRef,
-            versionId
-          }
-        }
-      ).then(response => {
-        resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
-      });
-    });
   }
 
   checkUpdate(apiKey, device) {
@@ -249,48 +137,6 @@ class BarracksClient {
       }).catch(err => {
         logger.debug('check and download update failed:', err);
         reject(err);
-      });
-    });
-  }
-
-  getDeploymentPlan(token, componentRef) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Getting DeploymentPlan for component', componentRef);
-      this.client.sendEndpointRequest('getDeploymentPlan', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef
-        }
-      }).then(response => {
-        const deploymentPlan = response.body;
-        logger.debug('DeploymentPlan retrieved:', deploymentPlan);
-        resolve(deploymentPlan);
-      }).catch(err => {
-        logger.debug('Failed to retrieve DeploymentPlan');
-        reject(err.message);
-      });
-    });
-  }
-
-  getPackage(token, componentRef) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Getting package from its reference', componentRef);
-      this.client.sendEndpointRequest('getPackage', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef
-        }
-      }).then(response => {
-        const myPackage = response.body;
-        logger.debug('Package retrieved:', myPackage);
-        resolve(myPackage);
-      }).catch(err => {
-        logger.debug('Failed to retrieve package');
-        reject(err.message);
       });
     });
   }
