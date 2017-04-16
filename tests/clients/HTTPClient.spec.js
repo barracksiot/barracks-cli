@@ -14,7 +14,6 @@ let client;
 
 const baseUrl = 'http://barracks.io/';
 
-
 describe('HTTPClient', () => {
 
   beforeEach(() => {

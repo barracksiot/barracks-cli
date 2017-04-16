@@ -19,7 +19,6 @@ describe('PackageClient', () => {
   beforeEach(() => {
     packageClient = new PackageClient();
     packageClient.httpClient = {};
-    packageClient.v2Enabled = false;
   });
 
   describe('#createComponent()', () => {

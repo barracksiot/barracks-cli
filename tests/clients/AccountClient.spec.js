@@ -4,7 +4,6 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
 const AccountClient = require('../../src/clients/AccountClient');
-const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -17,7 +16,6 @@ describe('AccountClient', () => {
   beforeEach(() => {
     accountClient = new AccountClient();
     accountClient.httpClient = {};
-    accountClient.v2Enabled = false;
   });
 
   describe('#authenticate()', () => {

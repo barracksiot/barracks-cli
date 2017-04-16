@@ -4,7 +4,6 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
 const SegmentClient = require('../../src/clients/SegmentClient');
-const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -24,7 +23,6 @@ describe('segmentClient', () => {
   beforeEach(() => {
     segmentClient = new SegmentClient();
     segmentClient.httpClient = {};
-    segmentClient.v2Enabled = false;
   });
 
   describe('#createSegment()', () => {

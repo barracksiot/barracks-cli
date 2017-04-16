@@ -14,12 +14,13 @@ chai.use(sinonChai);
 describe('UpdateClient', () => {
 
   let updateClient;
+  let mockedCreateReadStream = undefined;
+  let mockedBasename = undefined;
   const token = 'i8uhkj.token.65ryft';
 
   beforeEach(() => {
     updateClient = new UpdateClient();
     updateClient.httpClient = {};
-    updateClient.v2Enabled = false;
   });
 
   describe('#createUpdate()', () => {
