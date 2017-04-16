@@ -33,10 +33,16 @@ describe('TokenClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
-          headers: { 'x-auth-token': token },
-          body: newToken
-        });
+        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/auth/tokens'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: newToken
+          }
+        );
         done();
       });
     });
@@ -52,10 +58,16 @@ describe('TokenClient', () => {
       tokenClient.createToken(token, newToken).then(result => {
         expect(result).to.be.equals(newTokenFull);
         expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createToken', {
-          headers: { 'x-auth-token': token },
-          body: newToken
-        });
+        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/auth/tokens'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: newToken
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -80,7 +92,10 @@ describe('TokenClient', () => {
         expect(tokenClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(tokenClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getTokens',
+          {
+            method: 'GET',
+            path: '/api/auth/tokens'
+          },
           options,
           'tokens'
         );
@@ -105,10 +120,16 @@ describe('TokenClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { token: tokenToRevoke }
-        });
+        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/auth/tokens/:token/revoke'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { token: tokenToRevoke }
+          }
+        );
         done();
       });
     });
@@ -129,10 +150,16 @@ describe('TokenClient', () => {
       tokenClient.revokeToken(token, tokenToRevoke).then(result => {
         expect(result).to.be.equals(revokedToken);
         expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('revokeToken', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { token: tokenToRevoke }
-        });
+        expect(tokenClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/auth/tokens/:token/revoke'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { token: tokenToRevoke }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
