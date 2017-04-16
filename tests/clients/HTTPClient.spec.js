@@ -12,7 +12,7 @@ chai.use(sinonChai);
 let requestMock;
 let client;
 
-const baseUrl = 'http://barracks.io/';
+const baseUrl = 'http://barracks.io';
 
 describe('HTTPClient', () => {
 
@@ -30,64 +30,64 @@ describe('HTTPClient', () => {
 
     it('should return the endpoint url when no path params given', () => {
       // Given
-      const endpoint = 'test';
-      const options = {};
-      client.serverInfo = {
-        baseUrl,
-        endpoints: {
-          test: { path: 'test/endpoint' }
-        }
+      const path = '/test/endpoint';
+      const endpoint = {
+        path,
+        method: 'GET'
       };
+      client.baseUrl = baseUrl;
+      const options = {};
 
       // When
       const result = client.buildEndpointUri(endpoint, options);
 
       // Then
-      const expectedResult = baseUrl + client.serverInfo.endpoints[endpoint].path;
+      const expectedResult = baseUrl + path;
       expect(result).to.be.equals(expectedResult);
     });
 
     it('should return the endpoint url when one path params given', () => {
       // Given
-      const endpoint = 'test';
+      const path = '/test/endpoint/';
+      const paramName = ':param';
       const paramValue = 'anId';
-      const options = { pathVariables: { param: paramValue } };
-      client.serverInfo = {
-        baseUrl,
-        endpoints: {
-          test: { path: 'test/endpoint/:param' }
-        }
+      const endpoint = {
+        path: path + paramName,
+        method: 'GET'
       };
+      const options = { pathVariables: { param: paramValue } };
+      client.baseUrl = baseUrl;
 
       // When
       const result = client.buildEndpointUri(endpoint, options);
 
       // Then
-      const expectedResult = baseUrl + 'test/endpoint/' + paramValue;
+      const expectedResult = baseUrl + path + paramValue;
       expect(result).to.be.equals(expectedResult);
     });
 
     it('should return the endpoint url when multiple path params given', () => {
       // Given
-      const endpoint = 'test';
+      const path = '/test/endpoint/:param/truc/:otherParam';
       const paramValue = 'anId';
-      const otherParamValue = 'aValue'
-      const options = { pathVariables: {
-        param: paramValue,
-        otherParam: otherParamValue
-      }};
-      client.serverInfo = {
-        baseUrl,
-        endpoints: {
-          test: { path: 'test/endpoint/:param/truc/:otherParam' }
+      const otherParamValue = 'otherId';
+      const endpoint = {
+        path: path,
+        method: 'GET'
+      };
+      const options = {
+        pathVariables: {
+          param: paramValue,
+          otherParam: otherParamValue
         }
       };
+      client.baseUrl = baseUrl;
 
       // When
       const result = client.buildEndpointUri(endpoint, options);
 
       // Then
-      const expectedResult = baseUrl + 'test/endpoint/' + paramValue + '/truc/' + otherParamValue;
+      const expectedResult = baseUrl + '/test/endpoint/' + paramValue + '/truc/' + otherParamValue;
       expect(result).to.be.equals(expectedResult);
     });
   });
@@ -96,22 +96,16 @@ describe('HTTPClient', () => {
 
     it('should return request response', () => {
       // Given
-      const endpoint = 'test';
-      const endpointUri = baseUrl + 'endpoint';
-      const method = 'POST';
-      const options = { headers: { 'x-auth-token': 'token' } };
-      client.buildEndpointUri = sinon.stub().returns(endpointUri);
-      client.serverInfo = {
-        baseUrl,
-        endpoints: {
-          test: {
-            path: 'endpoint',
-            method
-          }
-        }
+      const path = '/test/endpoint';
+      const endpoint = {
+        path,
+        method: 'GET'
       };
+      client.baseUrl = baseUrl;
+      const options = {};
       const response = { status: 200, body: 'coucou' };
       requestMock = sinon.stub().returns(response);
+      client.buildEndpointUri = sinon.stub().returns(baseUrl + path);
 
       // When
       const result = client.sendEndpointRequest(endpoint, options);
@@ -122,8 +116,8 @@ describe('HTTPClient', () => {
       expect(client.buildEndpointUri).to.have.been.calledWithExactly(endpoint, options);
       expect(requestMock).to.have.been.calledOnce;
       expect(requestMock).to.have.been.calledWithExactly(Object.assign({}, {
-        method,
-        uri: endpointUri,
+        method: endpoint.method,
+        uri: baseUrl + path,
         json: true,
         resolveWithFullResponse: true
       }, options));
