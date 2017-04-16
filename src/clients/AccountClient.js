@@ -1,19 +1,36 @@
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
 
+const endpoints = {
+  login: {
+    method: 'POST',
+    path: '/api/auth/login'
+  },
+  me: {
+    method: 'GET',
+    path: '/api/auth/me'
+  },
+  setGoogleAnalyticsTrackingId: {
+    method: 'PUT',
+    path: '/api/auth/me/gaTrackingId'
+  }
+};
+
 class AccountClient {
 
-  constructor(options) {
-    this.options = options;
-    this.httpClient = new HTTPClient(options);
+  constructor() {
+    this.httpClient = new HTTPClient();
   }
 
   authenticate(username, password) {
     return new Promise((resolve, reject) => {
-      logger.debug('Authenticating:', username);
-      this.httpClient.sendEndpointRequest('login', {
-        body: { username, password }
-      }).then(response => {
+      logger.debug(`Authenticating ${username}`);
+      this.httpClient.sendEndpointRequest(
+        endpoints.login,
+        {
+          body: { username, password }
+        }
+      ).then(response => {
         logger.debug('Authentication successful.');
         resolve(response.headers['x-auth-token']);
       }).catch(err => {
@@ -26,11 +43,14 @@ class AccountClient {
   getAccount(token) {
     return new Promise((resolve, reject) => {
       logger.debug('Getting account information for token:', token);
-      this.httpClient.sendEndpointRequest('me', {
-        headers: {
-          'x-auth-token': token
+      this.httpClient.sendEndpointRequest(
+        endpoints.me,
+        {
+          headers: {
+            'x-auth-token': token
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const account = response.body;
         logger.debug('Account information retrieved:', account);
         resolve(account);
@@ -44,7 +64,8 @@ class AccountClient {
   setGoogleAnalyticsTrackingId(token, googleId) {
     return new Promise((resolve, reject) => {
       logger.debug('Setting Google Analytics Id:', googleId);
-      this.httpClient.sendEndpointRequest('setGoogleAnalyticsTrackingId',
+      this.httpClient.sendEndpointRequest(
+        endpoints.setGoogleAnalyticsTrackingId,
         {
           headers: {
             'x-auth-token': token
@@ -52,7 +73,8 @@ class AccountClient {
           body: {
             value: googleId
           }
-        }).then(response => {
+        }
+      ).then(response => {
         logger.debug('GA Id setted successful.');
         resolve(response.body);
       }).catch(err => {

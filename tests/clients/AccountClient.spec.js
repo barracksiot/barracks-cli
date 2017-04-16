@@ -33,9 +33,15 @@ describe('AccountClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('login', {
-          body: { username, password }
-        });
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/auth/login'
+          },
+          {
+            body: { username, password }
+          }
+        );
         done();
       });
     });
@@ -51,9 +57,15 @@ describe('AccountClient', () => {
       accountClient.authenticate(username, password).then(result => {
         expect(result).to.be.equals(token);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('login', {
-          body: { username, password }
-        });
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/auth/login'
+          },
+          {
+            body: { username, password }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -74,9 +86,15 @@ describe('AccountClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('me', {
-          headers: { 'x-auth-token': token }
-        });
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/auth/me'
+          },
+          {
+            headers: { 'x-auth-token': token }
+          }
+        );
         done();
       });
     });
@@ -91,9 +109,15 @@ describe('AccountClient', () => {
       accountClient.getAccount(token).then(result => {
         expect(result).to.be.equals(account);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('me', {
-          headers: { 'x-auth-token': token }
-        });
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/auth/me'
+          },
+          {
+            headers: { 'x-auth-token': token }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -117,7 +141,10 @@ describe('AccountClient', () => {
         expect(err).to.be.equals(error.message);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'setGoogleAnalyticsTrackingId',
+          {
+            method: 'PUT',
+            path: '/api/auth/me/gaTrackingId'
+          },
           {
             headers: { 'x-auth-token': token },
             body: { value: analyticsId }
@@ -138,7 +165,10 @@ describe('AccountClient', () => {
         expect(result).to.be.equals(account);
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'setGoogleAnalyticsTrackingId',
+          {
+            method: 'PUT',
+            path: '/api/auth/me/gaTrackingId'
+          },
           {
             headers: { 'x-auth-token': token },
             body: { value: analyticsId }

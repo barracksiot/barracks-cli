@@ -1,6 +1,5 @@
 /* jshint maxstatements: 11 */
 
-const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
 const DeviceClient = require('./DeviceClient');
 const FilterClient = require('./FilterClient');
@@ -9,10 +8,9 @@ const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
-const config = require('../config');
 
-function mergeAccountClient(barracksClient, options) {
-  const accountClient = new AccountClient(options);
+function mergeAccountClient(barracksClient) {
+  const accountClient = new AccountClient();
   barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
   barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
@@ -86,11 +84,7 @@ function mergeSDKProxy(barracksClient, options) {
 class BarracksClient {
 
   constructor(options) {
-    this.options = options;
-    this.client = new HTTPClient(options);
-    this.v2Enabled = config.v2Enabled;
-
-    mergeAccountClient(this, options);
+    mergeAccountClient(this);
     mergeDeviceClient(this, options);
     mergeFilterClient(this, options);
     mergePackageClient(this, options);
