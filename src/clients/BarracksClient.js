@@ -62,8 +62,8 @@ function mergeTokenClient(barracksClient) {
   barracksClient.revokeToken = tokenClient.revokeToken.bind(tokenClient);
 }
 
-function mergeUpdateClient(barracksClient, options) {
-  const updateClient = new UpdateClient(options);
+function mergeUpdateClient(barracksClient) {
+  const updateClient = new UpdateClient();
   barracksClient.createUpdate = updateClient.createUpdate.bind(updateClient);
   barracksClient.createUpdatePackage = updateClient.createUpdatePackage.bind(updateClient);
   barracksClient.editUpdate = updateClient.editUpdate.bind(updateClient);
@@ -90,7 +90,7 @@ class BarracksClient {
     mergePackageClient(this);
     mergeSegmentClient(this);
     mergeTokenClient(this);
-    mergeUpdateClient(this, options);
+    mergeUpdateClient(this);
     mergeSDKProxy(this, options);
   }
 }

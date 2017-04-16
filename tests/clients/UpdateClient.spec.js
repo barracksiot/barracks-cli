@@ -37,10 +37,16 @@ describe('UpdateClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createUpdate', {
-          headers: { 'x-auth-token': token },
-          body: update
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/updates'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: update
+          }
+        );
         done();
       });
     });
@@ -56,10 +62,16 @@ describe('UpdateClient', () => {
       updateClient.createUpdate(token, update).then(result => {
         expect(result).to.be.equals(updateFull);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createUpdate', {
-          headers: { 'x-auth-token': token },
-          body: update
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/updates'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: update
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -108,7 +120,10 @@ describe('UpdateClient', () => {
         expect(result).to.be.equals(response.body);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createUpdatePackage',
+          {
+            method: 'POST',
+            path: '/api/member/packages'
+          },
           {
             headers: { 'x-auth-token': token },
             formData: {
@@ -154,7 +169,10 @@ describe('UpdateClient', () => {
         expect(err).to.be.equals(response.message);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createUpdatePackage',
+          {
+            method: 'POST',
+            path: '/api/member/packages'
+          },
           {
             headers: { 'x-auth-token': token },
             formData: {
@@ -206,11 +224,17 @@ describe('UpdateClient', () => {
         expect(updateClient.getUpdate).to.have.been.calledOnce;
         expect(updateClient.getUpdate).to.have.been.calledWithExactly(token, changes.uuid);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('editUpdate', {
-          headers: { 'x-auth-token': token },
-          body: Object.assign({}, originalUpdateWithPackageId, changes),
-          pathVariables: { uuid: originalUpdateWithPackageId.uuid }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: Object.assign({}, originalUpdateWithPackageId, changes),
+            pathVariables: { uuid: originalUpdateWithPackageId.uuid }
+          }
+        );
         done();
       });
     });
@@ -252,11 +276,17 @@ describe('UpdateClient', () => {
         expect(updateClient.getUpdate).to.have.been.calledOnce;
         expect(updateClient.getUpdate).to.have.been.calledWithExactly(token, changes.uuid);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('editUpdate', {
-          headers: { 'x-auth-token': token },
-          body: excpectedResult,
-          pathVariables: { uuid: originalUpdateWithPackageId.uuid }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: excpectedResult,
+            pathVariables: { uuid: originalUpdateWithPackageId.uuid }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -283,12 +313,18 @@ describe('UpdateClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            uuid: existingUpdate.uuid
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/updates/:uuid'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              uuid: existingUpdate.uuid
+            }
           }
-        });
+        );
         done();
       });
     });
@@ -302,12 +338,18 @@ describe('UpdateClient', () => {
       updateClient.getUpdate(token, existingUpdate.uuid).then(result => {
         expect(result).to.be.equals(existingUpdate);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            uuid: existingUpdate.uuid
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/updates/:uuid'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              uuid: existingUpdate.uuid
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);
@@ -332,7 +374,10 @@ describe('UpdateClient', () => {
         expect(updateClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(updateClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getUpdates',
+          {
+            method: 'GET',
+            path: '/api/member/updates?size=20'
+          },
           options,
           'updates'
         );
@@ -360,7 +405,10 @@ describe('UpdateClient', () => {
         expect(updateClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(updateClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'updatesBySegmentId',
+          {
+            method: 'GET',
+            path: '/api/member/segments/:segmentId/updates'
+          },
           options,
           'updates'
         );
@@ -385,10 +433,16 @@ describe('UpdateClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('publishUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { uuid: updateId }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/published'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { uuid: updateId }
+          }
+        );
         done();
       });
     });
@@ -404,10 +458,16 @@ describe('UpdateClient', () => {
       updateClient.publishUpdate(token, updateId).then(result => {
         expect(result).to.be.equals(update);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('publishUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { uuid: updateId }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/published'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { uuid: updateId }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -429,10 +489,16 @@ describe('UpdateClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('archiveUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { uuid: updateId }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/archived'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { uuid: updateId }
+          }
+        );
         done();
       });
     });
@@ -448,10 +514,16 @@ describe('UpdateClient', () => {
       updateClient.archiveUpdate(token, updateId).then(result => {
         expect(result).to.be.equals(update);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('archiveUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { uuid: updateId }
-        });
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/archived'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { uuid: updateId }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -473,13 +545,19 @@ describe('UpdateClient', () => {
       updateClient.scheduleUpdate(token, uuid, date).then(result => {
         expect(result).to.be.equals(update);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('scheduleUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            uuid,
-            time: date.toISOString()
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/scheduled?time=:time'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              uuid,
+              time: date.toISOString()
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);
@@ -500,13 +578,19 @@ describe('UpdateClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error);
         expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('scheduleUpdate', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            uuid,
-            time: date.toISOString()
+        expect(updateClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/updates/:uuid/status/scheduled?time=:time'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              uuid,
+              time: date.toISOString()
+            }
           }
-        });
+        );
         done();
       });
     });

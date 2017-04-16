@@ -4,21 +4,62 @@ const logger = require('../utils/logger');
 const fs = require('fs');
 const path = require('path');
 
+const endpoints = {
+  createUpdate: {
+    method: 'POST',
+    path: '/api/member/updates'
+  },
+  createUpdatePackage: {
+    method: 'POST',
+    path: '/api/member/packages'
+  },
+  editUpdate: {
+    method: 'PUT',
+    path: '/api/member/updates/:uuid'
+  },
+  getUpdate: {
+    method: 'GET',
+    path: '/api/member/updates/:uuid'
+  },
+  getUpdates: {
+    method: 'GET',
+    path: '/api/member/updates?size=20'
+  },
+  updatesBySegmentId: {
+    method: 'GET',
+    path: '/api/member/segments/:segmentId/updates'
+  },
+  publishUpdate: {
+    method: 'PUT',
+    path: '/api/member/updates/:uuid/status/published'
+  },
+  archiveUpdate: {
+    method: 'PUT',
+    path: '/api/member/updates/:uuid/status/archived'
+  },
+  scheduleUpdate: {
+    method: 'PUT',
+    path: '/api/member/updates/:uuid/status/scheduled?time=:time'
+  }
+};
+
 class BarracksClient {
 
-  constructor(options) {
-    this.options = options;
-    this.httpClient = new HTTPClient(options);
+  constructor() {
+    this.httpClient = new HTTPClient();
   }
 
   createUpdate(token, update) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('createUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: update
-      }).then(response => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.createUpdate,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: update
+        }
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -28,20 +69,23 @@ class BarracksClient {
 
   createUpdatePackage(token, updatePackage) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('createUpdatePackage', {
-        headers: {
-          'x-auth-token': token
-        },
-        formData: {
-          versionId: updatePackage.versionId,
-          file: {
-            value: fs.createReadStream(updatePackage.file),
-            options: {
-              filename: path.basename(updatePackage.file)
+      this.httpClient.sendEndpointRequest(
+        endpoints.createUpdatePackage,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          formData: {
+            versionId: updatePackage.versionId,
+            file: {
+              value: fs.createReadStream(updatePackage.file),
+              options: {
+                filename: path.basename(updatePackage.file)
+              }
             }
           }
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -55,15 +99,18 @@ class BarracksClient {
         const newUpdate = Object.assign({}, update, { packageId: update.packageInfo.id }, updateDiff);
         delete newUpdate.packageInfo;
         logger.debug('Editing update:', newUpdate);
-        return this.httpClient.sendEndpointRequest('editUpdate', {
-          headers: {
-            'x-auth-token': token
-          },
-          body: newUpdate,
-          pathVariables: {
-            uuid: newUpdate.uuid
+        return this.httpClient.sendEndpointRequest(
+          endpoints.editUpdate,
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            body: newUpdate,
+            pathVariables: {
+              uuid: newUpdate.uuid
+            }
           }
-        });
+        );
       }).then(response => {
         const update = response.body;
         logger.debug('Edit update successful:', update);
@@ -77,14 +124,17 @@ class BarracksClient {
 
   getUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('getUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
+      this.httpClient.sendEndpointRequest(
+        endpoints.getUpdate,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            uuid
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const update = response.body;
         logger.debug('Update information retrieved:', update);
         resolve(update);
@@ -99,12 +149,16 @@ class BarracksClient {
     return new Promise(resolve => {
       const stream = new PageableStream();
       resolve(stream);
-      this.httpClient.retrieveAllPages(stream, 'getUpdates', {
+      this.httpClient.retrieveAllPages(
+        stream,
+        endpoints.getUpdates,
+        {
           headers: {
             'x-auth-token': token
           }
         },
-        'updates');
+        'updates'
+      );
     });
   }
 
@@ -112,7 +166,10 @@ class BarracksClient {
     return new Promise(resolve => {
       const stream = new PageableStream();
       resolve(stream);
-      this.httpClient.retrieveAllPages(stream, 'updatesBySegmentId', {
+      this.httpClient.retrieveAllPages(
+        stream,
+        endpoints.updatesBySegmentId,
+        {
           headers: {
             'x-auth-token': token
           },
@@ -120,20 +177,24 @@ class BarracksClient {
             segmentId
           }
         },
-        'updates');
+        'updates'
+      );
     });
   }
 
   publishUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('publishUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
+      this.httpClient.sendEndpointRequest(
+        endpoints.publishUpdate,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            uuid
+          }
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -143,14 +204,17 @@ class BarracksClient {
 
   archiveUpdate(token, uuid) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('archiveUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid
+      this.httpClient.sendEndpointRequest(
+        endpoints.archiveUpdate,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            uuid
+          }
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -160,15 +224,18 @@ class BarracksClient {
 
   scheduleUpdate(token, uuid, date) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('scheduleUpdate', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          uuid,
-          time: date.toISOString()
+      this.httpClient.sendEndpointRequest(
+        endpoints.scheduleUpdate,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            uuid,
+            time: date.toISOString()
+          }
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
