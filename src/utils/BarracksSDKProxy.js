@@ -1,17 +1,18 @@
 const BarracksSDK = require('barracks-sdk');
 const logger = require('../utils/logger');
+const baseUrl = require('../config').barracks.baseUrl;
 
 class BarracksSDKProxy {
 
-  constructor(options) {
-    this.options = options;
+  constructor() {
+    this.baseUrl = baseUrl;
   }
 
   checkUpdate(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('checking update:', device);
       const sdk = new BarracksSDK({
-        baseURL: this.options.baseUrl,
+        baseURL: this.baseUrl,
         apiKey,
         unitId: device.unitId
       });
@@ -33,7 +34,7 @@ class BarracksSDKProxy {
     return new Promise((resolve, reject) => {
       logger.debug('check and download update:', device, path);
       const sdk = new BarracksSDK({
-        baseURL: this.options.baseUrl,
+        baseURL: this.baseUrl,
         apiKey,
         unitId: device.unitId,
         downloadFilePath: path

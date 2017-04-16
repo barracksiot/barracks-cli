@@ -11,15 +11,16 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('BarracksSDKProxy', () => {
+
+  const baseUrl = 'http://barracks.io';
+  const apiKey = 'myApiKey';
+  const unitId = 'unitId';
+  const versionId = 'version1';
   
   describe('#checkUpdate()', () => {
 
     it('should reject an error if client fail', done => {
       // Given
-      const baseUrl = 'base/url';
-      const apiKey = 'myApiKey';
-      const unitId = 'unitId';
-      const versionId = 'version1';
       const error = 'blah error';
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
@@ -32,7 +33,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
@@ -55,10 +56,6 @@ describe('BarracksSDKProxy', () => {
 
     it('should return a message if no update available', done => {
       // Given
-      const baseUrl = 'base/url';
-      const apiKey = 'myApiKey';
-      const unitId = 'unitId';
-      const versionId = 'version1';
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(undefined));
@@ -70,7 +67,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
@@ -94,10 +91,6 @@ describe('BarracksSDKProxy', () => {
 
     it('should call client with empty customClientData when device with no customClientData given', done => {
       // Given
-      const baseUrl = 'base/url';
-      const apiKey = 'myApiKey';
-      const unitId = 'unitId';
-      const versionId = 'version1';
       const response = { versionId: 'version2', packageId: 'id' };
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
@@ -110,7 +103,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
@@ -134,10 +127,6 @@ describe('BarracksSDKProxy', () => {
 
     it('should call client with customClientData when device with customClientData given', done => {
       // Given
-      const baseUrl = 'base/url';
-      const apiKey = 'myApiKey';
-      const unitId = 'unitId';
-      const versionId = 'version1';
       const customClientData = { data1: 'value', data2: 4 };
       const response = { versionId: 'version2', packageId: 'id' };
       const device = { unitId, versionId, customClientData };
@@ -151,7 +140,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdate(apiKey, device).then(result => {
@@ -176,10 +165,6 @@ describe('BarracksSDKProxy', () => {
 
   describe('#checkUpdateAndDownload()', () => {
 
-    const baseUrl = 'base/url';
-    const apiKey = 'myApiKey';
-    const unitId = 'unitId';
-    const versionId = 'version1';
     const filePath = 'path/to/update';
 
     it('should reject an error if client fail', done => {
@@ -196,7 +181,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {
@@ -231,7 +216,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {
@@ -270,7 +255,7 @@ describe('BarracksSDKProxy', () => {
       });
 
       barracks = new ProxifiedBarracks();
-      barracks.options = { baseUrl };
+      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.checkUpdateAndDownload(apiKey, device, filePath).then(result => {

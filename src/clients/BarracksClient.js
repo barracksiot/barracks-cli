@@ -75,15 +75,15 @@ function mergeUpdateClient(barracksClient) {
   barracksClient.scheduleUpdate = updateClient.scheduleUpdate.bind(updateClient);
 }
 
-function mergeSDKProxy(barracksClient, options) {
-  const proxy = new BarracksSDKProxy(options);
+function mergeSDKProxy(barracksClient) {
+  const proxy = new BarracksSDKProxy();
   barracksClient.checkUpdate = proxy.checkUpdate.bind(proxy);
   barracksClient.checkUpdateAndDownload = proxy.checkUpdateAndDownload.bind(proxy);
 }
 
 class BarracksClient {
 
-  constructor(options) {
+  constructor() {
     mergeAccountClient(this);
     mergeDeviceClient(this);
     mergeFilterClient(this);
@@ -91,7 +91,7 @@ class BarracksClient {
     mergeSegmentClient(this);
     mergeTokenClient(this);
     mergeUpdateClient(this);
-    mergeSDKProxy(this, options);
+    mergeSDKProxy(this);
   }
 }
 
