@@ -34,10 +34,16 @@ describe('FilterClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV1', {
-          headers: { 'x-auth-token': token },
-          body: filter
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/filters'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: filter
+          }
+        );
         done();
       });
     });
@@ -53,10 +59,16 @@ describe('FilterClient', () => {
       filterClient.createFilter(token, filter).then(result => {
         expect(result).to.be.equals(savedFilter);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV1', {
-          headers: { 'x-auth-token': token },
-          body: filter
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/filters'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: filter
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -76,10 +88,16 @@ describe('FilterClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV2', {
-          headers: { 'x-auth-token': token },
-          body: filter
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/member/filters'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: filter
+          }
+        );
         done();
       });
     });
@@ -96,10 +114,16 @@ describe('FilterClient', () => {
       filterClient.createFilter(token, filter).then(result => {
         expect(result).to.be.equals(savedFilter);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createFilterV2', {
-          headers: { 'x-auth-token': token },
-          body: filter
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/member/filters'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: filter
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -124,12 +148,18 @@ describe('FilterClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getFilter', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            filter: filterName
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              filter: filterName
+            }
           }
-        });
+        );
         done();
       });
     });
@@ -144,12 +174,18 @@ describe('FilterClient', () => {
       filterClient.getFilter(token, filterName).then(result => {
         expect(result).to.be.equals(filter);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getFilter', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            filter: filterName
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              filter: filterName
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);
@@ -172,7 +208,10 @@ describe('FilterClient', () => {
         expect(filterClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(filterClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getFiltersV1',
+          {
+            method: 'GET',
+            path: '/api/member/filters?size=20'
+          },
           options,
           'filters'
         );
@@ -196,7 +235,10 @@ describe('FilterClient', () => {
         expect(filterClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(filterClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getFiltersV2',
+          {
+            method: 'GET',
+            path: '/v2/api/member/filters?size=20'
+          },
           options,
           'filters'
         );
@@ -221,10 +263,16 @@ describe('FilterClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV1', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { filter: name }
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { filter: name }
+          }
+        );
         done();
       });
     });
@@ -239,10 +287,16 @@ describe('FilterClient', () => {
       filterClient.deleteFilter(token, name).then(result => {
         expect(result).to.be.equals(undefined);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV1', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { filter: name }
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { filter: name }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -262,7 +316,12 @@ describe('FilterClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV2', {
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
           headers: { 'x-auth-token': token },
           pathVariables: { filter: name }
         });
@@ -281,10 +340,16 @@ describe('FilterClient', () => {
       filterClient.deleteFilter(token, name).then(result => {
         expect(result).to.be.equals(undefined);
         expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('deleteFilterV2', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { filter: name }
-        });
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { filter: name }
+          }
+        );
         done();
       }).catch(err => {
         done(err);

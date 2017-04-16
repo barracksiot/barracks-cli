@@ -25,8 +25,8 @@ function mergeDeviceClient(barracksClient) {
   barracksClient.getDeviceEvents = deviceClient.getDeviceEvents.bind(deviceClient);
 }
 
-function mergeFilterClient(barracksClient, options) {
-  const filterClient = new FilterClient(options);
+function mergeFilterClient(barracksClient) {
+  const filterClient = new FilterClient();
   barracksClient.createFilter = filterClient.createFilter.bind(filterClient);
   barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
   barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
@@ -86,7 +86,7 @@ class BarracksClient {
   constructor(options) {
     mergeAccountClient(this);
     mergeDeviceClient(this);
-    mergeFilterClient(this, options);
+    mergeFilterClient(this);
     mergePackageClient(this, options);
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
