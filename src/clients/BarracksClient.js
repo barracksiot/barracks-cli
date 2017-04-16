@@ -1,4 +1,4 @@
-/* jshint maxstatements: 10 */
+/* jshint maxstatements: 11 */
 
 const HTTPClient = require('./HTTPClient');
 const AccountClient = require('./AccountClient');
@@ -8,8 +8,7 @@ const PackageClient = require('./PackageClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
-const BarracksSDK = require('barracks-sdk');
-const logger = require('../utils/logger');
+const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
 const config = require('../config');
 
 function mergeAccountClient(barracksClient, options) {
@@ -78,6 +77,12 @@ function mergeUpdateClient(barracksClient, options) {
   barracksClient.scheduleUpdate = updateClient.scheduleUpdate.bind(updateClient);
 }
 
+function mergeSDKProxy(barracksClient, options) {
+  const proxy = new BarracksSDKProxy(options);
+  barracksClient.checkUpdate = proxy.checkUpdate.bind(proxy);
+  barracksClient.checkUpdateAndDownload = proxy.checkUpdateAndDownload.bind(proxy);
+}
+
 class BarracksClient {
 
   constructor(options) {
@@ -92,53 +97,7 @@ class BarracksClient {
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
     mergeUpdateClient(this, options);
-  }
-
-  checkUpdate(apiKey, device) {
-    return new Promise((resolve, reject) => {
-      logger.debug('checking update:', device);
-      const client = new BarracksSDK({
-        baseURL: this.options.baseUrl,
-        apiKey,
-        unitId: device.unitId
-      });
-
-      client.checkUpdate(device.versionId, device.customClientData).then(update => {
-        if (update) {
-          resolve(update);
-        } else {
-          resolve('No update available');
-        }
-      }).catch(err => {
-        logger.debug('check update failed:', err);
-        reject(err);
-      });
-    });
-  }
-
-  checkUpdateAndDownload(apiKey, device, path) {
-    return new Promise((resolve, reject) => {
-      logger.debug('check and download update:', device, path);
-      const client = new BarracksSDK({
-        baseURL: this.options.baseUrl,
-        apiKey,
-        unitId: device.unitId,
-        downloadFilePath: path
-      });
-
-      client.checkUpdate(device.versionId, device.customClientData).then(update => {
-        if (update) {
-          update.download().then(file => {
-            resolve(file);
-          });
-        } else {
-          resolve('No update available');
-        }
-      }).catch(err => {
-        logger.debug('check and download update failed:', err);
-        reject(err);
-      });
-    });
+    mergeSDKProxy(this, options);
   }
 }
 
