@@ -16,8 +16,8 @@ function mergeAccountClient(barracksClient) {
   barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
 }
 
-function mergeDeviceClient(barracksClient, options) {
-  const deviceClient = new DeviceClient(options);
+function mergeDeviceClient(barracksClient) {
+  const deviceClient = new DeviceClient();
   barracksClient.getDevice = deviceClient.getDevice.bind(deviceClient);
   barracksClient.getDevices = deviceClient.getDevices.bind(deviceClient);
   barracksClient.getDevicesFilteredByQuery = deviceClient.getDevicesFilteredByQuery.bind(deviceClient);
@@ -85,7 +85,7 @@ class BarracksClient {
 
   constructor(options) {
     mergeAccountClient(this);
-    mergeDeviceClient(this, options);
+    mergeDeviceClient(this);
     mergeFilterClient(this, options);
     mergePackageClient(this, options);
     mergeSegmentClient(this, options);

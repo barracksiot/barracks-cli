@@ -2,24 +2,61 @@ const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
 
+const endpoints = {
+  getDevice: {
+    method: 'GET',
+    path: '/v2/api/member/devices/:unitId'
+  },
+  getDevicesV1: {
+    method: 'GET',
+    path: '/api/member/devices?size=20'
+  },
+  getDevicesV2: {
+    method: 'GET',
+    path: '/v2/api/member/devices?size=20'
+  },
+  getDevicesWithQueryV1: {
+    method: 'GET',
+    path: '/api/member/devices?size=20&query=:query'
+  },
+  getDevicesWithQueryV2: {
+    method: 'GET',
+    path: '/v2/api/member/devices?size=20&query=:query'
+  },
+  getDevicesBySegment: {
+    method: 'GET',
+    path: '/api/member/segments/:segmentId/devices'
+  },
+  getDeviceEventsV1: {
+    method: 'GET',
+    path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+  },
+  getDeviceEventsV2: {
+    method: 'GET',
+    path: '/v2/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+  }
+};
+
 class DeviceClient {
 
-  constructor(options) {
-    this.options = options;
-    this.httpClient = new HTTPClient(options);
+  constructor() {
+    this.httpClient = new HTTPClient();
   }
 
   getDevice(token, unitId) {
     return new Promise((resolve, reject) => {
       logger.debug(`Getting device ${unitId}`);
-      this.httpClient.sendEndpointRequest('getDevice', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          unitId
+      this.httpClient.sendEndpointRequest(
+        endpoints.getDevice,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            unitId
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const device = response.body;
         logger.debug('Device information retrieved:', device);
         resolve(device);
@@ -36,12 +73,15 @@ class DeviceClient {
       const stream = new PageableStream();
       resolve(stream);
       const endpointKey = this.v2Enabled ? 'getDevicesV2' : 'getDevicesV1';
-      this.httpClient.retrieveAllPages(stream, endpointKey, {
-        headers: {
-          'x-auth-token': token
-        }
-      },
-      'devices');
+      this.httpClient.retrieveAllPages(stream,
+        endpoints[endpointKey],
+        {
+          headers: {
+            'x-auth-token': token
+          }
+        },
+        'devices'
+      );
     });
   }
 
@@ -51,7 +91,9 @@ class DeviceClient {
       const stream = new PageableStream();
       resolve(stream);
       const endpointKey = this.v2Enabled ? 'getDevicesWithQueryV2' : 'getDevicesWithQueryV1';
-      this.httpClient.retrieveAllPages(stream, endpointKey, {
+      this.httpClient.retrieveAllPages(stream,
+        endpoints[endpointKey],
+        {
           headers: {
             'x-auth-token': token
           },
@@ -59,7 +101,8 @@ class DeviceClient {
             query: encodeURI(JSON.stringify(query))
           }
         },
-        'devices');
+        'devices'
+      );
     });
   }
 
@@ -68,7 +111,9 @@ class DeviceClient {
       logger.debug('Getting devices for segment:', segmentId);
       const stream = new PageableStream();
       resolve(stream);
-      this.httpClient.retrieveAllPages(stream, 'getSegmentDevices', {
+      this.httpClient.retrieveAllPages(stream,
+        endpoints.getDevicesBySegment,
+        {
           headers: {
             'x-auth-token': token
           },
@@ -76,7 +121,8 @@ class DeviceClient {
             segmentId
           }
         },
-        'devices');
+        'devices'
+      );
     });
   }
 
@@ -86,7 +132,9 @@ class DeviceClient {
       const bufferStream = new PageableStream();
       resolve(resultStream);
       const endpointKey = this.v2Enabled ? 'getDeviceEventsV2' : 'getDeviceEventsV1';
-      this.httpClient.retrievePagesUntilCondition(bufferStream, endpointKey, {
+      this.httpClient.retrievePagesUntilCondition(bufferStream,
+        endpoints[endpointKey],
+        {
           headers: {
             'x-auth-token': token
           },

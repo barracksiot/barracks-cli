@@ -35,10 +35,16 @@ describe('DeviceClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getDevice', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { unitId }
-        });
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices/:unitId'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { unitId }
+          }
+        );
         done();
       });
     });
@@ -57,10 +63,16 @@ describe('DeviceClient', () => {
       deviceClient.getDevice(token, unitId).then(result => {
         expect(result).to.deep.equals(device);
         expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getDevice', {
-          headers: { 'x-auth-token': token },
-          pathVariables: { unitId }
-        });
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices/:unitId'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { unitId }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -84,7 +96,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDevicesV1',
+          {
+            method: 'GET',
+            path: '/api/member/devices?size=20'
+          },
           options,
           'devices'
         );
@@ -109,7 +124,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDevicesV2',
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices?size=20'
+          },
           options,
           'devices'
         );
@@ -137,7 +155,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDevicesWithQueryV1',
+          {
+            method: 'GET',
+            path: '/api/member/devices?size=20&query=:query'
+          },
           options,
           'devices'
         );
@@ -163,7 +184,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDevicesWithQueryV2',
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices?size=20&query=:query'
+          },
           options,
           'devices'
         );
@@ -191,7 +215,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getSegmentDevices',
+          {
+            method: 'GET',
+            path: '/api/member/segments/:segmentId/devices'
+          },
           options,
           'devices'
         );
@@ -219,7 +246,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrievePagesUntilCondition).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrievePagesUntilCondition).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDeviceEventsV1',
+          {
+            method: 'GET',
+            path: '/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+          },
           options,
           'events',
           sinon.match.func
@@ -246,7 +276,10 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.retrievePagesUntilCondition).to.have.been.calledOnce;
         expect(deviceClient.httpClient.retrievePagesUntilCondition).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getDeviceEventsV2',
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices/:unitId/events?size=20&sort=receptionDate,DESC'
+          },
           options,
           'events',
           sinon.match.func
