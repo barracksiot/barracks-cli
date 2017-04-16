@@ -39,10 +39,16 @@ describe('segmentClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createSegment', {
-          headers: { 'x-auth-token': token },
-          body: segment
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/segments'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: segment
+          }
+        );
         done();
       });
     });
@@ -58,10 +64,16 @@ describe('segmentClient', () => {
       segmentClient.createSegment(token, segment).then(result => {
         expect(result).to.be.equals(savedSegment);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('createSegment', {
-          headers: { 'x-auth-token': token },
-          body: segment
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/segments'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: segment
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -93,11 +105,17 @@ describe('segmentClient', () => {
           expect(segmentClient.getSegment).to.have.been.calledOnce;
           expect(segmentClient.getSegment).to.have.been.calledWithExactly(token, changes.id);
           expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-          expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('editSegment', {
-            headers: { 'x-auth-token': token },
-            body: Object.assign({}, originalSegment, changes),
-            pathVariables: { id: originalSegment.id }
-          });
+          expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+            {
+              method: 'PUT',
+              path: '/api/member/segments/:id'
+            },
+            {
+              headers: { 'x-auth-token': token },
+              body: Object.assign({}, originalSegment, changes),
+              pathVariables: { id: originalSegment.id }
+            }
+          );
           done();
         } catch (e) {
           done(e);
@@ -143,11 +161,17 @@ describe('segmentClient', () => {
         expect(segmentClient.getSegment).to.have.been.calledOnce;
         expect(segmentClient.getSegment).to.have.been.calledWithExactly(token, changes.id);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('editSegment', {
-          headers: { 'x-auth-token': token },
-          body: expectedResult,
-          pathVariables: { id: originalSegment.id }
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/member/segments/:id'
+          },
+          { 
+            headers: { 'x-auth-token': token },
+            body: expectedResult,
+            pathVariables: { id: originalSegment.id }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -337,12 +361,18 @@ describe('segmentClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getSegment', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            id: existingSegment.id
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/segments/:id'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              id: existingSegment.id
+            }
           }
-        });
+        );
         done();
       });
     });
@@ -356,12 +386,18 @@ describe('segmentClient', () => {
       segmentClient.getSegment(token, existingSegment.id).then(result => {
         expect(result).to.be.equals(existingSegment);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getSegment', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            id: existingSegment.id
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/segments/:id'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              id: existingSegment.id
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);
@@ -384,9 +420,15 @@ describe('segmentClient', () => {
       segmentClient.getSegments(token).then(result => {
         expect(result).to.be.equals(segments);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
-          headers: { 'x-auth-token': token }
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/segments/order'
+          },
+          {
+            headers: { 'x-auth-token': token }
+          }
+        );
         done();
       }).catch(err => {
         done(err);
@@ -405,9 +447,15 @@ describe('segmentClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(errorMessage);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getSegments', {
-          headers: { 'x-auth-token': token }
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/segments/order'
+          },
+          {
+            headers: { 'x-auth-token': token }
+          }
+        );
         done();
       });
     });
@@ -428,10 +476,16 @@ describe('segmentClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(errorResponse.message);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('setActiveSegments', {
-          headers: { 'x-auth-token': token },
-          body: segmentIds
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/segments/order'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: segmentIds
+          }
+        );
         done();
       });
     });
@@ -445,10 +499,16 @@ describe('segmentClient', () => {
       segmentClient.setActiveSegments(token, segmentIds).then(result => {
         expect(result).to.be.equals(segmentIds);
         expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('setActiveSegments', {
-          headers: { 'x-auth-token': token },
-          body: segmentIds
-        });
+        expect(segmentClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/member/segments/order'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: segmentIds
+          }
+        );
         done();
       }).catch(err => {
         done(err);

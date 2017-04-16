@@ -45,8 +45,8 @@ function mergePackageClient(barracksClient) {
   barracksClient.getDeploymentPlan = packageClient.getDeploymentPlan.bind(packageClient);
 }
 
-function mergeSegmentClient(barracksClient, options) {
-  const segmentClient = new SegmentClient(options);
+function mergeSegmentClient(barracksClient) {
+  const segmentClient = new SegmentClient();
   barracksClient.createSegment = segmentClient.createSegment.bind(segmentClient);
   barracksClient.editSegment = segmentClient.editSegment.bind(segmentClient);
   barracksClient.getSegmentByName = segmentClient.getSegmentByName.bind(segmentClient);
@@ -88,7 +88,7 @@ class BarracksClient {
     mergeDeviceClient(this);
     mergeFilterClient(this);
     mergePackageClient(this);
-    mergeSegmentClient(this, options);
+    mergeSegmentClient(this);
     mergeTokenClient(this, options);
     mergeUpdateClient(this, options);
     mergeSDKProxy(this, options);

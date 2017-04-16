@@ -1,21 +1,46 @@
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
 
+const endpoints = {
+  createSegment: {
+    method: 'POST',
+    path: '/api/member/segments'
+  },
+  editSegment: {
+    method: 'PUT',
+    path: '/api/member/segments/:id'
+  },
+  getSegment: {
+    method: 'GET',
+    path: '/api/member/segments/:id'
+  },
+  getSegments: {
+    method: 'GET',
+    path: '/api/member/segments/order'
+  },
+  setActiveSegments: {
+    method: 'POST',
+    path: '/api/member/segments/order'
+  }
+};
+
 class SegmentClient {
 
-  constructor(options) {
-    this.options = options;
-    this.httpClient = new HTTPClient(options);
+  constructor() {
+    this.httpClient = new HTTPClient();
   }
 
   createSegment(token, segment) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('createSegment', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: segment
-      }).then(response => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.createSegment,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: segment
+        }
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -26,15 +51,18 @@ class SegmentClient {
   editSegment(token, diff) {
     return new Promise((resolve, reject) => {
       this.getSegment(token, diff.id).then(segment => {
-        return this.httpClient.sendEndpointRequest('editSegment', {
-          headers: {
-            'x-auth-token': token
-          },
-          body: Object.assign({}, segment, diff),
-          pathVariables: {
-            id: segment.id
+        return this.httpClient.sendEndpointRequest(
+          endpoints.editSegment,
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            body: Object.assign({}, segment, diff),
+            pathVariables: {
+              id: segment.id
+            }
           }
-        });
+        );
       }).then(response => {
         resolve(response.body);
       }).catch(err => {
@@ -62,14 +90,17 @@ class SegmentClient {
 
   getSegment(token, segmentId) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('getSegment', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          id: segmentId
+      this.httpClient.sendEndpointRequest(
+        endpoints.getSegment,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            id: segmentId
+          }
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -80,11 +111,14 @@ class SegmentClient {
   getSegments(token) {
     return new Promise((resolve, reject) => {
       logger.debug('Getting user segments...');
-      this.httpClient.sendEndpointRequest('getSegments', {
-        headers: {
-          'x-auth-token': token
+      this.httpClient.sendEndpointRequest(
+        endpoints.getSegments,
+        {
+          headers: {
+            'x-auth-token': token
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const segments = response.body;
         logger.debug('User segments retrieved:', segments);
         resolve(segments);
@@ -97,12 +131,15 @@ class SegmentClient {
 
   setActiveSegments(token, segmentIds) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('setActiveSegments', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: segmentIds
-      }).then(response => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.setActiveSegments,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: segmentIds
+        }
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
