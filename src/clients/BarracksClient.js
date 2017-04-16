@@ -33,8 +33,8 @@ function mergeFilterClient(barracksClient) {
   barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);
 }
 
-function mergePackageClient(barracksClient, options) {
-  const packageClient = new PackageClient(options);
+function mergePackageClient(barracksClient) {
+  const packageClient = new PackageClient();
   barracksClient.createComponent = packageClient.createComponent.bind(packageClient);
   barracksClient.getPackage = packageClient.getPackage.bind(packageClient);
   barracksClient.getComponents = packageClient.getComponents.bind(packageClient);
@@ -87,7 +87,7 @@ class BarracksClient {
     mergeAccountClient(this);
     mergeDeviceClient(this);
     mergeFilterClient(this);
-    mergePackageClient(this, options);
+    mergePackageClient(this);
     mergeSegmentClient(this, options);
     mergeTokenClient(this, options);
     mergeUpdateClient(this, options);

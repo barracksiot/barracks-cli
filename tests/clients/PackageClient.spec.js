@@ -40,7 +40,10 @@ describe('PackageClient', () => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createComponent',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components'
+          },
           {
             headers: { 'x-auth-token': token },
             body: component
@@ -61,7 +64,10 @@ describe('PackageClient', () => {
         expect(result).to.be.equals(response.body);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createComponent',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components'
+          },
           {
             headers: { 'x-auth-token': token },
             body: component
@@ -95,12 +101,18 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getPackage', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            componentRef: validPackage.reference
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              componentRef: validPackage.reference
+            }
           }
-        });
+        );
         done();
       });
     });
@@ -114,12 +126,18 @@ describe('PackageClient', () => {
       packageClient.getPackage(token, validPackage.reference).then(result => {
         expect(result).to.be.equals(validPackage);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getPackage', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            componentRef: validPackage.reference
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              componentRef: validPackage.reference
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);
@@ -143,7 +161,10 @@ describe('PackageClient', () => {
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getComponents',
+          {
+            method: 'GET',
+            path: '/v2/api/member/components'
+          },
           options,
           'components'
         );
@@ -236,7 +257,10 @@ describe('PackageClient', () => {
         expect(err).to.be.equals(error.message);
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createVersion',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components/:componentRef/versions'
+          },
           options
         );
         done();
@@ -257,7 +281,10 @@ describe('PackageClient', () => {
         expect(result).to.be.equals(response.body);
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'createVersion',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components/:componentRef/versions'
+          },
           options
         );
         done();
@@ -284,7 +311,10 @@ describe('PackageClient', () => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'getVersion',
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef/versions/:versionId'
+          },
           {
             headers: {
               'x-auth-token': token
@@ -310,7 +340,10 @@ describe('PackageClient', () => {
         expect(result).to.deep.equals(version);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'getVersion',
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef/versions/:versionId'
+          },
           {
             headers: {
               'x-auth-token': token
@@ -347,7 +380,10 @@ describe('PackageClient', () => {
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
           new PageableStream(),
-          'getComponentVersions',
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef/versions'
+          },
           options,
           'versions'
         );
@@ -381,7 +417,10 @@ describe('PackageClient', () => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'publishDeploymentPlan',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components/:componentRef/deployment-plan'
+          },
           {
             headers: {
               'x-auth-token': token
@@ -407,7 +446,10 @@ describe('PackageClient', () => {
         expect(result).to.be.equals(response.body);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          'publishDeploymentPlan',
+          {
+            method: 'POST',
+            path: '/v2/api/member/components/:componentRef/deployment-plan'
+          },
           {
             headers: {
               'x-auth-token': token
@@ -446,12 +488,18 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getDeploymentPlan', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            componentRef: validDeploymentPlan.package
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef/deployment-plan'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              componentRef: validDeploymentPlan.package
+            }
           }
-        });
+        );
         done();
       });
     });
@@ -465,12 +513,18 @@ describe('PackageClient', () => {
       packageClient.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
         expect(result).to.be.equals(validDeploymentPlan);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly('getDeploymentPlan', {
-          headers: { 'x-auth-token': token },
-          pathVariables: {
-            componentRef: validDeploymentPlan.package
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/components/:componentRef/deployment-plan'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              componentRef: validDeploymentPlan.package
+            }
           }
-        });
+        );
         done();
       }).catch(err => {
         done(err);

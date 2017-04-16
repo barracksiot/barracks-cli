@@ -4,21 +4,58 @@ const logger = require('../utils/logger');
 const fs = require('fs');
 const path = require('path');
 
+const endpoints = {
+  createComponent: {
+    method: 'POST',
+    path: '/v2/api/member/components'
+  },
+  getPackage: {
+    method: 'GET',
+    path: '/v2/api/member/components/:componentRef'
+  },
+  getComponents: {
+    method: 'GET',
+    path: '/v2/api/member/components'
+  },
+  createVersion: {
+    method: 'POST',
+    path: '/v2/api/member/components/:componentRef/versions'
+  },
+  getVersion: {
+    method: 'GET',
+    path: '/v2/api/member/components/:componentRef/versions/:versionId'
+  },
+  getComponentVersions: {
+    method: 'GET',
+    path: '/v2/api/member/components/:componentRef/versions'
+  },
+  publishDeploymentPlan: {
+    method: 'POST',
+    path: '/v2/api/member/components/:componentRef/deployment-plan'
+  },
+  getDeploymentPlan: {
+    method: 'GET',
+    path: '/v2/api/member/components/:componentRef/deployment-plan'
+  }
+};
+
 class PackageClient {
 
-  constructor(options) {
-    this.options = options;
-    this.httpClient = new HTTPClient(options);
+  constructor() {
+    this.httpClient = new HTTPClient();
   }
 
   createComponent(token, component) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('createComponent', {
-        headers: {
-          'x-auth-token': token
-        },
-        body: component
-      }).then(response => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.createComponent,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: component
+        }
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -29,14 +66,17 @@ class PackageClient {
   getPackage(token, componentRef) {
     return new Promise((resolve, reject) => {
       logger.debug('Getting package from its reference', componentRef);
-      this.httpClient.sendEndpointRequest('getPackage', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef
+      this.httpClient.sendEndpointRequest(
+        endpoints.getPackage,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            componentRef
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const myPackage = response.body;
         logger.debug('Package retrieved:', myPackage);
         resolve(myPackage);
@@ -52,45 +92,52 @@ class PackageClient {
       logger.debug('Getting components');
       const stream = new PageableStream();
       resolve(stream);
-      this.httpClient.retrieveAllPages(stream, 'getComponents', {
+      this.httpClient.retrieveAllPages(
+        stream,
+        endpoints.getComponents,
+        {
           headers: {
             'x-auth-token': token
           }
         },
-        'components');
+        'components'
+      );
     });
   }
 
   createVersion(token, version) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('createVersion', {
-        headers: {
-          'x-auth-token': token
-        },
-        formData: {
-          version: {
-            value: JSON.stringify({
-              id: version.id,
-              name: version.name,
-              description: version.description,
-              metadata: version.metadata
-            }),
-            options: {
-              contentType: 'application/json'
+      this.httpClient.sendEndpointRequest(
+        endpoints.createVersion,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          formData: {
+            version: {
+              value: JSON.stringify({
+                id: version.id,
+                name: version.name,
+                description: version.description,
+                metadata: version.metadata
+              }),
+              options: {
+                contentType: 'application/json'
+              }
+            },
+            file: {
+              value: fs.createReadStream(version.file),
+              options: {
+                filename: path.basename(version.file),
+                contentType: 'application/octet-stream'
+              }
             }
           },
-          file: {
-            value: fs.createReadStream(version.file),
-            options: {
-              filename: path.basename(version.file),
-              contentType: 'application/octet-stream'
-            }
+          pathVariables: {
+            componentRef: version.component
           }
-        },
-        pathVariables: {
-          componentRef: version.component
         }
-      }).then(response => {
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -102,7 +149,7 @@ class PackageClient {
     return new Promise((resolve, reject) => {
       logger.debug(`Getting version ${versionId} of component ${componentRef}`);
       this.httpClient.sendEndpointRequest(
-        'getVersion',
+        endpoints.getVersion,
         {
           headers: {
             'x-auth-token': token
@@ -127,7 +174,7 @@ class PackageClient {
       resolve(stream);
       this.httpClient.retrieveAllPages(
         stream,
-        'getComponentVersions',
+        endpoints.getComponentVersions,
         {
           headers: { 'x-auth-token': token },
           pathVariables: { componentRef }
@@ -139,15 +186,18 @@ class PackageClient {
 
   publishDeploymentPlan(token, plan) {
     return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest('publishDeploymentPlan', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef: plan.package
-        },
-        body: plan
-      }).then(response => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.publishDeploymentPlan,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            componentRef: plan.package
+          },
+          body: plan
+        }
+      ).then(response => {
         resolve(response.body);
       }).catch(err => {
         reject(err.message);
@@ -158,14 +208,17 @@ class PackageClient {
   getDeploymentPlan(token, componentRef) {
     return new Promise((resolve, reject) => {
       logger.debug('Getting DeploymentPlan for component', componentRef);
-      this.httpClient.sendEndpointRequest('getDeploymentPlan', {
-        headers: {
-          'x-auth-token': token
-        },
-        pathVariables: {
-          componentRef
+      this.httpClient.sendEndpointRequest(
+        endpoints.getDeploymentPlan,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            componentRef
+          }
         }
-      }).then(response => {
+      ).then(response => {
         const deploymentPlan = response.body;
         logger.debug('DeploymentPlan retrieved:', deploymentPlan);
         resolve(deploymentPlan);
