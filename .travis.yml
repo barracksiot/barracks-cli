@@ -25,4 +25,8 @@ deploy:
     on:
       tags: true
       repo: barracksiot/barracks-cli
-  
+
+notifications:
+  slack: YhTdgj0B9xkucKEroPt1Gi8PVWTlW4lEk+Jgz3UvSPbn+gEu+j96UDKYvAN1l9W6tyVompHTiYk+pmdmx5EKGoYQ1h5TjgwB/I6TmlD1dg5z9lh2d/vqDI04zYfitZA8yzyZr0K+lbWwGo+ebAcTUuNMQ2d2XTCq4K/9lQqzzO51R/4qXraTJ1rhMEiQlp9nRAGTj6ld6AfnlC0rv0/vr09dloMuFlc7RvTn0jfHslYcJcM6MfUAdhX4HuvBiw4lF9Tri6cEr24TNFa199GVc20t3Slbza+LYV5+LiOt+Aa5B1Yjd+b1tcdSV0W9rP6JMCjajOPlU7F45f4QxhxyDJbIXcYTY4Nt83sflfWoHOWRVzzDRqymU1x3SfIM6VJmqfhPmyCO4wMFLsndg8jhl6AYL0SCnZicAE3Bde0m98te19fOzRdSmfADs3NS9R+ruKWf885ynsOmWAYJC+Hj6bY/TkU6giVgOURoYFduFzdsC+AYv+XEaXLiiDtXB8qY/jcSc5SwqAQd3+T87562UdaJI87eL8vlUvWbd9IfoMSelUUjfLPOT3w4FQ8IDxtNfCccLGlkb7dHE07xcLNivAYKX03dvXmVPImDRyD6by+nz6blm3hsCmY8VgwaGQa0UxHSa6RsLAKL88KIAac86a+XzZKj+/OVPpKkELnPltw=
+    on_success: change
+    on_failure: always
