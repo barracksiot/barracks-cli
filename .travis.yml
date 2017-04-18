@@ -12,11 +12,9 @@ script:
   - npm test
   - npm run coveralls 
   - docker build -t barracksiot/cli:$TRAVIS_JOB_NUMBER .
-  - docker tag barracksiot/cli:$TRAVIS_JOB_NUMBER barracksiot/cli:unstable
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push barracksiot/cli:$TRAVIS_JOB_NUMBER;
-      docker push barracksiot/cli:unstable;
     fi
 
 deploy:
@@ -27,11 +25,4 @@ deploy:
     on:
       tags: true
       repo: barracksiot/barracks-cli
-  - provider: script
-    script: docker tag barracksiot/cli:$TRAVIS_JOB_NUMBER barracksiot/cli:latest &&\
-            docker tag barracksiot/cli:$TRAVIS_JOB_NUMBER barracksiot/cli:$TRAVIS_TAG &&\
-            docker push barracksiot/cli:$TRAVIS_TAG &&\
-            docker push barracksiot/cli:latest
-    on:
-      tags: true
-      repo: barracksiot/barracks-cli
+  
