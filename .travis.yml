@@ -11,7 +11,7 @@ services:
 script:
   - npm test
   - npm run coveralls 
-  - docker build -t barracksiot/cli:$TRAVIS_JOB_NUMBER .
+  - docker build -t barracksiot/cli:travis-$TRAVIS_JOB_NUMBER .
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push barracksiot/cli:$TRAVIS_JOB_NUMBER;
