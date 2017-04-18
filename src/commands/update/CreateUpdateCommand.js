@@ -31,7 +31,7 @@ class CreateUpdateCommand extends BarracksCommand {
       return this.barracks.getSegmentByName(token, program.segment);
     }).then(result => {
       segment = result;
-      return this.barracks.createPackage(token, {
+      return this.barracks.createUpdatePackage(token, {
         versionId: program.versionId,
         file: program.package
       });

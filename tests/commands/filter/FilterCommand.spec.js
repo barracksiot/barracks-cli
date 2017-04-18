@@ -55,7 +55,7 @@ describe('filterCommand', () => {
       const error = 'error';
       const program = programWithValidOptions;
       filterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      filterCommand.barracks.getFilterByName = sinon.stub().returns(Promise.reject(error));
+      filterCommand.barracks.getFilter = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
       filterCommand.execute(program).then(result => {
@@ -64,8 +64,8 @@ describe('filterCommand', () => {
         expect(err).to.be.equals(error);
         expect(filterCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(filterCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(filterCommand.barracks.getFilterByName).to.have.been.calledOnce;
-        expect(filterCommand.barracks.getFilterByName).to.have.been.calledWithExactly(token, programWithValidOptions.args[0]);
+        expect(filterCommand.barracks.getFilter).to.have.been.calledOnce;
+        expect(filterCommand.barracks.getFilter).to.have.been.calledWithExactly(token, programWithValidOptions.args[0]);
         done();
       });
     });
@@ -75,15 +75,15 @@ describe('filterCommand', () => {
       const response = ['myFilter'];
       const program = programWithValidOptions;
       filterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      filterCommand.barracks.getFilterByName = sinon.stub().returns(Promise.resolve(response));
+      filterCommand.barracks.getFilter = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       filterCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
         expect(filterCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(filterCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(filterCommand.barracks.getFilterByName).to.have.been.calledOnce;
-        expect(filterCommand.barracks.getFilterByName).to.have.been.calledWithExactly(token, programWithValidOptions.args[0]);
+        expect(filterCommand.barracks.getFilter).to.have.been.calledOnce;
+        expect(filterCommand.barracks.getFilter).to.have.been.calledWithExactly(token, programWithValidOptions.args[0]);
         done();
       }).catch(err => {
         done(err);

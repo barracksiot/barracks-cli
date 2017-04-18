@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const request = require('request-promise');
+const baseUrl = require('../config').barracks.baseUrl;
 
 function sendRequest(method, uri, options) {
   logger.debug('Sending request to', uri);
@@ -17,19 +18,19 @@ function isPage(body) {
 
 class HTTPClient {
 
-  constructor(serverInfo) {
-    this.serverInfo = serverInfo;
+  constructor() {
+    this.baseUrl = baseUrl;
   }
 
   buildEndpointUri(endpoint, options) {
     return Object.getOwnPropertyNames(options.pathVariables || {}).reduce((uri, key) => {
       return uri.replace(`:${key}`, options.pathVariables[key]);
-    }, this.serverInfo.baseUrl + this.serverInfo.endpoints[endpoint].path);
+    }, this.baseUrl + endpoint.path);
   }
 
   sendEndpointRequest(endpoint, options) {
     const requestUri = this.buildEndpointUri(endpoint, options);
-    return sendRequest(this.serverInfo.endpoints[endpoint].method, requestUri, options);
+    return sendRequest(endpoint.method, requestUri, options);
   }
 
   retrievePagesUntilCondition(pageableStream, endpoint, options, embeddedKey, stopCondition) {

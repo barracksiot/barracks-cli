@@ -15,7 +15,7 @@ function getAllDevicesFromFilter(token, barracks, filterName) {
 function getAllDevicesFromSegment(token, barracks, segmentName) {
   return new Promise((resolve, reject) => {
     barracks.getSegmentByName(token, segmentName).then(segment => {
-      return barracks.getSegmentDevices(token, segment.id);
+      return barracks.getDevicesBySegment(token, segment.id);
     }).then(resultStream => {
       resolve(resultStream);
     }).catch(err => {
