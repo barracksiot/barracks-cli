@@ -8,6 +8,7 @@ program.version(pjson.version);
   
 if (config.v2Enabled) {
   program.command('login', 'Authenticate to Barracks')
+    .command('logout', 'Logout from your Barracks account')
     .command('account', 'Get account information')
     .command('device [cmd]', 'Manage devices')
     .command('filter [cmd]', 'Manage filters')
@@ -18,6 +19,7 @@ if (config.v2Enabled) {
   }
 } else {
   program.command('login', 'Authenticate to Barracks')
+    .command('logout', 'Logout from your Barracks account')
     .command('account', 'Get account information')
     .command('update [cmd]', 'Manage updates')
     .command('device [cmd]', 'Manage devices')

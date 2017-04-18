@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const LogoutCommand = require('../commands/LogoutCommand');
+new LogoutCommand().render();
