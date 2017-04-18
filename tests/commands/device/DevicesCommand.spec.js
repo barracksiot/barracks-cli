@@ -294,7 +294,7 @@ describe('DevicesCommand', () => {
       const error = 'request failed';
       devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       devicesCommand.barracks.getSegmentByName = sinon.stub().returns(Promise.resolve(segment));
-      devicesCommand.barracks.getSegmentDevices = sinon.stub().returns(Promise.reject(error));
+      devicesCommand.barracks.getDevicesBySegment = sinon.stub().returns(Promise.reject(error));
 
       // when / Then
       devicesCommand.execute(program).then(result => {
@@ -305,8 +305,8 @@ describe('DevicesCommand', () => {
         expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(devicesCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(devicesCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, segmentName);
-        expect(devicesCommand.barracks.getSegmentDevices).to.have.been.calledOnce;
-        expect(devicesCommand.barracks.getSegmentDevices).to.have.been.calledWithExactly(token, segmentId);
+        expect(devicesCommand.barracks.getDevicesBySegment).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevicesBySegment).to.have.been.calledWithExactly(token, segmentId);
         done();
       });
     });
@@ -316,7 +316,7 @@ describe('DevicesCommand', () => {
       const program = programWithValidSegment;
       devicesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       devicesCommand.barracks.getSegmentByName = sinon.stub().returns(Promise.resolve(segment));
-      devicesCommand.barracks.getSegmentDevices = sinon.stub().returns(Promise.resolve(new PageableStream()));
+      devicesCommand.barracks.getDevicesBySegment = sinon.stub().returns(Promise.resolve(new PageableStream()));
 
       // when / Then
       devicesCommand.execute(program).then(result => {
@@ -325,8 +325,8 @@ describe('DevicesCommand', () => {
         expect(devicesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(devicesCommand.barracks.getSegmentByName).to.have.been.calledOnce;
         expect(devicesCommand.barracks.getSegmentByName).to.have.been.calledWithExactly(token, segmentName);
-        expect(devicesCommand.barracks.getSegmentDevices).to.have.been.calledOnce;
-        expect(devicesCommand.barracks.getSegmentDevices).to.have.been.calledWithExactly(token, segmentId);
+        expect(devicesCommand.barracks.getDevicesBySegment).to.have.been.calledOnce;
+        expect(devicesCommand.barracks.getDevicesBySegment).to.have.been.calledWithExactly(token, segmentId);
         done();
       }).catch(err => {
         done(err);

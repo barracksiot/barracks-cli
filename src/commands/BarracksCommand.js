@@ -2,7 +2,7 @@ const prettyRenderer = require('../renderers/prettyRenderer');
 const jsonRenderer = require('../renderers/jsonRenderer');
 const read = require('read');
 const program = require('commander');
-const Barracks = require('../clients/Barracks');
+const Barracks = require('../clients/BarracksClient');
 const UserConfiguration = require('../repositories/UserConfiguration');
 const config = require('../config');
 
@@ -12,7 +12,7 @@ class BarracksCommand {
     this.experimental = config.experimental;
     this.v2Enabled = config.v2Enabled;
     this.userConfiguration = new UserConfiguration(config.userConfig);
-    this.barracks = new Barracks(config.barracks);
+    this.barracks = new Barracks();
     this.configureCommand(program)
       .option('--json', 'Format result in json')
       .parse(process.argv);
