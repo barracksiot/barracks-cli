@@ -8,8 +8,9 @@ node_js:
 services:
   - docker
 
-after_success:
-  - 'npm run coveralls'
+script:
+  - npm test
+  - npm run coveralls 
   - docker build -t barracksiot/cli:$TRAVIS_JOB_NUMBER .
   - docker tag barracksiot/cli:$TRAVIS_JOB_NUMBER barracksiot/cli:unstable
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
