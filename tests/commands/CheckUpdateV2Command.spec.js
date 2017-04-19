@@ -4,6 +4,7 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
 const CheckUpdateCommand = require('../../src/commands/CheckUpdateV2Command');
+const proxyquire = require('proxyquire').noCallThru();
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -28,8 +29,36 @@ describe('CheckUpdateV2Command', () => {
 
   describe('#validateCommand(program)', () => {
 
-    before(() => {
-      checkUpdateCommand = new CheckUpdateCommand();
+    let proxyIsJsonObject;
+    let spyIsJsonObject;
+    let proxyIsJsonArray;
+    let spyIsJsonArray;
+
+    beforeEach(() => {
+      const ProxifiedCommand = proxyquire('../../src/commands/CheckUpdateV2Command', {
+        '../utils/Validator': {
+          isJsonObject: (str) => {
+            return proxyIsJsonObject(str);
+          },
+          isJsonArray: (str) => {
+            return proxyIsJsonArray(str);
+          }
+        }
+      });
+
+      spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
+        return true;
+      }
+
+      spyIsJsonArray = sinon.spy();
+      proxyIsJsonArray = (str) => {
+        spyIsJsonArray(str);
+        return true;
+      }
+
+      checkUpdateCommand = new ProxifiedCommand();
       checkUpdateCommand.barracks = {};
       checkUpdateCommand.userConfiguration = {};
     });
@@ -41,6 +70,9 @@ describe('CheckUpdateV2Command', () => {
       const result = checkUpdateCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
+      expect(spyIsJsonArray).to.have.been.calledOnce;
+      expect(spyIsJsonArray).to.have.been.calledWithExactly(program.packages);
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
     });
 
     it('should return true when unitId, packages and customClientData are given', () => {
@@ -50,6 +82,10 @@ describe('CheckUpdateV2Command', () => {
       const result = checkUpdateCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
+      expect(spyIsJsonArray).to.have.been.calledOnce;
+      expect(spyIsJsonArray).to.have.been.calledWithExactly(program.packages);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(program.customClientData);
     });
 
     it('should return false when unitId is missing', () => {
@@ -60,6 +96,8 @@ describe('CheckUpdateV2Command', () => {
       console.log(result);
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonArray).to.not.have.been.calledOnce;
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
     });
 
     it('should return false when packages is missing', () => {
@@ -70,6 +108,8 @@ describe('CheckUpdateV2Command', () => {
       console.log(result);
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonArray).to.not.have.been.calledOnce;
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
     });
 
     it('should return false when unitId has no value', () => {
@@ -80,6 +120,8 @@ describe('CheckUpdateV2Command', () => {
       console.log(result);
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonArray).to.not.have.been.calledOnce;
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
     });
 
     it('should return false when packages has no value', () => {
@@ -90,16 +132,45 @@ describe('CheckUpdateV2Command', () => {
       console.log(result);
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonArray).to.not.have.been.calledOnce;
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
     });
 
     it('should return false when packages is not a JSON array', () => {
       // Given
+      spyIsJsonArray = sinon.spy();
+      proxyIsJsonArray = (str) => {
+        spyIsJsonArray(str);
+        return false;
+      }
       const program = Object.assign({}, validProgram, { packages: '{}' });
       // When
       const result = checkUpdateCommand.validateCommand(program);
       console.log(result);
       // Then
       expect(result).to.be.false;
+      expect(spyIsJsonArray).to.have.been.calledOnce;
+      expect(spyIsJsonArray).to.have.been.calledWithExactly(program.packages);
+      expect(spyIsJsonObject).to.not.have.been.calledOnce;
+    });
+
+    it('should return false when customClientData are not a JSON object', () => {
+      // Given
+      spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
+        return false;
+      }
+      const program = Object.assign({}, validProgram, { customClientData: 'kgfcvbnm{//nhjwrf}notJson' });
+      // When
+      const result = checkUpdateCommand.validateCommand(program);
+      console.log(result);
+      // Then
+      expect(result).to.be.false;
+      expect(spyIsJsonArray).to.have.been.calledOnce;
+      expect(spyIsJsonArray).to.have.been.calledWithExactly(program.packages);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(program.customClientData);
     });
   });
 

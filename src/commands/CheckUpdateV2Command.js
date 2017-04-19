@@ -25,7 +25,7 @@ class CheckUpdateV2Command extends BarracksCommand {
     return !!(
       program.unitId && program.unitId !== true &&
       program.packages && program.packages !== true && Validator.isJsonArray(program.packages) &&
-      (!program.customClientData || (program.customClientData && program.customClientData !== true))
+      (!program.customClientData || (program.customClientData && program.customClientData !== true && Validator.isJsonObject(program.customClientData)))
     );
   }
 

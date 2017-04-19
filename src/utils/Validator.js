@@ -18,7 +18,6 @@ class Validator {
     } catch (e) {
       return false;
     }
-    return true;
   }
 
   static fileExists(path) {
