@@ -11,13 +11,13 @@ chai.use(sinonChai);
 describe('CreateUpdateCommand', () => {
 
   let createUpdateCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
 
   const CreateUpdateCommand = proxyquire('../../../src/commands/update/CreateUpdateCommand', {
     '../../utils/Validator': {
-      isJsonString: (str) => {
-        return proxyIsJsonString(str);
+      isJsonObject: (str) => {
+        return proxyIsJsonObject(str);
       },
       fileExists: (path) => {
         return proxyFileExists(path);
@@ -39,7 +39,7 @@ describe('CreateUpdateCommand', () => {
     createUpdateCommand = new CreateUpdateCommand();
     createUpdateCommand.barracks = {};
     createUpdateCommand.userConfiguration = {};
-    proxyIsJsonString = undefined;
+    proxyIsJsonObject = undefined;
     roxyFileExists = undefined;
   });
 
@@ -54,7 +54,7 @@ describe('CreateUpdateCommand', () => {
         return true;
       }
       const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
+      proxyIsJsonObject = (str) => {
         spyIsJsonString(str);
         return true;
       }
@@ -88,7 +88,7 @@ describe('CreateUpdateCommand', () => {
         return true;
       }
       const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
+      proxyIsJsonObject = (str) => {
         spyIsJsonString(str);
         return true;
       }
@@ -141,7 +141,7 @@ describe('CreateUpdateCommand', () => {
         return true;
       }
       const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
+      proxyIsJsonObject = (str) => {
         spyIsJsonString(str);
         return false;
       }

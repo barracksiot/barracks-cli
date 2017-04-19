@@ -13,7 +13,7 @@ chai.use(sinonChai);
 describe('PublishDeploymentPlanCommand', () => {
 
   let publishDeploymentPlanCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
   let proxyInStream = new Stream();
   let proxyReadFile;
@@ -27,8 +27,8 @@ describe('PublishDeploymentPlanCommand', () => {
   function getProxyCommand() {
     return proxyquire('../../../src/commands/package/PublishDeploymentPlanCommand', {
       '../../utils/Validator': {
-        isJsonString: (str) => {
-          return proxyIsJsonString(str);
+        isJsonObject: (str) => {
+          return proxyIsJsonObject(str);
         },
         fileExists: (path) => {
           return proxyFileExists(path);
@@ -146,9 +146,9 @@ describe('PublishDeploymentPlanCommand', () => {
       // Given
       const program = {};
       const data = 'some { invalid: "json string"}';
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return false;
       };
       spyOnData = sinon.spy();
@@ -171,8 +171,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
         expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         done();
       });
     });
@@ -183,9 +183,9 @@ describe('PublishDeploymentPlanCommand', () => {
       const plan = { 'a-valid': 'json string' };
       const data = '{ "a-valid": "json string" }';
       const response = 'youpi';
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return true;
       };
       spyOnData = sinon.spy();
@@ -208,8 +208,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
         expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         done();
       });
     });
@@ -219,9 +219,9 @@ describe('PublishDeploymentPlanCommand', () => {
       const program = {};
       const data = JSON.stringify(validPlan);
       const response = 'youpi';
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return true;
       };
       spyOnData = sinon.spy();
@@ -243,8 +243,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
         expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
@@ -286,9 +286,9 @@ describe('PublishDeploymentPlanCommand', () => {
         spyReadFile(file, callback);
         callback(undefined, data);
       };
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return false;
       };
       publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -302,8 +302,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         done();
       });
     });
@@ -319,9 +319,9 @@ describe('PublishDeploymentPlanCommand', () => {
         spyReadFile(file, callback);
         callback(undefined, data);
       };
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return true;
       };
       publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -335,8 +335,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         done();
       });
     });
@@ -351,9 +351,9 @@ describe('PublishDeploymentPlanCommand', () => {
         spyReadFile(file, callback);
         callback(undefined, data);
       };
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (data) => {
-        spyIsJsonString(data);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (data) => {
+        spyIsJsonObject(data);
         return true;
       };
       publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -366,8 +366,8 @@ describe('PublishDeploymentPlanCommand', () => {
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
         expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonString).to.have.been.calledOnce;
-        expect(spyIsJsonString).to.have.been.calledWithExactly(data);
+        expect(spyIsJsonObject).to.have.been.calledOnce;
+        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
         expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
