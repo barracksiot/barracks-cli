@@ -13,8 +13,11 @@ if (config.v2Enabled) {
     .command('device [cmd]', 'Manage devices')
     .command('filter [cmd]', 'Manage filters')
     .command('package [cmd]', 'Manage packages')
-    .command('token [cmd]', 'Manage tokens')
-    .command('integration [cmd]', 'Manage third-party integrations');
+    .command('token [cmd]', 'Manage tokens');
+
+  if (config.experimental) {
+    program.command('integration [cmd]', 'Manage third-party integrations');
+  }
 } else {
   program.command('login', 'Authenticate to Barracks')
     .command('logout', 'Logout from your Barracks account')
