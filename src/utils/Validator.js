@@ -2,9 +2,19 @@ const fs = require('fs');
 
 class Validator {
 
-  static isJsonString(str) {
+  static isJsonObject(str) {
     try {
       JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  static isJsonArray(str) {
+    try {
+      const obj = JSON.parse(str);
+      return Array.isArray(obj);
     } catch (e) {
       return false;
     }

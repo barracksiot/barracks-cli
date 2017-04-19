@@ -20,7 +20,7 @@ class CreatePackageVersionCommand extends BarracksCommand {
       program.packageReference && program.packageReference !== true && 
       program.file && Validator.fileExists(program.file) && 
       (!program.description || (program.description  && program.description !== true)) &&
-      (!program.metadata || Validator.isJsonString(program.metadata))
+      (!program.metadata || Validator.isJsonObject(program.metadata))
     );
   }
 

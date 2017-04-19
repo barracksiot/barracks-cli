@@ -11,13 +11,13 @@ chai.use(sinonChai);
 describe('CreatePackageVersionCommand', () => {
 
   let createPackageVersionCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
 
   const CreatePackageVersionCommand = proxyquire('../../../src/commands/package/CreatePackageVersionCommand', {
     '../../utils/Validator': {
-      isJsonString: (str) => {
-        return proxyIsJsonString(str);
+      isJsonObject: (str) => {
+        return proxyIsJsonObject(str);
       },
       fileExists: (path) => {
         return proxyFileExists(path);
@@ -44,7 +44,7 @@ describe('CreatePackageVersionCommand', () => {
     createPackageVersionCommand = new CreatePackageVersionCommand();
     createPackageVersionCommand.barracks = {};
     createPackageVersionCommand.userConfiguration = {};
-    proxyIsJsonString = undefined;
+    proxyIsJsonObject = undefined;
     roxyFileExists = undefined;
   });
 
@@ -175,9 +175,9 @@ describe('CreatePackageVersionCommand', () => {
         spyFileExists(path);
         return true;
       }
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return false;
       }
 
@@ -188,8 +188,8 @@ describe('CreatePackageVersionCommand', () => {
       expect(result).to.be.false;
       expect(spyFileExists).to.have.been.calledOnce;
       expect(spyFileExists).to.have.been.calledWithExactly(file);
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(true);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(true);
     });
 
     it('should return true when minimum option and invalid metadata given', () => {
@@ -201,9 +201,9 @@ describe('CreatePackageVersionCommand', () => {
         spyFileExists(path);
         return true;
       }
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return false;
       }
 
@@ -214,8 +214,8 @@ describe('CreatePackageVersionCommand', () => {
       expect(result).to.be.false;
       expect(spyFileExists).to.have.been.calledOnce;
       expect(spyFileExists).to.have.been.calledWithExactly(file);
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(invalidMetadata);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(invalidMetadata);
     });
 
     it('should return true when minimum option and valid metadata given', () => {
@@ -226,9 +226,9 @@ describe('CreatePackageVersionCommand', () => {
         spyFileExists(path);
         return true;
       }
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return true;
       }
 
@@ -239,8 +239,8 @@ describe('CreatePackageVersionCommand', () => {
       expect(result).to.be.true;
       expect(spyFileExists).to.have.been.calledOnce;
       expect(spyFileExists).to.have.been.calledWithExactly(file);
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(JSON.stringify(metadata));
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(JSON.stringify(metadata));
     });
 
     it('should return true when all valid options given', () => {
@@ -251,9 +251,9 @@ describe('CreatePackageVersionCommand', () => {
         spyFileExists(path);
         return true;
       }
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return true;
       }
 
@@ -264,8 +264,8 @@ describe('CreatePackageVersionCommand', () => {
       expect(result).to.be.true;
       expect(spyFileExists).to.have.been.calledOnce;
       expect(spyFileExists).to.have.been.calledWithExactly(file);
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(JSON.stringify(metadata));
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(JSON.stringify(metadata));
     });
   });
 

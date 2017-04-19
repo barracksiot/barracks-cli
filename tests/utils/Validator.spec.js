@@ -12,13 +12,13 @@ chai.use(sinonChai);
 
 describe('Validator', () => {
 
-  describe('#isJsonString()', () => {
+  describe('#isJsonObject()', () => {
   
     it('should return true when given string in JSON', () => {
       // Given
       const value = JSON.stringify({ test: 'plop' });
       // When
-      const result = Validator.isJsonString(value);
+      const result = Validator.isJsonObject(value);
       // Then
       expect(result).to.be.true;
     });
@@ -27,7 +27,37 @@ describe('Validator', () => {
       // Given
       const value = 'not a json string }';
       // When
-      const result = Validator.isJsonString(value);
+      const result = Validator.isJsonObject(value);
+      // Then
+      expect(result).to.be.false;
+    });
+  });
+
+  describe('#isJsonArray()', () => {
+  
+    it('should return true when given string is JSON Array', () => {
+      // Given
+      const value = JSON.stringify(['plop']);
+      // When
+      const result = Validator.isJsonArray(value);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when given string is not a JSON', () => {
+      // Given
+      const value = 'not a json string }';
+      // When
+      const result = Validator.isJsonArray(value);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when given string is a JSON but not an array', () => {
+      // Given
+      const value = '{}';
+      // When
+      const result = Validator.isJsonArray(value);
       // Then
       expect(result).to.be.false;
     });

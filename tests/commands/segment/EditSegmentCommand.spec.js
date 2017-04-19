@@ -11,13 +11,13 @@ chai.use(sinonChai);
 describe('EditSegmentCommand', () => {
 
   let editSegmentCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
 
   const EditSegmentCommand = proxyquire('../../../src/commands/segment/EditSegmentCommand', {
     '../../utils/Validator': {
-      isJsonString: (str) => {
-        return proxyIsJsonString(str);
+      isJsonObject: (str) => {
+        return proxyIsJsonObject(str);
       },
       fileExists: (path) => {
         return proxyFileExists(path);
@@ -63,7 +63,7 @@ describe('EditSegmentCommand', () => {
     editSegmentCommand = new EditSegmentCommand();
     editSegmentCommand.barracks = {};
     editSegmentCommand.userConfiguration = {};
-    proxyIsJsonString = undefined;
+    proxyIsJsonObject = undefined;
     roxyFileExists = undefined;
   });
 
@@ -72,9 +72,9 @@ describe('EditSegmentCommand', () => {
     it('should return true when all the options are valid and present', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions);
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return true;
       }
 
@@ -83,8 +83,8 @@ describe('EditSegmentCommand', () => {
 
       // Then
       expect(result).to.be.true;
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithAllOptions.query);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(programWithAllOptions.query);
     });
 
     it('should return false when id is missing', () => {
@@ -100,9 +100,9 @@ describe('EditSegmentCommand', () => {
       // Given
       const query = 'Not { a } json';
       const program = Object.assign({}, programWithAllOptions, { query });
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return false;
       }
 
@@ -111,8 +111,8 @@ describe('EditSegmentCommand', () => {
 
       // Then
       expect(result).to.be.false;
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(query);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(query);
     });
 
     it('should return true when query is missing', () => {
@@ -127,9 +127,9 @@ describe('EditSegmentCommand', () => {
     it('should return true when name is missing', () => {
       // Given
       const program = Object.assign({}, programWithAllOptions, { name: undefined });
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return true;
       }
 
@@ -138,8 +138,8 @@ describe('EditSegmentCommand', () => {
 
       // Then
       expect(result).to.be.true;
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithAllOptions.query);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(programWithAllOptions.query);
     });
   });
 
