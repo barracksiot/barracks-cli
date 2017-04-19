@@ -230,68 +230,173 @@ describe('BarracksCommand', () => {
 
   describe('#authenticate()', () => {
 
-    before(() => {
-      resetCommand();
+    let proxifiedCommand;
+    let mockHostname;
+    let spyHostname;
+    let mockUserInfo;
+    let spyUserInfo;
+
+    const hostname = 'someComputer';
+    const localUser = 'someDude';
+    const apiToken = {
+      userId:    '05804cadd5929ddf21b45dc7',
+      label:     `${localUser}@${hostname}`,
+      value:     'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI5YxS0C_ZA9l26x7RUpczNS1mNTE0ODUxMGQzOGUiLCJzdWIiOiJncmVnb2lyeFUOxK3Ot1f4qLbf_1xw4kuyY5KF0IiMDXZUBiYXJyYWNrcy5pbyIsImlhdCI6MTQ5MjU0MzkyMH0.HtoDcc1Ng3NtjU2M2Y3NC1mNzY4LTQ1OTEtODQnbWZc12pRhxsNgPUIB5Lltw',
+      startDate: '2017-04-18T19:32:00.325Z',
+      revoked:   false
+    };
+
+    beforeEach(() => {
+      const ProxifiedCommand = proxyquire('../../src/commands/BarracksCommand', {
+        'os': {
+          hostname: () => {
+            return mockHostname();
+          },
+          userInfo: () => {
+            return mockUserInfo();
+          }
+        }
+      });
+
+      proxifiedCommand = new ProxifiedCommand();
+      proxifiedCommand.barracks = {};
+      proxifiedCommand.userConfiguration = {};
+      spyHostname = sinon.spy();
+      spyUserInfo = sinon.spy();
+      mockHostname = () => {
+        spyHostname();
+        return hostname;
+      };
+      mockUserInfo = () => {
+        spyUserInfo();
+        return { username: localUser };
+      };
+    });
+
+    it('should reject an error when authenticate fails', done => {
+      // Given
+      const error = 'anError';
+      proxifiedCommand.barracks.authenticate = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      proxifiedCommand.authenticate(account.email, accountPassword).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
+        done();
+      });
+    });
+
+    it('should reject an error when createToken fails', done => {
+      // Given
+      const error = 'anError';
+      proxifiedCommand.barracks.authenticate = sinon.stub().returns(Promise.resolve(token));
+      proxifiedCommand.barracks.createToken = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      proxifiedCommand.authenticate(account.email, accountPassword).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
+        expect(spyHostname).to.have.been.calledOnce;
+        expect(spyHostname).to.have.been.calledWithExactly();
+        expect(spyUserInfo).to.have.been.calledOnce;
+        expect(spyUserInfo).to.have.been.calledWithExactly();
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledWithExactly(token, { label: apiToken.label });
+        done();
+      });
+    });
+
+    it('should reject an error when saveAuthenticationToken fails', done => {
+      // Given
+      const error = 'anError';
+      proxifiedCommand.barracks.authenticate = sinon.stub().returns(Promise.resolve(token));
+      proxifiedCommand.barracks.createToken = sinon.stub().returns(Promise.resolve(apiToken));
+      proxifiedCommand.saveAuthenticationToken = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      proxifiedCommand.authenticate(account.email, accountPassword).then(result => {
+        done('Should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error);
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
+        expect(spyHostname).to.have.been.calledOnce;
+        expect(spyHostname).to.have.been.calledWithExactly();
+        expect(spyUserInfo).to.have.been.calledOnce;
+        expect(spyUserInfo).to.have.been.calledWithExactly();
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledWithExactly(token, { label: apiToken.label });
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledWithExactly(apiToken.value);
+        done();
+      });
     });
 
     it('should return a token when valid credentials given', done => {
       // Given
-      barracksCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
-      barracksCommand.saveAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      proxifiedCommand.barracks.authenticate = sinon.stub().returns(Promise.resolve(token));
+      proxifiedCommand.barracks.createToken = sinon.stub().returns(Promise.resolve(apiToken));
+      proxifiedCommand.saveAuthenticationToken = sinon.stub().returns(Promise.resolve(apiToken.value));
 
       // When / Then
-      barracksCommand.authenticate(account.email, accountPassword).then(result => {
-        expect(result).to.equals(token);
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
-        expect(barracksCommand.saveAuthenticationToken).to.have.been.calledOnce;
-        expect(barracksCommand.saveAuthenticationToken).to.have.been.calledWithExactly(token);
+      proxifiedCommand.authenticate(account.email, accountPassword).then(result => {
+        expect(result).to.equals(apiToken.value);
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
+        expect(spyHostname).to.have.been.calledOnce;
+        expect(spyHostname).to.have.been.calledWithExactly();
+        expect(spyUserInfo).to.have.been.calledOnce;
+        expect(spyUserInfo).to.have.been.calledWithExactly();
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledWithExactly(token, { label: apiToken.label });
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledWithExactly(apiToken.value);
         done();
       }).catch(err => {
         done(err);
       });
     });
 
-    it('should return an error token when invalid credentials given', done => {
+    it('should truncate the token label to 50 char maximum when username and/or hostname are too long', done => {
       // Given
-      const badEmail = 'plop@plop.com';
-      const badPassword = 'password';
-      const errorMessage = 'Invalid credentials';
-      barracksCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.reject(errorMessage))
+      const longHostname = 'ASuperVeryLongLongHostnameOf40Characters';
+      const longUsername = 'ASuperVeryLongLongUsernameOf40Characters';
+      mockHostname = () => {
+        spyHostname();
+        return longHostname;
       };
+      mockUserInfo = () => {
+        spyUserInfo();
+        return { username: longUsername };
+      };
+      const fullLabel = `${longUsername}@${longHostname}`;
+      const expectedLabel = fullLabel.substring(0, 50);
+      proxifiedCommand.barracks.authenticate = sinon.stub().returns(Promise.resolve(token));
+      proxifiedCommand.barracks.createToken = sinon.stub().returns(Promise.resolve(apiToken));
+      proxifiedCommand.saveAuthenticationToken = sinon.stub().returns(Promise.resolve(apiToken.value));
 
       // When / Then
-      barracksCommand.authenticate(badEmail, badPassword).then(result => {
-        done('should have failed');
-      }).catch(err => {
-        expect(err).to.equals(errorMessage);
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledWithExactly(badEmail, badPassword);
+      proxifiedCommand.authenticate(account.email, accountPassword).then(result => {
+        expect(result).to.equals(apiToken.value);
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
+        expect(spyHostname).to.have.been.calledOnce;
+        expect(spyHostname).to.have.been.calledWithExactly();
+        expect(spyUserInfo).to.have.been.calledOnce;
+        expect(spyUserInfo).to.have.been.calledWithExactly();
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.barracks.createToken).to.have.been.calledWithExactly(token, { label: expectedLabel });
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledOnce;
+        expect(proxifiedCommand.saveAuthenticationToken).to.have.been.calledWithExactly(apiToken.value);
         done();
-      });
-    });
-
-    it('should return an error token when saveAuthenticationToken fail', done => {
-      // Given
-      const errorMessage = 'A marche po';
-      barracksCommand.barracks = {
-        authenticate: sinon.stub().returns(Promise.resolve(token))
-      };
-      barracksCommand.saveAuthenticationToken = sinon.stub().returns(Promise.reject(errorMessage));
-
-      // When / Then
-      barracksCommand.authenticate(account.email, accountPassword).then(result => {
-        done('should have failed');
       }).catch(err => {
-        expect(err).to.equals(errorMessage);
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledOnce;
-        expect(barracksCommand.barracks.authenticate).to.have.been.calledWithExactly(account.email, accountPassword);
-        expect(barracksCommand.saveAuthenticationToken).to.have.been.calledOnce;
-        expect(barracksCommand.saveAuthenticationToken).to.have.been.calledWithExactly(token);
-        done();
+        done(err);
       });
     });
   });

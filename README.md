@@ -31,6 +31,7 @@ $ barracks help
     update [cmd]   Manage updates
     device [cmd]   Manage devices
     segment [cmd]  Manage segments
+    token [cmd]    Manage tokens
     check-update   Check for an update the same way a device would
     help [cmd]     display help for [cmd]
 
@@ -70,6 +71,7 @@ $ barracks help
     device [cmd]   Manage devices
     filter [cmd]   Manage filters
     package [cmd]  Manage packages
+    token [cmd]    Manage tokens
     help [cmd]     display help for [cmd]
 
   Options:
@@ -99,6 +101,10 @@ Currently, the following features are available through the CLI:
     * Create a new segment
     * Edit an existing segment
     * Change active segments
+* Manage API tokens
+    * List all API tokens
+    * Create a new API token
+    * Revoke an existing API token
 * Simulate a device checking for update
 
 ### With Barracks V2 enabled
@@ -123,6 +129,10 @@ Currently, the following features are available through the CLI:
     * List all versions of a packages
     * Create a new version of a package
     * Display detailed information of a version
+* Manage API tokens
+    * List all API tokens
+    * Create a new API token
+    * Revoke an existing API token
 
 ## Docs & Community
 

@@ -5,6 +5,15 @@ const program = require('commander');
 const Barracks = require('../clients/BarracksClient');
 const UserConfiguration = require('../repositories/UserConfiguration');
 const config = require('../config');
+const os = require('os');
+
+const TOKEN_LABEL_MAX_LENGTH = 50;
+
+function buildTokenLabel() {
+  const hostname = os.hostname();
+  const user = os.userInfo().username;
+  return `${user}@${hostname}`.substring(0, TOKEN_LABEL_MAX_LENGTH);
+}
 
 class BarracksCommand {
 
@@ -66,8 +75,10 @@ class BarracksCommand {
 
   authenticate(email, password) {
     return new Promise((resolve, reject) => {
-      this.barracks.authenticate(email, password).then(token => {
-        return this.saveAuthenticationToken(token);
+      this.barracks.authenticate(email, password).then(authToken => {
+        return this.barracks.createToken(authToken, { label: buildTokenLabel() });
+      }).then(apiToken => {
+        return this.saveAuthenticationToken(apiToken.value);
       }).then(token => {
         resolve(token);
       }).catch(err => {

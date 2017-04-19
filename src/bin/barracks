@@ -8,26 +8,24 @@ program.version(pjson.version);
   
 if (config.v2Enabled) {
   program.command('login', 'Authenticate to Barracks')
+    .command('logout', 'Logout from your Barracks account')
     .command('account', 'Get account information')
     .command('device [cmd]', 'Manage devices')
     .command('filter [cmd]', 'Manage filters')
     .command('package [cmd]', 'Manage packages')
-    .command('check-update', 'Check for an update the same way a device would');
-
-  if (config.experimental) {
-    program.command('token [cmd]', 'Manage tokens');
-  }
+    .command('token [cmd]', 'Manage tokens');
 } else {
   program.command('login', 'Authenticate to Barracks')
+    .command('logout', 'Logout from your Barracks account')
     .command('account', 'Get account information')
     .command('update [cmd]', 'Manage updates')
     .command('device [cmd]', 'Manage devices')
     .command('segment [cmd]', 'Manage segments')
+    .command('token [cmd]', 'Manage tokens')
     .command('check-update', 'Check for an update the same way a device would');
 
   if (config.experimental) {
     program.command('filter [cmd]', 'Manage filters')
-      .command('token [cmd]', 'Manage tokens')
       .command('integration [cmd]', 'Manage third-party integrations');
   }
 }
