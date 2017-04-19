@@ -11,13 +11,13 @@ chai.use(sinonChai);
 describe('CreateFilterCommand', () => {
 
   let createFilterCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
 
   const CreateFilterCommand = proxyquire('../../../src/commands/filter/CreateFilterCommand', {
     '../../utils/Validator': {
-      isJsonString: (str) => {
-        return proxyIsJsonString(str);
+      isJsonObject: (str) => {
+        return proxyIsJsonObject(str);
       },
       fileExists: (path) => {
         return proxyFileExists(path);
@@ -66,7 +66,7 @@ describe('CreateFilterCommand', () => {
     createFilterCommand = new CreateFilterCommand();
     createFilterCommand.barracks = {};
     createFilterCommand.userConfiguration = {};
-    proxyIsJsonString = undefined;
+    proxyIsJsonObject = undefined;
     roxyFileExists = undefined;
   });
 
@@ -75,9 +75,9 @@ describe('CreateFilterCommand', () => {
     it('should return true when all the options are valid and present', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions);
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return true;
       }
 
@@ -86,8 +86,8 @@ describe('CreateFilterCommand', () => {
 
       // Then
       expect(result).to.be.true;
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(programWithValidOptions.query);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(programWithValidOptions.query);
     });
 
     it('should return false when name is missing', () => {
@@ -112,9 +112,9 @@ describe('CreateFilterCommand', () => {
       // Given
       const query = 'Not { a } json';
       const program = Object.assign({}, programWithValidOptions, { query });
-      const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
-        spyIsJsonString(str);
+      const spyIsJsonObject = sinon.spy();
+      proxyIsJsonObject = (str) => {
+        spyIsJsonObject(str);
         return false;
       }
 
@@ -123,8 +123,8 @@ describe('CreateFilterCommand', () => {
 
       // Then
       expect(result).to.be.false;
-      expect(spyIsJsonString).to.have.been.calledOnce;
-      expect(spyIsJsonString).to.have.been.calledWithExactly(query);
+      expect(spyIsJsonObject).to.have.been.calledOnce;
+      expect(spyIsJsonObject).to.have.been.calledWithExactly(query);
     });
 
   });

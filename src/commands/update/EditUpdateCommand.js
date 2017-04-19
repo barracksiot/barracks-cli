@@ -74,7 +74,7 @@ class EditUpdateCommand extends BarracksCommand {
       program.args[0] && program.args[0] !== true &&
       this.validateOptionnalParams(program, options) &&
       atLeastOneGiven(program, options) &&
-      (!program.properties || Validator.isJsonString(program.properties))
+      (!program.properties || Validator.isJsonObject(program.properties))
     );
   }
 

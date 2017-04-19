@@ -12,13 +12,13 @@ describe('EditUpdateCommand', () => {
 
   let editUpdateCommand;
   let createFilterCommand;
-  let proxyIsJsonString;
+  let proxyIsJsonObject;
   let proxyFileExists;
 
   const EditUpdateCommand = proxyquire('../../../src/commands/update/EditUpdateCommand', {
     '../../utils/Validator': {
-      isJsonString: (str) => {
-        return proxyIsJsonString(str);
+      isJsonObject: (str) => {
+        return proxyIsJsonObject(str);
       },
       fileExists: (path) => {
         return proxyFileExists(path);
@@ -117,7 +117,7 @@ describe('EditUpdateCommand', () => {
       const program = Object.assign({}, minimalProgram, { properties: invalidProperties });
       editUpdateCommand.validateOptionnalParams = sinon.stub().returns(true);
       const spyIsJsonString = sinon.spy();
-      proxyIsJsonString = (str) => {
+      proxyIsJsonObject = (str) => {
         spyIsJsonString(str);
         return false;
       }

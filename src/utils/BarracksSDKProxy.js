@@ -1,6 +1,9 @@
-const BarracksSDK = require('barracks-sdk');
+const niv = require('npm-install-version');
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
+
+niv.install('barracks-sdk@0.0.2', { quiet: true });
+const BarracksSDK = niv.require('barracks-sdk@0.0.2');
 
 class BarracksSDKProxy {
 

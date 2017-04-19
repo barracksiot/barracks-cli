@@ -35,7 +35,7 @@ class EditSegmentCommand extends BarracksCommand {
         !program.query || 
         (
           program.query !== true && 
-          Validator.isJsonString(program.query)
+          Validator.isJsonObject(program.query)
         )
       )
     );

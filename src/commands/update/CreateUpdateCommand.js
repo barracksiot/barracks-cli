@@ -19,7 +19,7 @@ class CreateUpdateCommand extends BarracksCommand {
       program.segment && program.segment !== true && 
       program.versionId && program.versionId !== true && 
       program.package && Validator.fileExists(program.package) && 
-      (!program.properties || Validator.isJsonString(program.properties))
+      (!program.properties || Validator.isJsonObject(program.properties))
     );
   }
 

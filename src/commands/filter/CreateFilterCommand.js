@@ -13,7 +13,7 @@ class CreateFilterCommand extends BarracksCommand {
     return !!(
       program.name && program.name !== true &&
       program.query && program.query !== true && 
-      Validator.isJsonString(program.query)
+      Validator.isJsonObject(program.query)
     );
   }
 

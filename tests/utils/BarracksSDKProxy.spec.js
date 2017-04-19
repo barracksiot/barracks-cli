@@ -10,6 +10,18 @@ const proxyquire = require('proxyquire').noCallThru();
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
+function getProxifiedBarracks(constructorSpy, checkUpdateSpy) {
+  return proxyquire(sdkProxyPath, {
+    'npm-install-version': {
+      install: sinon.spy(),
+      require: sinon.stub().returns(function Constructor(options) {
+        constructorSpy(options);
+        this.checkUpdate = checkUpdateSpy;
+      })
+    }
+  });
+}
+
 describe('BarracksSDKProxy', () => {
 
   const baseUrl = 'http://barracks.io';
@@ -25,14 +37,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -59,14 +66,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(undefined));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -95,14 +97,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -132,14 +129,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId, customClientData };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -173,14 +165,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -208,14 +195,9 @@ describe('BarracksSDKProxy', () => {
       const device = { unitId, versionId };
       const constructorSpy = sinon.spy();
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(undefined));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then
@@ -247,14 +229,9 @@ describe('BarracksSDKProxy', () => {
       const downloadSpy = sinon.stub().returns(Promise.resolve(file));
       const update = { download: downloadSpy };
       const checkUpdateSpy = sinon.stub().returns(Promise.resolve(update));
-      const ProxifiedBarracks = proxyquire(sdkProxyPath, {
-        'barracks-sdk': function Constructor(options) {
-          constructorSpy(options);
-          this.checkUpdate = checkUpdateSpy;
-        }
-      });
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
 
-      barracks = new ProxifiedBarracks();
+      const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
       // When / Then

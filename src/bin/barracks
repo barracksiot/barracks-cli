@@ -11,7 +11,8 @@ if (config.v2Enabled) {
     .command('account', 'Get account information')
     .command('device [cmd]', 'Manage devices')
     .command('filter [cmd]', 'Manage filters')
-    .command('package [cmd]', 'Manage packages');
+    .command('package [cmd]', 'Manage packages')
+    .command('check-update', 'Check for an update the same way a device would');
 
   if (config.experimental) {
     program.command('token [cmd]', 'Manage tokens');

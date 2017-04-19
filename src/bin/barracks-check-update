@@ -1,4 +1,13 @@
 #!/usr/bin/env node
 
-const CheckUpdateCommand = require('../commands/CheckUpdateCommand');
+const config = require('../config.js');
+
+let CheckUpdateCommand;
+
+if (config.v2Enabled) {
+  CheckUpdateCommand = require('../commands/CheckUpdateV2Command');
+} else {
+  CheckUpdateCommand = require('../commands/CheckUpdateCommand');
+}
+
 new CheckUpdateCommand().render();

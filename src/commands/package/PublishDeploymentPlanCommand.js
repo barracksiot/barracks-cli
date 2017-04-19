@@ -5,7 +5,7 @@ const fs = require('fs');
 
 function getDeploymentPlanFromString(data) {
   return new Promise((resolve, reject) => {
-    if (Validator.isJsonString(data)) {
+    if (Validator.isJsonObject(data)) {
       const plan = JSON.parse(data);
       if (plan.package) {
         resolve(plan);
