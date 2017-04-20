@@ -13,6 +13,10 @@ const endpoints = {
   setGoogleAnalyticsTrackingId: {
     method: 'PUT',
     path: '/api/auth/me/gaTrackingId'
+  },
+  setGoogleClientSecret: {
+    method: 'PUT',
+    path: '/api/auth/me/googleClientSecret'
   }
 };
 
@@ -75,10 +79,30 @@ class AccountClient {
           }
         }
       ).then(response => {
-        logger.debug('GA Id setted successful.');
+        logger.debug('GA Id successfully set.');
         resolve(response.body);
       }).catch(err => {
-        logger.debug('GA Id set failure.');
+        logger.debug('GA Id setting failed.');
+        reject(err.message);
+      });
+    });
+  }
+
+  setGoogleClientSecret(token, secret) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.setGoogleClientSecret,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: secret
+        }
+      ).then(response => {
+        logger.debug('Google Client Secret successfully set.');
+        resolve(response.body);
+      }).catch(err => {
+        logger.debug('Google Client Secret setting failed.');
         reject(err.message);
       });
     });

@@ -180,4 +180,62 @@ describe('AccountClient', () => {
       });
     });
   });
+
+  describe('#setGoogleClientSecret()', () => {
+
+    const validSecret = { 'web': { 'client_id': 'myClientId' } };
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      accountClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      accountClient.setGoogleClientSecret(token, validSecret).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/auth/me/googleClientSecret'
+          },
+          {
+            headers: {
+              'x-auth-token': token
+            },
+            body: validSecret
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the server response when request succeeds', done => {
+      // Given
+      const account = { apiKey: 'qwertyuiop', username: 'coucou', googleClientSecret: validSecret };
+      const response = { body: account };
+      accountClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      accountClient.setGoogleClientSecret(token, validSecret).then(result => {
+        expect(result).to.be.equals(account);
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/auth/me/googleClientSecret'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: validSecret
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
 });
