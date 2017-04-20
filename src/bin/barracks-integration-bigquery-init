@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-const SetBigQueryClientSecretCommand = require('../commands/integration/SetBigQueryClientSecretCommand');
-new SetBigQueryClientSecretCommand().render();
+const SetGoogleClientSecretCommand = require('../commands/integration/SetGoogleClientSecretCommand');
+new SetGoogleClientSecretCommand().render();
