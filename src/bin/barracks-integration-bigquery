@@ -6,8 +6,7 @@ const pjson = require('../../package.json');
 
 const barracks = program
   .version(pjson.version)
-  .command('ganalytics [cmd]', 'Manage Google Analytics integration')
-  .command('bigquery [cmd]', 'Manage Big Query integration');
+  .command('init', 'Setup Big Query integration');
 
 barracks.parse(process.argv);
 
