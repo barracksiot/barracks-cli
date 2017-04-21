@@ -10,16 +10,16 @@ class CreatePackageVersionCommand extends BarracksCommand {
       .option('--packageReference [value]', 'The reference for which existing package you want to create the version')
       .option('--file [file]', 'The path to the package of the update')
       .option('--description [value]', '(Optionnal) The description of the update')
-      .option('--metadata [json]', '(Optionnal) The metadata you want to associate with the update (must be a valid JSON)'); 
+      .option('--metadata [json]', '(Optionnal) The metadata you want to associate with the update (must be a valid JSON)');
   }
 
   validateCommand(program) {
     return !!(
-      program.versionId && program.versionId !== true && 
-      program.name && program.name !== true && 
-      program.packageReference && program.packageReference !== true && 
-      program.file && Validator.fileExists(program.file) && 
-      (!program.description || (program.description  && program.description !== true)) &&
+      program.versionId && program.versionId !== true &&
+      program.name && program.name !== true &&
+      program.packageReference && program.packageReference !== true &&
+      program.file && Validator.fileExists(program.file) &&
+      (!program.description || (program.description && program.description !== true)) &&
       (!program.metadata || Validator.isJsonObject(program.metadata))
     );
   }
@@ -29,7 +29,7 @@ class CreatePackageVersionCommand extends BarracksCommand {
       return this.barracks.createVersion(token, {
         id: program.versionId,
         name: program.name,
-        component: program.packageReference,
+        packageRef: program.packageReference,
         file: program.file,
         description: program.description,
         metadata: program.metadata ? JSON.parse(program.metadata) : undefined

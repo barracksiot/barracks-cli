@@ -13,7 +13,7 @@ describe('packageVersionCommand', () => {
 
   let packageVersionCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageReference = 'my.component.ref';
+  const packageReference = 'my.package.ref';
   const versionId = '1.3.1';
   const validProgram = {
     args: [
@@ -32,7 +32,9 @@ describe('packageVersionCommand', () => {
 
     it('should return false when no argument given', () => {
       // Given
-      const program = { args: [] };
+      const program = {
+        args: []
+      };
       // When
       const result = packageVersionCommand.validateCommand(program);
       // Then
@@ -41,7 +43,9 @@ describe('packageVersionCommand', () => {
 
     it('should return false when one argument given', () => {
       // Given
-      const program = { args: ['plop'] };
+      const program = {
+        args: ['plop']
+      };
       // When
       const result = packageVersionCommand.validateCommand(program);
       // Then
@@ -50,7 +54,9 @@ describe('packageVersionCommand', () => {
 
     it('should return false when more than two arguments given', () => {
       // Given
-      const program = { args: ['plop', 'replop', 'rereplop'] };
+      const program = {
+        args: ['plop', 'replop', 'rereplop']
+      };
       // When
       const result = packageVersionCommand.validateCommand(program);
       // Then

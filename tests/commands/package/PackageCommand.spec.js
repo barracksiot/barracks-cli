@@ -12,10 +12,12 @@ describe('packageCommand', () => {
 
   let packageCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageReference = 'my.component.ref';
-  const validProgram = { args: [
-    packageReference
-  ]};
+  const packageReference = 'my.package.ref';
+  const validProgram = {
+    args: [
+      packageReference
+    ]
+  };
 
   before(() => {
     packageCommand = new PackageCommand();
@@ -27,7 +29,9 @@ describe('packageCommand', () => {
 
     it('should return false when no argument given', () => {
       // Given
-      const program = { args: [] };
+      const program = {
+        args: []
+      };
       // When
       const result = packageCommand.validateCommand(program);
       // Then

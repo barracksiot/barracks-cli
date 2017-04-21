@@ -7,10 +7,10 @@ function getDeploymentPlanFromString(data) {
   return new Promise((resolve, reject) => {
     if (Validator.isJsonObject(data)) {
       const plan = JSON.parse(data);
-      if (plan.package) {
+      if (plan.packageRef) {
         resolve(plan);
       } else {
-        reject('Missing mandatory attribute "package" in deployment plan');
+        reject('Missing mandatory attribute "packageRef" in deployment plan');
       }
     } else {
       reject('Deployment plan must be described by a valid JSON');

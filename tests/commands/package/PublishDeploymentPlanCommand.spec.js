@@ -22,7 +22,9 @@ describe('PublishDeploymentPlanCommand', () => {
   let spyOnClose;
   const token = '345678ujhbvcdsw34rg';
   const file = 'path/to/file.json';
-  const validProgram = { file };
+  const validProgram = {
+    file
+  };
 
   function getProxyCommand() {
     return proxyquire('../../../src/commands/package/PublishDeploymentPlanCommand', {
@@ -40,7 +42,7 @@ describe('PublishDeploymentPlanCommand', () => {
           return proxyReadFile(file, callback);
         }
       }
-    });  
+    });
   }
 
   beforeEach(() => {
@@ -111,7 +113,7 @@ describe('PublishDeploymentPlanCommand', () => {
   describe('#execute(program)', () => {
 
     const validPlan = {
-      package: 'ze-ref',
+      packageRef: 'ze-ref',
       data: {
         some: 'value',
         someOther: 'value'
@@ -177,10 +179,12 @@ describe('PublishDeploymentPlanCommand', () => {
       });
     });
 
-    it('should reject when JSON plan do not contain a component reference', done => {
+    it('should reject when JSON plan do not contain a package reference', done => {
       // Given
       const program = {};
-      const plan = { 'a-valid': 'json string' };
+      const plan = {
+        'a-valid': 'json string'
+      };
       const data = '{ "a-valid": "json string" }';
       const response = 'youpi';
       const spyIsJsonObject = sinon.spy();
@@ -201,7 +205,7 @@ describe('PublishDeploymentPlanCommand', () => {
       publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnData).to.have.been.calledOnce;
@@ -255,7 +259,9 @@ describe('PublishDeploymentPlanCommand', () => {
 
     it('should reject an error when option file given and unable to read the file', done => {
       // Given
-      const program = { file };
+      const program = {
+        file
+      };
       const error = 'Unable to read file';
       const spyReadFile = sinon.spy();
       proxyReadFile = (file, callback) => {
@@ -279,7 +285,9 @@ describe('PublishDeploymentPlanCommand', () => {
 
     it('should reject an error when option file given and content is not valid JSON', done => {
       // Given
-      const program = { file };
+      const program = {
+        file
+      };
       const data = 'not { a-valid": "json string" }';
       const spyReadFile = sinon.spy();
       proxyReadFile = (file, callback) => {
@@ -308,10 +316,14 @@ describe('PublishDeploymentPlanCommand', () => {
       });
     });
 
-    it('should forward to client and return result when file contains valid JSON data but no component ref', done => {
+    it('should forward to client and return result when file contains valid JSON data but no package ref', done => {
       // Given
-      const program = { file };
-      const plan = { 'a-valid': 'json string' };
+      const program = {
+        file
+      };
+      const plan = {
+        'a-valid': 'json string'
+      };
       const data = '{ "a-valid": "json string" }';
       const response = 'youpi';
       const spyReadFile = sinon.spy();
@@ -330,7 +342,7 @@ describe('PublishDeploymentPlanCommand', () => {
       publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;
@@ -343,7 +355,9 @@ describe('PublishDeploymentPlanCommand', () => {
 
     it('should forward to client and return result when file contains valid JSON data', done => {
       // Given
-      const program = { file };
+      const program = {
+        file
+      };
       const data = JSON.stringify(validPlan);
       const response = 'youpi';
       const spyReadFile = sinon.spy();
