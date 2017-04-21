@@ -35,10 +35,34 @@ describe('CreatePackageVersionCommand', () => {
     data1: 'value1',
     data2: 'value2',
   };
-  const minimalValidProgram = { versionId, name, packageReference, file };
-  const programWithDescription = { versionId, name, packageReference, file, description };
-  const programWithMetadata = { versionId, name, packageReference, file, metadata: JSON.stringify(metadata) };
-  const programWithDescriptionAndMetadata = { versionId, name, packageReference, file, description, metadata: JSON.stringify(metadata) };
+  const minimalValidProgram = {
+    versionId,
+    name,
+    packageReference,
+    file
+  };
+  const programWithDescription = {
+    versionId,
+    name,
+    packageReference,
+    file,
+    description
+  };
+  const programWithMetadata = {
+    versionId,
+    name,
+    packageReference,
+    file,
+    metadata: JSON.stringify(metadata)
+  };
+  const programWithDescriptionAndMetadata = {
+    versionId,
+    name,
+    packageReference,
+    file,
+    description,
+    metadata: JSON.stringify(metadata)
+  };
 
   before(() => {
     createPackageVersionCommand = new CreatePackageVersionCommand();
@@ -61,7 +85,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when only versionId option given', () => {
       // Given
-      const program = { versionId };
+      const program = {
+        versionId
+      };
       // When
       const result = createPackageVersionCommand.validateCommand(program);
       // Then
@@ -70,7 +96,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when only name option given', () => {
       // Given
-      const program = { name };
+      const program = {
+        name
+      };
       // When
       const result = createPackageVersionCommand.validateCommand(program);
       // Then
@@ -79,7 +107,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when only packageReference option given', () => {
       // Given
-      const program = { packageReference };
+      const program = {
+        packageReference
+      };
       // When
       const result = createPackageVersionCommand.validateCommand(program);
       // Then
@@ -88,7 +118,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when only file option given', () => {
       // Given
-      const program = { packageReference };
+      const program = {
+        packageReference
+      };
       // When
       const result = createPackageVersionCommand.validateCommand(program);
       // Then
@@ -133,7 +165,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when minimum option given and empty description', () => {
       // Given
-      const program = Object.assign({}, minimalValidProgram, { description: true });
+      const program = Object.assign({}, minimalValidProgram, {
+        description: true
+      });
       const spyFileExists = sinon.spy();
       proxyFileExists = (path) => {
         spyFileExists(path);
@@ -169,7 +203,9 @@ describe('CreatePackageVersionCommand', () => {
 
     it('should return false when minimum option given and empty metadata', () => {
       // Given
-      const program = Object.assign({}, minimalValidProgram, { metadata: true });
+      const program = Object.assign({}, minimalValidProgram, {
+        metadata: true
+      });
       const spyFileExists = sinon.spy();
       proxyFileExists = (path) => {
         spyFileExists(path);
@@ -195,7 +231,9 @@ describe('CreatePackageVersionCommand', () => {
     it('should return true when minimum option and invalid metadata given', () => {
       // Given
       const invalidMetadata = '{bhvgcfdghjklm,nbvcg';
-      const program = Object.assign({}, minimalValidProgram, { metadata: invalidMetadata });
+      const program = Object.assign({}, minimalValidProgram, {
+        metadata: invalidMetadata
+      });
       const spyFileExists = sinon.spy();
       proxyFileExists = (path) => {
         spyFileExists(path);
@@ -274,8 +312,11 @@ describe('CreatePackageVersionCommand', () => {
     it('should reject an error if creation request fail', done => {
       // Given
       const program = minimalValidProgram;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
+      const packageId = '09876543sdfghjkl';
+      const aPackage = {
+        name: packageReference,
+        id: packageId
+      };
       const error = 'creation failed';
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.reject(error));
@@ -289,11 +330,10 @@ describe('CreatePackageVersionCommand', () => {
         expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
-          token,
-          {
+          token, {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description: undefined,
             metadata: undefined
@@ -306,9 +346,15 @@ describe('CreatePackageVersionCommand', () => {
     it('should forward to barracks client when minimal options given', done => {
       // Given
       const program = minimalValidProgram;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
-      const response = { id: 'wertyui', component: packageReference };
+      const packageId = '09876543sdfghjkl';
+      const aPackage = {
+        name: packageReference,
+        id: packageId
+      };
+      const response = {
+        id: 'wertyui',
+        packageRef: packageReference
+      };
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
@@ -319,11 +365,10 @@ describe('CreatePackageVersionCommand', () => {
         expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
-          token,
-          {
+          token, {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description: undefined,
             metadata: undefined
@@ -338,9 +383,15 @@ describe('CreatePackageVersionCommand', () => {
     it('should forward to barracks client when all options given', done => {
       // Given
       const program = programWithDescriptionAndMetadata;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
-      const response = { id: 'wertyui', component: packageReference };
+      const packageId = '09876543sdfghjkl';
+      const aPackage = {
+        name: packageReference,
+        id: packageId
+      };
+      const response = {
+        id: 'wertyui',
+        packageRef: packageReference
+      };
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
@@ -351,11 +402,10 @@ describe('CreatePackageVersionCommand', () => {
         expect(createPackageVersionCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledOnce;
         expect(createPackageVersionCommand.barracks.createVersion).to.have.been.calledWithExactly(
-          token,
-          {
+          token, {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description,
             metadata: metadata

@@ -21,58 +21,70 @@ describe('PackageClient', () => {
     packageClient.httpClient = {};
   });
 
-  describe('#createComponent()', () => {
+  describe('#createPackage()', () => {
 
-    const componentRef = 'my.component.yo';
-    const componentName = 'A cool component';
-    const componentDescription = 'A very cool component';
+    const packageRef = 'my.package.yo';
+    const packageName = 'A cool package';
+    const packageDescription = 'A very cool package';
 
     it('should return an error message when request fails', done => {
       // Given
-      const component = { ref: componentRef, name: componentName, description: componentDescription };
-      const error = { message: 'Error !' };
+      const aPackage = {
+        ref: packageRef,
+        name: packageName,
+        description: packageDescription
+      };
+      const error = {
+        message: 'Error !'
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      packageClient.createComponent(token, component).then(result => {
+      packageClient.createPackage(token, aPackage).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'POST',
-            path: '/v2/api/member/components'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'POST',
+          path: '/v2/api/member/packages'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            body: component
-          }
-        );
+          body: aPackage
+        });
         done();
       });
     });
 
-    it('should return the component created', done => {
+    it('should return the package created', done => {
       // Given
-      const component = { ref: componentRef, name: componentName, description: componentDescription };
-      const response = { body: Object.assign({}, component, { id: 'theNewId' }) };
+      const aPackage = {
+        ref: packageRef,
+        name: packageName,
+        description: packageDescription
+      };
+      const response = {
+        body: Object.assign({}, aPackage, {
+          id: 'theNewId'
+        })
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      packageClient.createComponent(token, component).then(result => {
+      packageClient.createPackage(token, aPackage).then(result => {
         expect(result).to.be.equals(response.body);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'POST',
-            path: '/v2/api/member/components'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'POST',
+          path: '/v2/api/member/packages'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            body: component
-          }
-        );
+          body: aPackage
+        });
         done();
       }).catch(err => {
         done(err);
@@ -92,7 +104,9 @@ describe('PackageClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const error = { message: 'Error !' };
+      const error = {
+        message: 'Error !'
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
@@ -101,43 +115,43 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            pathVariables: {
-              componentRef: validPackage.reference
-            }
+          pathVariables: {
+            packageRef: validPackage.reference
           }
-        );
+        });
         done();
       });
     });
 
     it('should return a package when request succeeds', done => {
       // Given
-      const response = { body: validPackage };
+      const response = {
+        body: validPackage
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageClient.getPackage(token, validPackage.reference).then(result => {
         expect(result).to.be.equals(validPackage);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            pathVariables: {
-              componentRef: validPackage.reference
-            }
+          pathVariables: {
+            packageRef: validPackage.reference
           }
-        );
+        });
         done();
       }).catch(err => {
         done(err);
@@ -145,28 +159,29 @@ describe('PackageClient', () => {
     });
   });
 
-  describe('#getComponent()', () => {
+  describe('#getPackage()', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
       const options = {
-        headers: { 'x-auth-token': token }
+        headers: {
+          'x-auth-token': token
+        }
       };
 
       packageClient.httpClient.retrieveAllPages = sinon.spy();
 
       // When / Then
-      packageClient.getComponents(token).then(result => {
+      packageClient.getPackages(token).then(result => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
-          new PageableStream(),
-          {
+          new PageableStream(), {
             method: 'GET',
-            path: '/v2/api/member/components'
+            path: '/v2/api/member/packages'
           },
           options,
-          'components'
+          'packages'
         );
         done();
       }).catch(err => {
@@ -182,10 +197,12 @@ describe('PackageClient', () => {
     const version = {
       id: '2.0',
       name: 'version 2',
-      component: 'ref.package',
+      packageRef: 'ref.package',
       file: filePath,
       description: 'description',
-      metadata: JSON.stringify({ data: 'value' })
+      metadata: JSON.stringify({
+        data: 'value'
+      })
     };
 
     let spyCreateReadStream;
@@ -238,14 +255,16 @@ describe('PackageClient', () => {
         }
       },
       pathVariables: {
-        componentRef: version.component
+        packageRef: version.packageRef
       }
     };
 
     it('should return an error message when request fails', done => {
       // Given
       const proxypackageClient = new ProxifiedpackageClient();
-      const error = { message: 'request failed' };
+      const error = {
+        message: 'request failed'
+      };
       spyCreateReadStream = sinon.spy();
       spyBasename = sinon.spy();
       proxypackageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
@@ -256,10 +275,9 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
+        expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
             method: 'POST',
-            path: '/v2/api/member/components/:componentRef/versions'
+            path: '/v2/api/member/packages/:packageRef/versions'
           },
           options
         );
@@ -270,7 +288,9 @@ describe('PackageClient', () => {
     it('should return the serveur response body when request is successful', done => {
       // Given
       const proxypackageClient = new ProxifiedpackageClient();
-      const response = { body: 'youpi created' };
+      const response = {
+        body: 'youpi created'
+      };
       spyCreateReadStream = sinon.spy();
       spyBasename = sinon.spy();
 
@@ -280,10 +300,9 @@ describe('PackageClient', () => {
       proxypackageClient.createVersion(token, version).then(result => {
         expect(result).to.be.equals(response.body);
         expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
+        expect(proxypackageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
             method: 'POST',
-            path: '/v2/api/member/components/:componentRef/versions'
+            path: '/v2/api/member/packages/:packageRef/versions'
           },
           options
         );
@@ -301,7 +320,9 @@ describe('PackageClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const error = { message: 'Error !' };
+      const error = {
+        message: 'Error !'
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
@@ -310,50 +331,49 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef/versions/:versionId'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef/versions/:versionId'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: {
-              'x-auth-token': token
-            },
-            pathVariables: {
-              componentRef: packageRef,
-              versionId
-            }
+          pathVariables: {
+            packageRef: packageRef,
+            versionId
           }
-        );
+        });
         done();
       });
     });
 
     it('should return a token when request succeed', done => {
       // Given
-      const version = { component: packageRef, id: versionId };
-      const response = { body: version };
+      const version = {
+        packageRef: packageRef,
+        id: versionId
+      };
+      const response = {
+        body: version
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageClient.getVersion(token, packageRef, versionId).then(result => {
         expect(result).to.deep.equals(version);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef/versions/:versionId'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef/versions/:versionId'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: {
-              'x-auth-token': token
-            },
-            pathVariables: {
-              componentRef: packageRef,
-              versionId
-            }
+          pathVariables: {
+            packageRef: packageRef,
+            versionId
           }
-        );
+        });
         done();
       }).catch(err => {
         done(err);
@@ -361,28 +381,29 @@ describe('PackageClient', () => {
     });
   });
 
-  describe('#getComponentVersions()', () => {
+  describe('#getPackageVersions()', () => {
 
     it('should return a stream object and deleguate to the client', done => {
       // Given
-      const componentRef = 'my.component.ref';
+      const packageRef = 'my.package.ref';
       const options = {
         headers: {
           'x-auth-token': token
         },
-        pathVariables: { componentRef }
+        pathVariables: {
+          packageRef
+        }
       };
       packageClient.httpClient.retrieveAllPages = sinon.spy();
 
       // When / Then
-      packageClient.getComponentVersions(token, componentRef).then(result => {
+      packageClient.getPackageVersions(token, packageRef).then(result => {
         expect(result).to.be.instanceOf(PageableStream);
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
         expect(packageClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
-          new PageableStream(),
-          {
+          new PageableStream(), {
             method: 'GET',
-            path: '/v2/api/member/components/:componentRef/versions'
+            path: '/v2/api/member/packages/:packageRef/versions'
           },
           options,
           'versions'
@@ -398,7 +419,7 @@ describe('PackageClient', () => {
 
     const packageRef = 'ze.ref';
     const validPlan = {
-      package: packageRef,
+      packageRef: packageRef,
       data: {
         some: 'value',
         someOther: 'value'
@@ -407,7 +428,9 @@ describe('PackageClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const error = { message: 'Error !' };
+      const error = {
+        message: 'Error !'
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
@@ -416,50 +439,48 @@ describe('PackageClient', () => {
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'POST',
-            path: '/v2/api/member/components/:componentRef/deployment-plan'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'POST',
+          path: '/v2/api/member/packages/:packageRef/deployment-plan'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: {
-              'x-auth-token': token
-            },
-            pathVariables: {
-              componentRef: packageRef
-            },
-            body: validPlan
-          }
-        );
+          pathVariables: {
+            packageRef: packageRef
+          },
+          body: validPlan
+        });
         done();
       });
     });
 
     it('should return the plan created', done => {
       // Given
-      const plan = Object.assign({}, validPlan, { id: 'kjcxse456tyhjkloiuytrfd' });
-      const response = { body: plan };
+      const plan = Object.assign({}, validPlan, {
+        id: 'kjcxse456tyhjkloiuytrfd'
+      });
+      const response = {
+        body: plan
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageClient.publishDeploymentPlan(token, plan).then(result => {
         expect(result).to.be.equals(response.body);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'POST',
-            path: '/v2/api/member/components/:componentRef/deployment-plan'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'POST',
+          path: '/v2/api/member/packages/:packageRef/deployment-plan'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: {
-              'x-auth-token': token
-            },
-            pathVariables: {
-              componentRef: packageRef
-            },
-            body: plan
-          }
-        );
+          pathVariables: {
+            packageRef: packageRef
+          },
+          body: plan
+        });
         done();
       }).catch(err => {
         done(err);
@@ -470,7 +491,7 @@ describe('PackageClient', () => {
   describe('#getDeploymentPlan()', () => {
     const packageRef = 'ze.ref';
     const validDeploymentPlan = {
-      package: packageRef,
+      packageRef: packageRef,
       data: {
         some: 'value',
         someOther: 'value'
@@ -479,52 +500,54 @@ describe('PackageClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const error = { message: 'Error !' };
+      const error = {
+        message: 'Error !'
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      packageClient.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
+      packageClient.getDeploymentPlan(token, validDeploymentPlan.packageRef).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef/deployment-plan'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef/deployment-plan'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            pathVariables: {
-              componentRef: validDeploymentPlan.package
-            }
+          pathVariables: {
+            packageRef: validDeploymentPlan.package
           }
-        );
+        });
         done();
       });
     });
 
     it('should return a deployment plan when request succeed', done => {
       // Given
-      const response = { body: validDeploymentPlan };
+      const response = {
+        body: validDeploymentPlan
+      };
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageClient.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
         expect(result).to.be.equals(validDeploymentPlan);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
-        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
-          {
-            method: 'GET',
-            path: '/v2/api/member/components/:componentRef/deployment-plan'
+        expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
+          method: 'GET',
+          path: '/v2/api/member/packages/:packageRef/deployment-plan'
+        }, {
+          headers: {
+            'x-auth-token': token
           },
-          {
-            headers: { 'x-auth-token': token },
-            pathVariables: {
-              componentRef: validDeploymentPlan.package
-            }
+          pathVariables: {
+            packageRef: validDeploymentPlan.package
           }
-        );
+        });
         done();
       }).catch(err => {
         done(err);

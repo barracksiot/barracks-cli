@@ -19,7 +19,9 @@ describe('CreatePackageCommand', () => {
     reference: packageReference,
     name: packageName
   };
-  const validProgramWithDescription = Object.assign({}, validProgram, { description: packageDescription });
+  const validProgramWithDescription = Object.assign({}, validProgram, {
+    description: packageDescription
+  });
 
   before(() => {
     createPackageCommand = new CreatePackageCommand();
@@ -40,7 +42,9 @@ describe('CreatePackageCommand', () => {
 
     it('should return false when only reference option given', () => {
       // Given
-      const program = { reference: packageReference };
+      const program = {
+        reference: packageReference
+      };
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -49,7 +53,9 @@ describe('CreatePackageCommand', () => {
 
     it('should return false when only name option given', () => {
       // Given
-      const program = { name: packageName };
+      const program = {
+        name: packageName
+      };
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -58,7 +64,9 @@ describe('CreatePackageCommand', () => {
 
     it('should return false when empty reference option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { reference: true });
+      const program = Object.assign({}, validProgram, {
+        reference: true
+      });
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -67,16 +75,20 @@ describe('CreatePackageCommand', () => {
 
     it('should return false when empty name option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { name: true });
+      const program = Object.assign({}, validProgram, {
+        name: true
+      });
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
-    
+
     it('should return false when empty description option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { description: true });
+      const program = Object.assign({}, validProgram, {
+        description: true
+      });
       // When
       const result = createPackageCommand.validateCommand(program);
       // Then
@@ -113,15 +125,14 @@ describe('CreatePackageCommand', () => {
         name: packageName
       };
       createPackageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createPackageCommand.barracks.createComponent = sinon.stub().returns(Promise.resolve(response));
+      createPackageCommand.barracks.createPackage = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       createPackageCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createPackageCommand.barracks.createComponent).to.have.been.calledOnce;
-        expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
-          token,
-          {
+        expect(createPackageCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createPackageCommand.barracks.createPackage).to.have.been.calledWithExactly(
+          token, {
             reference: packageReference,
             name: packageName,
             description: undefined
@@ -143,15 +154,14 @@ describe('CreatePackageCommand', () => {
         description: packageDescription
       };
       createPackageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      createPackageCommand.barracks.createComponent = sinon.stub().returns(Promise.resolve(response));
+      createPackageCommand.barracks.createPackage = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       createPackageCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(createPackageCommand.barracks.createComponent).to.have.been.calledOnce;
-        expect(createPackageCommand.barracks.createComponent).to.have.been.calledWithExactly(
-          token,
-          {
+        expect(createPackageCommand.barracks.createPackage).to.have.been.calledOnce;
+        expect(createPackageCommand.barracks.createPackage).to.have.been.calledWithExactly(
+          token, {
             reference: packageReference,
             name: packageName,
             description: packageDescription

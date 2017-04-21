@@ -11,7 +11,7 @@ class CreatePackageCommand extends BarracksCommand {
 
   validateCommand(program) {
     return !!(
-      program.reference && program.reference !== true && 
+      program.reference && program.reference !== true &&
       program.name && program.name !== true &&
       (!program.description || (program.description && program.description !== true))
     );
@@ -19,7 +19,7 @@ class CreatePackageCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.createComponent(token, {
+      return this.barracks.createPackage(token, {
         reference: program.reference,
         name: program.name,
         description: program.description

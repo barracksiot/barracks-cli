@@ -13,10 +13,12 @@ describe('deploymentPlanCommand', () => {
 
   let deploymentPlanCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageReference = 'my.component.ref';
-  const validProgram = { args: [
-    packageReference
-  ]};
+  const packageReference = 'my.package.ref';
+  const validProgram = {
+    args: [
+      packageReference
+    ]
+  };
 
   before(() => {
     deploymentPlanCommand = new DeploymentPlanCommand();
@@ -28,7 +30,9 @@ describe('deploymentPlanCommand', () => {
 
     it('should return false when no argument given', () => {
       // Given
-      const program = { args: []};
+      const program = {
+        args: []
+      };
       // When
       const result = deploymentPlanCommand.validateCommand(program);
       // Then
@@ -69,7 +73,7 @@ describe('deploymentPlanCommand', () => {
 
     it('should forward the client response when all is ok', done => {
       // Given
-      const response = [ 'myGreatDeploymentPlan' ];
+      const response = ['myGreatDeploymentPlan'];
       const program = validProgram;
       deploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       deploymentPlanCommand.barracks.getDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
