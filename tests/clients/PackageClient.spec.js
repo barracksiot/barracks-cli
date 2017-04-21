@@ -519,7 +519,7 @@ describe('PackageClient', () => {
             'x-auth-token': token
           },
           pathVariables: {
-            packageRef: validDeploymentPlan.package
+            packageRef: validDeploymentPlan.packageRef
           }
         });
         done();
@@ -534,7 +534,7 @@ describe('PackageClient', () => {
       packageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      packageClient.getDeploymentPlan(token, validDeploymentPlan.package).then(result => {
+      packageClient.getDeploymentPlan(token, validDeploymentPlan.packageRef).then(result => {
         expect(result).to.be.equals(validDeploymentPlan);
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(packageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly({
@@ -545,7 +545,7 @@ describe('PackageClient', () => {
             'x-auth-token': token
           },
           pathVariables: {
-            packageRef: validDeploymentPlan.package
+            packageRef: validDeploymentPlan.packageRef
           }
         });
         done();

@@ -113,7 +113,7 @@ describe('PublishDeploymentPlanCommand', () => {
   describe('#execute(program)', () => {
 
     const validPlan = {
-      package: 'ze-ref',
+      packageRef: 'ze-ref',
       data: {
         some: 'value',
         someOther: 'value'
@@ -205,7 +205,7 @@ describe('PublishDeploymentPlanCommand', () => {
       publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyOnData).to.have.been.calledOnce;
@@ -342,7 +342,7 @@ describe('PublishDeploymentPlanCommand', () => {
       publishDeploymentPlanCommand.execute(program).then(result => {
         done('Should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
+        expect(err).to.be.equals('Missing mandatory attribute "packageRef" in deployment plan');
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(spyReadFile).to.have.been.calledOnce;

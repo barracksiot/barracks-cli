@@ -190,7 +190,7 @@ class PackageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            packageRef: plan.package
+            packageRef: plan.packageRef
           },
           body: plan
         }
