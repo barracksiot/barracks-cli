@@ -45,14 +45,14 @@ class PackageClient {
     this.httpClient = new HTTPClient();
   }
 
-  createPackage(token, package) {
+  createPackage(token, aPackage) {
     return new Promise((resolve, reject) => {
       this.httpClient.sendEndpointRequest(
         endpoints.createPackage, {
           headers: {
             'x-auth-token': token
           },
-          body: package
+          body: aPackage
         }
       ).then(response => {
         resolve(response.body);
