@@ -4,7 +4,7 @@ const fs = require('fs');
 
 class ReadFile {
 
-  getObjectFromString(data) {
+  static getObjectFromString(data) {
     return new Promise((resolve, reject) => {
       if (Validator.isJsonObject(data)) {
         const object = JSON.parse(data);
@@ -20,12 +20,13 @@ class ReadFile {
       fs.readFile(file, (err, data) => {
         if (err) {
           reject(err);
+        } else {
+          this.getObjectFromString(data).then(obj => {
+            resolve(obj);
+          }).catch(err => {
+            reject(err);
+          });
         }
-        this.getObjectFromString(data).then(obj => {
-          resolve(obj);
-        }).catch(err => {
-          reject(err);
-        });
       });
     });
   }
@@ -33,7 +34,6 @@ class ReadFile {
   static readObjectFromStdin() {
     return new Promise((resolve, reject) => {
       let streamContent = '';
-
       inStream.on('data', chunk => {
         streamContent += chunk.toString('utf8');
       });

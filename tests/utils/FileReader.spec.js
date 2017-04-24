@@ -168,12 +168,6 @@ describe('FileReader', () => {
     let mockStream = new Stream();
 
     beforeEach( () => {
-      FileReader = proxyquire('../../src/utils/FileReader', {
-        'in-stream': mockStream
-      });
-      spyOnData = sinon.spy();
-      spyOnClose = sinon.spy();
-      spyOnError = sinon.spy();
       mockStream = new Stream();
       mockStream.on('data', data => {
         spyOnData(data);
@@ -184,14 +178,17 @@ describe('FileReader', () => {
       mockStream.on('error', error => {
         spyOnError(error);
       });
+
+      FileReader = proxyquire('../../src/utils/FileReader', {
+        'in-stream': mockStream
+      });
     });
 
     it ('should reject error when input stream returns error', done => {
       // Given
       const error = 'This is an error';
-
+      spyOnError = sinon.spy();
       setTimeout(() => {
-        mockStream.emit('data', "dataaaaaaaaaaaaaaaaAAAAAAAAAAA");
         mockStream.emit('error', error);
       }, 50);
 
@@ -201,9 +198,9 @@ describe('FileReader', () => {
       FileReader.readObjectFromStdin().then(result => {
         done('Should have failed');
       }).catch(err => {
-      /*  expect(err).to.be.equals(error);
+        expect(err).to.be.equals(error);
         expect(spyOnError).to.have.been.calledOnce;
-        expect(spyOnError).to.have.been.calledWithExactly(error);*/
+        expect(spyOnError).to.have.been.calledWithExactly(error);
         done();
       });
     });
@@ -212,7 +209,9 @@ describe('FileReader', () => {
       // Given
       const data = '{ "aJsonKey": "aJsonValue", "anotherKey": "anotherValue" }';
       const error = 'My terrible error';
-
+      spyOnData = sinon.spy();
+      spyOnClose = sinon.spy();
+      spyOnError = sinon.spy();
       setTimeout(() => {
         mockStream.emit('data', data);
         mockStream.emit('close');
@@ -227,6 +226,10 @@ describe('FileReader', () => {
         expect(err).to.be.equals(error);
         expect(FileReader.getObjectFromString).to.have.been.calledOnce;
         expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(spyOnData).to.have.been.calledOnce;
+        expect(spyOnData).to.have.been.calledWithExactly(data);
+        expect(spyOnClose).to.have.been.calledOnce;
+        expect(spyOnClose).to.have.been.calledWithExactly();
         done();
       });
     });
@@ -250,6 +253,10 @@ describe('FileReader', () => {
         expect(result).to.be.equals(object);
         expect(FileReader.getObjectFromString).to.have.been.calledOnce;
         expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(spyOnData).to.have.been.calledOnce;
+        expect(spyOnData).to.have.been.calledWithExactly(data);
+        expect(spyOnClose).to.have.been.calledOnce;
+        expect(spyOnClose).to.have.been.calledWithExactly();
         done();
       }).catch(err => {
         done('Should have succeeded');
