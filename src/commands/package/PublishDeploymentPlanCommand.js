@@ -1,67 +1,6 @@
 const BarracksCommand = require('../BarracksCommand');
 const Validator = require('../../utils/Validator');
-const inStream = require('in-stream');
-const fs = require('fs');
-
-function getDeploymentPlanFromString(data) {
-  return new Promise((resolve, reject) => {
-    if (Validator.isJsonObject(data)) {
-      const plan = JSON.parse(data);
-      if (plan.package) {
-        resolve(plan);
-      } else {
-        reject('Missing mandatory attribute "package" in deployment plan');
-      }
-    } else {
-      reject('Deployment plan must be described by a valid JSON');
-    }
-  });
-}
-
-function readDeploymentPlanFromFile(file) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(file, (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      getDeploymentPlanFromString(data).then(plan => {
-        resolve(plan);
-      }).catch(err => {
-        reject(err);
-      });
-    });
-  });
-}
-
-function readDeploymentPlanFromStdin() {
-  return new Promise((resolve, reject) => {
-    let streamContent = '';
-
-    inStream.on('data', chunk => {
-      streamContent += chunk.toString('utf8');
-    });
-
-    inStream.on('close', () => {
-      getDeploymentPlanFromString(streamContent).then(plan => {
-        resolve(plan);
-      }).catch(err => {
-        reject(err);
-      });
-    });
-
-    inStream.on('error', error => {
-      reject(error);
-    });
-  });
-}
-
-function getDeploymentPlan(program) {
-  if (program.file) {
-    return readDeploymentPlanFromFile(program.file);
-  } else {
-    return readDeploymentPlanFromStdin();
-  }
-}
+const ReadFile = require('../../utils/FileReader');
 
 class PublishDeploymentPlanCommand extends BarracksCommand {
 
@@ -77,9 +16,13 @@ class PublishDeploymentPlanCommand extends BarracksCommand {
     let token;
     return this.getAuthenticationToken().then(authToken => {
       token = authToken;
-      return getDeploymentPlan(program);
+      return ReadFile.getObject(program);
     }).then(plan => {
-      return this.barracks.publishDeploymentPlan(token, plan);
+      if (plan.package) {
+        return this.barracks.publishDeploymentPlan(token, plan);
+      } else {
+        return false;
+      }
     });
   }
 }
