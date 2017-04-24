@@ -13,13 +13,8 @@ chai.use(sinonChai);
 describe('PublishDeploymentPlanCommand', () => {
 
   let publishDeploymentPlanCommand;
-  let proxyIsJsonObject;
   let proxyFileExists;
-  let proxyInStream = new Stream();
-  let proxyReadFile;
-  let spyOnError;
-  let spyOnData;
-  let spyOnClose;
+  let proxyGetObject;
   const token = '345678ujhbvcdsw34rg';
   const file = 'path/to/file.json';
   const validProgram = { file };
@@ -27,33 +22,20 @@ describe('PublishDeploymentPlanCommand', () => {
   function getProxyCommand() {
     return proxyquire('../../../src/commands/package/PublishDeploymentPlanCommand', {
       '../../utils/Validator': {
-        isJsonObject: (str) => {
-          return proxyIsJsonObject(str);
-        },
         fileExists: (path) => {
           return proxyFileExists(path);
         }
       },
-      'in-stream': proxyInStream,
-      fs: {
-        readFile: (file, callback) => {
-          return proxyReadFile(file, callback);
+      '../../utils/FileReader': {
+        getObject: (program) => {
+          return proxyGetObject(program);
         }
       }
     });  
   }
 
   beforeEach(() => {
-    proxyInStream = new Stream();
-    proxyInStream.on('data', data => {
-      spyOnData(data);
-    });
-    proxyInStream.on('close', () => {
-      spyOnClose();
-    });
-    proxyInStream.on('error', error => {
-      spyOnError(error);
-    });
+
     const Command = new getProxyCommand();
     publishDeploymentPlanCommand = new Command();
     publishDeploymentPlanCommand.barracks = {};
@@ -118,258 +100,49 @@ describe('PublishDeploymentPlanCommand', () => {
       }
     };
 
-    it('should reject an error if input stream return an error', done => {
+    const invalidPlan = {
+      data: {
+        some: 'value',
+        someOther: 'value'
+      }
+    };
+
+    it ('should forward to client when valid plan is given', done => {
       // Given
-      const program = {};
-      const error = 'Stream error';
-      spyOnError = sinon.spy();
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-
-      setTimeout(() => {
-        proxyInStream.emit('error', error);
-      }, 50);
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyOnError).to.have.been.calledOnce;
-        expect(spyOnError).to.have.been.calledWithExactly(error);
-        done();
-      });
-    });
-
-    it('should reject an error when input stream give invalid JSON data', done => {
-      // Given
-      const program = {};
-      const data = 'some { invalid: "json string"}';
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return false;
+      const program = validProgram;
+      const spyGetObject = sinon.spy();
+      const response = 'Yatta.';
+      proxyGetObject = (program) => {
+        spyGetObject(program);
+        return validPlan;
       };
-      spyOnData = sinon.spy();
-      spyOnClose = sinon.spy();
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
 
-      setTimeout(() => {
-        proxyInStream.emit('data', data);
-        proxyInStream.emit('close');
-      }, 50);
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals('Deployment plan must be described by a valid JSON');
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyOnData).to.have.been.calledOnce;
-        expect(spyOnData).to.have.been.calledWithExactly(data);
-        expect(spyOnClose).to.have.been.calledOnce;
-        expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        done();
-      });
-    });
-
-    it('should reject when JSON plan do not contain a component reference', done => {
-      // Given
-      const program = {};
-      const plan = { 'a-valid': 'json string' };
-      const data = '{ "a-valid": "json string" }';
-      const response = 'youpi';
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return true;
-      };
-      spyOnData = sinon.spy();
-      spyOnClose = sinon.spy();
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-
-      setTimeout(() => {
-        proxyInStream.emit('data', data);
-        proxyInStream.emit('close');
-      }, 50);
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyOnData).to.have.been.calledOnce;
-        expect(spyOnData).to.have.been.calledWithExactly(data);
-        expect(spyOnClose).to.have.been.calledOnce;
-        expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        done();
-      });
-    });
-
-    it('should forward to client and return result when input stream give valid JSON data', done => {
-      // Given
-      const program = {};
-      const data = JSON.stringify(validPlan);
-      const response = 'youpi';
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return true;
-      };
-      spyOnData = sinon.spy();
-      spyOnClose = sinon.spy();
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      publishDeploymentPlanCommand.barracks.publishDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
-
-      setTimeout(() => {
-        proxyInStream.emit('data', data);
-        proxyInStream.emit('close');
-      }, 50);
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        expect(result).to.be.equals(response);
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyOnData).to.have.been.calledOnce;
-        expect(spyOnData).to.have.been.calledWithExactly(data);
-        expect(spyOnClose).to.have.been.calledOnce;
-        expect(spyOnClose).to.have.been.calledWithExactly();
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
-        done();
-      }).catch(err => {
-        done(err);
-      });
-    });
-
-    it('should reject an error when option file given and unable to read the file', done => {
-      // Given
-      const program = { file };
-      const error = 'Unable to read file';
-      const spyReadFile = sinon.spy();
-      proxyReadFile = (file, callback) => {
-        spyReadFile(file, callback);
-        callback(error);
-      };
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals(error);
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyReadFile).to.have.been.calledOnce;
-        expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        done();
-      });
-    });
-
-    it('should reject an error when option file given and content is not valid JSON', done => {
-      // Given
-      const program = { file };
-      const data = 'not { a-valid": "json string" }';
-      const spyReadFile = sinon.spy();
-      proxyReadFile = (file, callback) => {
-        spyReadFile(file, callback);
-        callback(undefined, data);
-      };
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return false;
-      };
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals('Deployment plan must be described by a valid JSON');
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyReadFile).to.have.been.calledOnce;
-        expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        done();
-      });
-    });
-
-    it('should forward to client and return result when file contains valid JSON data but no component ref', done => {
-      // Given
-      const program = { file };
-      const plan = { 'a-valid': 'json string' };
-      const data = '{ "a-valid": "json string" }';
-      const response = 'youpi';
-      const spyReadFile = sinon.spy();
-      proxyReadFile = (file, callback) => {
-        spyReadFile(file, callback);
-        callback(undefined, data);
-      };
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return true;
-      };
-      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-
-      // When / Then
-      publishDeploymentPlanCommand.execute(program).then(result => {
-        done('Should have failed');
-      }).catch(err => {
-        expect(err).to.be.equals('Missing mandatory attribute "package" in deployment plan');
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyReadFile).to.have.been.calledOnce;
-        expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        done();
-      });
-    });
-
-    it('should forward to client and return result when file contains valid JSON data', done => {
-      // Given
-      const program = { file };
-      const data = JSON.stringify(validPlan);
-      const response = 'youpi';
-      const spyReadFile = sinon.spy();
-      proxyReadFile = (file, callback) => {
-        spyReadFile(file, callback);
-        callback(undefined, data);
-      };
-      const spyIsJsonObject = sinon.spy();
-      proxyIsJsonObject = (data) => {
-        spyIsJsonObject(data);
-        return true;
-      };
       publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       publishDeploymentPlanCommand.barracks.publishDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       publishDeploymentPlanCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(spyReadFile).to.have.been.calledOnce;
-        expect(spyReadFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(spyIsJsonObject).to.have.been.calledOnce;
-        expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
-        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
-        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
+        done();
+      }).catch(err => {
+       done(err);
+      });
+    });
+
+    it ('should return false when plan given is valid JSON but has no package field', done => {
+      // Given
+      const program = validProgram;
+      const spyGetObject = sinon.spy();
+      proxyGetObject = (program) => {
+        spyGetObject(program);
+        return invalidPlan;
+      };
+
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+
+      // When / Then
+      publishDeploymentPlanCommand.execute(program).then(result => {
+        expect(result).to.be.equals(false);
         done();
       }).catch(err => {
         done(err);
