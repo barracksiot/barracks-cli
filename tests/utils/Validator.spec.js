@@ -23,7 +23,7 @@ describe('Validator', () => {
       expect(result).to.be.true;
     });
 
-    it('should return false when given string in not JSON', () => {
+    it('should return false when given string is not JSON', () => {
       // Given
       const value = 'not a json string }';
       // When
