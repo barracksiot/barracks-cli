@@ -1,11 +1,9 @@
-const mockStdin = require('mock-stdin');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
 const proxyquire = require('proxyquire').noCallThru();
-const Stream = require('stream');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -14,7 +12,8 @@ describe('PublishDeploymentPlanCommand', () => {
 
   let publishDeploymentPlanCommand;
   let proxyFileExists;
-  let proxyGetObject;
+  let proxyReadObjectFromFile;
+  let proxyReadObjectFromStdin;
   const token = '345678ujhbvcdsw34rg';
   const file = 'path/to/file.json';
   const validProgram = { file };
@@ -26,17 +25,19 @@ describe('PublishDeploymentPlanCommand', () => {
           return proxyFileExists(path);
         }
       },
-      '../../utils/FileReader': {
-        getObject: (program) => {
-          return proxyGetObject(program);
+      '../../utils/ObjectReader': {
+        readObjectFromFile: (file) => {
+          return proxyReadObjectFromFile(file);
+        },
+        readObjectFromStdin: () => {
+          return proxyReadObjectFromStdin();
         }
       }
     });  
   }
 
   beforeEach(() => {
-
-    const Command = new getProxyCommand();
+    const Command = getProxyCommand();
     publishDeploymentPlanCommand = new Command();
     publishDeploymentPlanCommand.barracks = {};
     publishDeploymentPlanCommand.userConfiguration = {};
@@ -107,13 +108,14 @@ describe('PublishDeploymentPlanCommand', () => {
       }
     };
 
-    it ('should forward to client when valid plan is given', done => {
+    it ('should forward to client when valid plan is given as file', done => {
       // Given
       const program = validProgram;
-      const spyGetObject = sinon.spy();
+      const spyReadObjectFromFile = sinon.spy();
       const response = 'Yatta.';
-      proxyGetObject = (program) => {
-        spyGetObject(program);
+
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return validPlan;
       };
 
@@ -123,9 +125,40 @@ describe('PublishDeploymentPlanCommand', () => {
       // When / Then
       publishDeploymentPlanCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
         done();
       }).catch(err => {
        done(err);
+      });
+    });
+
+    it ('should forward to client when valid plan is given as stream', done => {
+      // Given
+      const program = {};
+      const spyReadObjectFromStdin = sinon.spy();
+      const response = 'Yatta.';
+
+      proxyReadObjectFromStdin = () => {
+        spyReadObjectFromStdin();
+        return validPlan;
+      };
+
+      publishDeploymentPlanCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      publishDeploymentPlanCommand.barracks.publishDeploymentPlan = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      publishDeploymentPlanCommand.execute(program).then(result => {
+        expect(result).to.be.equals(response);
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.barracks.publishDeploymentPlan).to.have.been.calledWithExactly(token, validPlan);
+        done();
+      }).catch(err => {
+        done(err);
       });
     });
 
@@ -133,7 +166,7 @@ describe('PublishDeploymentPlanCommand', () => {
       // Given
       const program = validProgram;
       const spyGetObject = sinon.spy();
-      proxyGetObject = (program) => {
+      proxyReadObjectFromFile = (program) => {
         spyGetObject(program);
         return invalidPlan;
       };
@@ -142,7 +175,8 @@ describe('PublishDeploymentPlanCommand', () => {
 
       // When / Then
       publishDeploymentPlanCommand.execute(program).then(result => {
-        expect(result).to.be.equals(false);
+        expect(result).to.be.equals(false);expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(publishDeploymentPlanCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         done();
       }).catch(err => {
         done(err);

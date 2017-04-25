@@ -2,7 +2,7 @@ const Validator = require('./Validator');
 const inStream = require('in-stream');
 const fs = require('fs');
 
-class ReadFile {
+class ObjectReader {
 
   static getObjectFromString(data) {
     return new Promise((resolve, reject) => {
@@ -51,14 +51,6 @@ class ReadFile {
       });
     });
   }
-
-  static getObject(program) {
-    if (program.file) {
-      return this.readObjectFromFile(program.file);
-    } else {
-      return this.readObjectFromStdin();
-    }
-  }
 }
 
-module.exports = ReadFile;
+module.exports = ObjectReader;

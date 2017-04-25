@@ -4,16 +4,17 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
 const proxyquire = require('proxyquire').noCallThru();
-const FileReader = require('../../../src/utils/FileReader');
+const ObjectReader = require('../../../src/utils/ObjectReader');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('SetBigQueryClientSecretCommand', () => {
+describe('SetGoogleClientSecretCommand', () => {
 
   let setGoogleClientSecretCommand;
   let proxyFileExists;
-  let proxyGetObject;
+  let proxyReadObjectFromFile;
+  let proxyReadObjectFromStdin;
   const token = '789ze5df1s354q984e';
   const file = 'path/to/file.json';
   const validProgram = { file };
@@ -25,16 +26,19 @@ describe('SetBigQueryClientSecretCommand', () => {
           return proxyFileExists(path);
         }
       },
-      '../../utils/FileReader': {
-        getObject: (program) => {
-          return proxyGetObject(program);
+      '../../utils/ObjectReader': {
+        readObjectFromFile: (file) => {
+          return proxyReadObjectFromFile(file);
+        },
+        readObjectFromStdin: () => {
+          return proxyReadObjectFromStdin();
         }
       }
     });
   }
 
   beforeEach(() => {
-    const Command = new getProxyCommand();
+    const Command = getProxyCommand();
     setGoogleClientSecretCommand = new Command();
     setGoogleClientSecretCommand.barracks = {};
     setGoogleClientSecretCommand.userConfiguration = {};
@@ -99,13 +103,13 @@ describe('SetBigQueryClientSecretCommand', () => {
       }
     };
 
-    it ('should forward to client when token is accessed and object is provided as file or stream', done => {
+    it ('should forward to client when token is accessed and object is provided as file', done => {
       // Given
       const program = validProgram;
       const response = 'Hello !';
-      const spyGetObject = sinon.spy();
-      proxyGetObject = (program) => {
-        spyGetObject(program);
+      const spyReadObjectFromFile = sinon.spy();
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return validSecret;
       };
       setGoogleClientSecretCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -114,6 +118,35 @@ describe('SetBigQueryClientSecretCommand', () => {
       // When / Then
       setGoogleClientSecretCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
+        expect(setGoogleClientSecretCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(setGoogleClientSecretCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(setGoogleClientSecretCommand.barracks.setGoogleClientSecret).to.have.been.calledOnce;
+        expect(setGoogleClientSecretCommand.barracks.setGoogleClientSecret).to.have.been.calledWithExactly(token, validSecret);
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it ('should forward to client when token is accessed and object is provided as stream', done => {
+      // Given
+      const program = {};
+      const response = 'Hello !';
+      const spyReadObjectFromStdin = sinon.spy();
+      proxyReadObjectFromStdin = () => {
+        spyReadObjectFromStdin();
+        return validSecret;
+      };
+      setGoogleClientSecretCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      setGoogleClientSecretCommand.barracks.setGoogleClientSecret = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      setGoogleClientSecretCommand.execute(program).then(result => {
+        expect(result).to.be.equals(response);
+        expect(setGoogleClientSecretCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(setGoogleClientSecretCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(setGoogleClientSecretCommand.barracks.setGoogleClientSecret).to.have.been.calledOnce;
+        expect(setGoogleClientSecretCommand.barracks.setGoogleClientSecret).to.have.been.calledWithExactly(token, validSecret);
         done();
       }).catch(err => {
         done(err);

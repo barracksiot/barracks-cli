@@ -1,7 +1,14 @@
 const BarracksCommand = require('../BarracksCommand');
 const Validator = require('../../utils/Validator');
-const ReadFile = require('../../utils/FileReader');
+const ObjectReader = require('../../utils/ObjectReader');
 
+function getObject(program) {
+  if (program.file) {
+    return ObjectReader.readObjectFromFile(program.file);
+  } else {
+    return ObjectReader.readObjectFromStdin();
+  }
+}
 class PublishDeploymentPlanCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -16,7 +23,7 @@ class PublishDeploymentPlanCommand extends BarracksCommand {
     let token;
     return this.getAuthenticationToken().then(authToken => {
       token = authToken;
-      return ReadFile.getObject(program);
+      return getObject(program);
     }).then(plan => {
       if (plan.package) {
         return this.barracks.publishDeploymentPlan(token, plan);

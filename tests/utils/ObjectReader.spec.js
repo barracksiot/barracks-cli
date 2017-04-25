@@ -11,10 +11,10 @@ const Stream = require('stream');
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('FileReader', () => {
+describe('ObjectReader', () => {
 
   const file = 'path/to/file.json';
-  let FileReader;
+  let ObjectReader;
 
   describe('#getObjectFromString()', () => {
 
@@ -22,7 +22,7 @@ describe('FileReader', () => {
     let spyIsJsonObject;
 
     beforeEach( () => {
-      FileReader = proxyquire('../../src/utils/FileReader', {
+      ObjectReader = proxyquire('../../src/utils/ObjectReader', {
         './Validator': {
           isJsonObject: (str) => {
             return mockIsJsonObject(str);
@@ -43,7 +43,7 @@ describe('FileReader', () => {
       };
 
       // When / Then
-      FileReader.getObjectFromString(data).then(result => {
+      ObjectReader.getObjectFromString(data).then(result => {
         expect(result).to.be.deep.equals(object);
         expect(spyIsJsonObject).to.have.been.calledOnce;
         expect(spyIsJsonObject).to.have.been.calledWithExactly(data);
@@ -53,7 +53,7 @@ describe('FileReader', () => {
       });
     });
 
-    it('should reject error when given file is not a JSON file', done => {
+    it('should reject error when given string is not a valid JSON', done => {
       // Given
       const data = 'notaJsonKey": "aJsonValue"}';
 
@@ -63,7 +63,7 @@ describe('FileReader', () => {
       };
 
       // When / Then
-      FileReader.getObjectFromString(data).then(result => {
+      ObjectReader.getObjectFromString(data).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals('Object must be described by a valid JSON');
@@ -80,7 +80,7 @@ describe('FileReader', () => {
     let spyReadObjectFromFile;
 
     beforeEach( () => {
-      FileReader = proxyquire('../../src/utils/FileReader', {
+      ObjectReader = proxyquire('../../src/utils/ObjectReader', {
         'fs': {
           readFile: (file, callback) => {
             return mockReadObjectFromFile(file, callback);
@@ -100,7 +100,7 @@ describe('FileReader', () => {
       };
 
       // When / Then
-      FileReader.readObjectFromFile(file).then(result => {
+      ObjectReader.readObjectFromFile(file).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
@@ -120,17 +120,17 @@ describe('FileReader', () => {
         callback(undefined, data);
       };
 
-      FileReader.getObjectFromString = sinon.stub().returns(Promise.reject(error));
+      ObjectReader.getObjectFromString = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      FileReader.readObjectFromFile(file).then(result => {
+      ObjectReader.readObjectFromFile(file).then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
         expect(spyReadObjectFromFile).to.have.been.calledOnce;
         expect(spyReadObjectFromFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(FileReader.getObjectFromString).to.have.been.calledOnce;
-        expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(ObjectReader.getObjectFromString).to.have.been.calledOnce;
+        expect(ObjectReader.getObjectFromString).to.have.been.calledWithExactly(data);
         done();
       });
     });
@@ -145,15 +145,15 @@ describe('FileReader', () => {
         callback(undefined, data);
       };
 
-      FileReader.getObjectFromString = sinon.stub().returns(Promise.resolve(response));
+      ObjectReader.getObjectFromString = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      FileReader.readObjectFromFile(file).then(result => {
+      ObjectReader.readObjectFromFile(file).then(result => {
         expect(result).to.be.equals(response);
         expect(spyReadObjectFromFile).to.have.been.calledOnce;
         expect(spyReadObjectFromFile).to.have.been.calledWithExactly(file, sinon.match.func);
-        expect(FileReader.getObjectFromString).to.have.been.calledOnce;
-        expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(ObjectReader.getObjectFromString).to.have.been.calledOnce;
+        expect(ObjectReader.getObjectFromString).to.have.been.calledWithExactly(data);
         done();
       }).catch(err => {
         done('Should have succeeded');
@@ -179,7 +179,7 @@ describe('FileReader', () => {
         spyOnError(error);
       });
 
-      FileReader = proxyquire('../../src/utils/FileReader', {
+      ObjectReader = proxyquire('../../src/utils/ObjectReader', {
         'in-stream': mockStream
       });
     });
@@ -193,9 +193,7 @@ describe('FileReader', () => {
       }, 50);
 
       // When / Then
-      console.log('1');
-      console.log(mockStream);
-      FileReader.readObjectFromStdin().then(result => {
+      ObjectReader.readObjectFromStdin().then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
@@ -217,15 +215,15 @@ describe('FileReader', () => {
         mockStream.emit('close');
       }, 50);
 
-      FileReader.getObjectFromString = sinon.stub().returns(Promise.reject(error));
+      ObjectReader.getObjectFromString = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      FileReader.readObjectFromStdin().then(result => {
+      ObjectReader.readObjectFromStdin().then(result => {
         done('Should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error);
-        expect(FileReader.getObjectFromString).to.have.been.calledOnce;
-        expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(ObjectReader.getObjectFromString).to.have.been.calledOnce;
+        expect(ObjectReader.getObjectFromString).to.have.been.calledWithExactly(data);
         expect(spyOnData).to.have.been.calledOnce;
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
@@ -246,13 +244,13 @@ describe('FileReader', () => {
         mockStream.emit('close');
       }, 50);
 
-      FileReader.getObjectFromString = sinon.stub().returns(Promise.resolve(object));
+      ObjectReader.getObjectFromString = sinon.stub().returns(Promise.resolve(object));
 
       // When / Then
-      FileReader.readObjectFromStdin().then(result => {
+      ObjectReader.readObjectFromStdin().then(result => {
         expect(result).to.be.equals(object);
-        expect(FileReader.getObjectFromString).to.have.been.calledOnce;
-        expect(FileReader.getObjectFromString).to.have.been.calledWithExactly(data);
+        expect(ObjectReader.getObjectFromString).to.have.been.calledOnce;
+        expect(ObjectReader.getObjectFromString).to.have.been.calledWithExactly(data);
         expect(spyOnData).to.have.been.calledOnce;
         expect(spyOnData).to.have.been.calledWithExactly(data);
         expect(spyOnClose).to.have.been.calledOnce;
@@ -261,45 +259,6 @@ describe('FileReader', () => {
       }).catch(err => {
         done('Should have succeeded');
       });
-    });
-  });
-
-  describe('#getObject()', () => {
-
-    beforeEach( () => {
-      FileReader = require('../../src/utils/FileReader');
-    });
-
-    it ('should forward to readObjectFromFile when file is given', () => {
-      // Given
-      const program = { file } ;
-      const object = { 'key' : 'value' };
-
-      FileReader.readObjectFromFile = sinon.stub().returns(object);
-
-      // When
-      const result = FileReader.getObject(program);
-
-      // Then
-      expect(result).to.be.equals(object);
-      expect(FileReader.readObjectFromFile).to.have.been.calledOnce;
-      expect(FileReader.readObjectFromFile).to.have.been.calledWithExactly(program.file);
-    });
-
-    it ('should forward to readObjectFromStdin when no file is given', () => {
-      // Given
-      const program =  {} ;
-      const object = { 'key' : 'value' };
-
-      FileReader.readObjectFromStdin = sinon.stub().returns(object);
-
-      // When
-      const result = FileReader.getObject(program);
-
-      // Then
-      expect(result).to.be.equals(object);
-      expect(FileReader.readObjectFromStdin).to.have.been.calledOnce;
-      expect(FileReader.readObjectFromStdin).to.have.been.calledWithExactly();
     });
   });
 });
