@@ -13,7 +13,7 @@ describe('deploymentPlanCommand', () => {
 
   let deploymentPlanCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageReference = 'my.component.ref';
+  const packageReference = 'my.package.ref';
   const validProgram = { args: [
     packageReference
   ]};

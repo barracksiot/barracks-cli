@@ -55,7 +55,7 @@ describe('PackagesCommand', () => {
       // Given
       const error = 'An error';
       packagesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packagesCommand.barracks.getComponents = sinon.stub().returns(Promise.reject(error));
+      packagesCommand.barracks.getPackages = sinon.stub().returns(Promise.reject(error));
 
       // when / Then
       packagesCommand.execute(program).then(result => {
@@ -64,25 +64,25 @@ describe('PackagesCommand', () => {
         expect(err).to.be.equals(error);
         expect(packagesCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packagesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packagesCommand.barracks.getComponents).to.have.been.calledOnce;
-        expect(packagesCommand.barracks.getComponents).to.have.been.calledWithExactly(token);
+        expect(packagesCommand.barracks.getPackages).to.have.been.calledOnce;
+        expect(packagesCommand.barracks.getPackages).to.have.been.calledWithExactly(token);
         done();
       });
     });
 
     it('should forward response from client', done => {
       // Given
-      const response = [ 'acomponent', 'anothercomponent' ];
+      const response = [ 'apackage', 'anotherpackage' ];
       packagesCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packagesCommand.barracks.getComponents = sinon.stub().returns(Promise.resolve(response));
+      packagesCommand.barracks.getPackages = sinon.stub().returns(Promise.resolve(response));
 
       // when / Then
       packagesCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
         expect(packagesCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packagesCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packagesCommand.barracks.getComponents).to.have.been.calledOnce;
-        expect(packagesCommand.barracks.getComponents).to.have.been.calledWithExactly(token);
+        expect(packagesCommand.barracks.getPackages).to.have.been.calledOnce;
+        expect(packagesCommand.barracks.getPackages).to.have.been.calledWithExactly(token);
         done();
       }).catch(err => {
         done(err);

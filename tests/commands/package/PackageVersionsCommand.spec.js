@@ -13,7 +13,7 @@ describe('packageVersionsCommand', () => {
 
   let packageVersionsCommand;
   const token = 'i8uhkj.token.65ryft';
-  const packageReference = 'my.component.ref';
+  const packageReference = 'my.package.ref';
   const validProgram = { args: [
     packageReference
   ]};
@@ -52,7 +52,7 @@ describe('packageVersionsCommand', () => {
       const error = 'error';
       const program = validProgram;
       packageVersionsCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packageVersionsCommand.barracks.getComponentVersions = sinon.stub().returns(Promise.reject(error));
+      packageVersionsCommand.barracks.getPackageVersions = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
       packageVersionsCommand.execute(program).then(result => {
@@ -61,8 +61,8 @@ describe('packageVersionsCommand', () => {
         expect(err).to.be.equals(error);
         expect(packageVersionsCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packageVersionsCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packageVersionsCommand.barracks.getComponentVersions).to.have.been.calledOnce;
-        expect(packageVersionsCommand.barracks.getComponentVersions).to.have.been.calledWithExactly(token, packageReference);
+        expect(packageVersionsCommand.barracks.getPackageVersions).to.have.been.calledOnce;
+        expect(packageVersionsCommand.barracks.getPackageVersions).to.have.been.calledWithExactly(token, packageReference);
         done();
       });
     });
@@ -72,15 +72,15 @@ describe('packageVersionsCommand', () => {
       const response = [ 'aversion', 'anotherversion', 'andonemoreversion' ];
       const program = validProgram;
       packageVersionsCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
-      packageVersionsCommand.barracks.getComponentVersions = sinon.stub().returns(Promise.resolve(response));
+      packageVersionsCommand.barracks.getPackageVersions = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
       packageVersionsCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
         expect(packageVersionsCommand.getAuthenticationToken).to.have.been.calledOnce;
         expect(packageVersionsCommand.getAuthenticationToken).to.have.been.calledWithExactly();
-        expect(packageVersionsCommand.barracks.getComponentVersions).to.have.been.calledOnce;
-        expect(packageVersionsCommand.barracks.getComponentVersions).to.have.been.calledWithExactly(token, packageReference);
+        expect(packageVersionsCommand.barracks.getPackageVersions).to.have.been.calledOnce;
+        expect(packageVersionsCommand.barracks.getPackageVersions).to.have.been.calledWithExactly(token, packageReference);
         done();
       }).catch(err => {
         done(err);
