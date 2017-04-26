@@ -56,12 +56,12 @@ describe('Barracks', () => {
       const barracksClient = new Barracks();
 
       // Then
-      expect(barracksClient).to.have.property('createComponent').and.to.be.a('function');
+      expect(barracksClient).to.have.property('createPackage').and.to.be.a('function');
       expect(barracksClient).to.have.property('getPackage').and.to.be.a('function');
-      expect(barracksClient).to.have.property('getComponents').and.to.be.a('function');
+      expect(barracksClient).to.have.property('getPackages').and.to.be.a('function');
       expect(barracksClient).to.have.property('createVersion').and.to.be.a('function');
       expect(barracksClient).to.have.property('getVersion').and.to.be.a('function');
-      expect(barracksClient).to.have.property('getComponentVersions').and.to.be.a('function');
+      expect(barracksClient).to.have.property('getPackageVersions').and.to.be.a('function');
       expect(barracksClient).to.have.property('publishDeploymentPlan').and.to.be.a('function');
       expect(barracksClient).to.have.property('getDeploymentPlan').and.to.be.a('function');
     });

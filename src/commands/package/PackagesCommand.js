@@ -8,7 +8,7 @@ class PackagesCommand extends BarracksCommand {
 
   execute() {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.getComponents(token);
+      return this.barracks.getPackages(token);
     });
   }
 }

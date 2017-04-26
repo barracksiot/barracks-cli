@@ -29,7 +29,7 @@ class CreatePackageVersionCommand extends BarracksCommand {
       return this.barracks.createVersion(token, {
         id: program.versionId,
         name: program.name,
-        component: program.packageReference,
+        packageRef: program.packageReference,
         file: program.file,
         description: program.description,
         metadata: program.metadata ? JSON.parse(program.metadata) : undefined

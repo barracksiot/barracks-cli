@@ -12,7 +12,7 @@ class PackageVersionsCommand extends BarracksCommand {
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
-      return this.barracks.getComponentVersions(token, program.args[0]);
+      return this.barracks.getPackageVersions(token, program.args[0]);
     });
   }
 }

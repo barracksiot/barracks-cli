@@ -37,12 +37,12 @@ function mergeFilterClient(barracksClient) {
 
 function mergePackageClient(barracksClient) {
   const packageClient = new PackageClient();
-  barracksClient.createComponent = packageClient.createComponent.bind(packageClient);
+  barracksClient.createPackage = packageClient.createPackage.bind(packageClient);
   barracksClient.getPackage = packageClient.getPackage.bind(packageClient);
-  barracksClient.getComponents = packageClient.getComponents.bind(packageClient);
+  barracksClient.getPackages = packageClient.getPackages.bind(packageClient);
   barracksClient.createVersion = packageClient.createVersion.bind(packageClient);
   barracksClient.getVersion = packageClient.getVersion.bind(packageClient);
-  barracksClient.getComponentVersions = packageClient.getComponentVersions.bind(packageClient);
+  barracksClient.getPackageVersions = packageClient.getPackageVersions.bind(packageClient);
   barracksClient.publishDeploymentPlan = packageClient.publishDeploymentPlan.bind(packageClient);
   barracksClient.getDeploymentPlan = packageClient.getDeploymentPlan.bind(packageClient);
 }

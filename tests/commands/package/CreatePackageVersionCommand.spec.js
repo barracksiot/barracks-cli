@@ -274,8 +274,7 @@ describe('CreatePackageVersionCommand', () => {
     it('should reject an error if creation request fail', done => {
       // Given
       const program = minimalValidProgram;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
+      const packageId = '09876543sdfghjkl';
       const error = 'creation failed';
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.reject(error));
@@ -293,7 +292,7 @@ describe('CreatePackageVersionCommand', () => {
           {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description: undefined,
             metadata: undefined
@@ -306,9 +305,8 @@ describe('CreatePackageVersionCommand', () => {
     it('should forward to barracks client when minimal options given', done => {
       // Given
       const program = minimalValidProgram;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
-      const response = { id: 'wertyui', component: packageReference };
+      const packageId = '09876543sdfghjkl';
+      const response = { id: 'wertyui', packageRef: packageReference };
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
@@ -323,7 +321,7 @@ describe('CreatePackageVersionCommand', () => {
           {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description: undefined,
             metadata: undefined
@@ -338,9 +336,8 @@ describe('CreatePackageVersionCommand', () => {
     it('should forward to barracks client when all options given', done => {
       // Given
       const program = programWithDescriptionAndMetadata;
-      const componentId = '09876543sdfghjkl';
-      const component = { name: packageReference, id: componentId };
-      const response = { id: 'wertyui', component: packageReference };
+      const packageId = '09876543sdfghjkl';
+      const response = { id: 'wertyui', packageRef: packageReference };
       createPackageVersionCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createPackageVersionCommand.barracks.createVersion = sinon.stub().returns(Promise.resolve(response));
 
@@ -355,7 +352,7 @@ describe('CreatePackageVersionCommand', () => {
           {
             id: versionId,
             name,
-            component: packageReference,
+            packageRef: packageReference,
             file,
             description,
             metadata: metadata
