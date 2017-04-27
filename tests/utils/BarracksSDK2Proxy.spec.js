@@ -10,13 +10,13 @@ const proxyquire = require('proxyquire').noCallThru();
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function getProxifiedBarracks(constructorSpy, checkUpdateSpy) {
+function getProxifiedBarracks(constructorSpy, getDevicePackagesSpy) {
   return proxyquire(sdkProxyPath, {
     'npm-install-version': {
       install: sinon.spy(),
       require: sinon.stub().returns(function Constructor(options) {
         constructorSpy(options);
-        this.checkUpdate = checkUpdateSpy;
+        this.getDevicePackages = getDevicePackagesSpy;
       })
     }
   });
@@ -47,8 +47,8 @@ describe('BarracksSDK2Proxy', () => {
       const error = 'blah error';
       const device = { unitId, packages };
       const constructorSpy = sinon.spy();
-      const checkUpdateSpy = sinon.stub().returns(Promise.reject(error));
-      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
+      const getDevicePackagesSpy = sinon.stub().returns(Promise.reject(error));
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, getDevicePackagesSpy);
       const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
@@ -59,11 +59,11 @@ describe('BarracksSDK2Proxy', () => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           baseURL: baseUrl,
-          apiKey,
-          unitId
+          apiKey
         });
-        expect(checkUpdateSpy).to.have.been.calledOnce;
-        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+        expect(getDevicePackagesSpy).to.have.been.calledOnce;
+        expect(getDevicePackagesSpy).to.have.been.calledWithExactly(
+          unitId,
           packages,
           undefined
         );
@@ -76,8 +76,8 @@ describe('BarracksSDK2Proxy', () => {
       const response = { a: 'response' };
       const device = { unitId, packages };
       const constructorSpy = sinon.spy();
-      const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
-      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
+      const getDevicePackagesSpy = sinon.stub().returns(Promise.resolve(response));
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, getDevicePackagesSpy);
 
       barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
@@ -88,11 +88,11 @@ describe('BarracksSDK2Proxy', () => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           baseURL: baseUrl,
-          apiKey,
-          unitId
+          apiKey
         });
-        expect(checkUpdateSpy).to.have.been.calledOnce;
-        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+        expect(getDevicePackagesSpy).to.have.been.calledOnce;
+        expect(getDevicePackagesSpy).to.have.been.calledWithExactly(
+          unitId,
           packages,
           undefined
         );
@@ -108,8 +108,8 @@ describe('BarracksSDK2Proxy', () => {
       const response = { a: 'response' };
       const device = { unitId, packages, customClientData };
       const constructorSpy = sinon.spy();
-      const checkUpdateSpy = sinon.stub().returns(Promise.resolve(response));
-      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, checkUpdateSpy);
+      const getDevicePackagesSpy = sinon.stub().returns(Promise.resolve(response));
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, getDevicePackagesSpy);
 
       barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
@@ -120,11 +120,11 @@ describe('BarracksSDK2Proxy', () => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           baseURL: baseUrl,
-          apiKey,
-          unitId
+          apiKey
         });
-        expect(checkUpdateSpy).to.have.been.calledOnce;
-        expect(checkUpdateSpy).to.have.been.calledWithExactly(
+        expect(getDevicePackagesSpy).to.have.been.calledOnce;
+        expect(getDevicePackagesSpy).to.have.been.calledWithExactly(
+          unitId,
           packages,
           customClientData
         );
