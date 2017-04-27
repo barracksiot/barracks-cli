@@ -25,14 +25,15 @@ if (config.v2Enabled) {
     .command('update [cmd]', 'Manage updates')
     .command('device [cmd]', 'Manage devices')
     .command('segment [cmd]', 'Manage segments')
-    .command('token [cmd]', 'Manage tokens')
-    .command('check-update', 'Check for an update the same way a device would');
+    .command('token [cmd]', 'Manage tokens');
 
   if (config.experimental) {
     program.command('filter [cmd]', 'Manage filters')
       .command('integration [cmd]', 'Manage third-party integrations');
   }
 }
+
+program.command('check-update', 'Check for updates the same way a device would');
 
 program.parse(process.argv);
 

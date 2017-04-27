@@ -2,8 +2,8 @@ const niv = require('npm-install-version');
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
 
-niv.install('barracks-sdk@v2-beta', { quiet: true });
-const BarracksSDK = niv.require('barracks-sdk@v2-beta');
+niv.install('barracks-sdk@v2-preview', { quiet: true });
+const BarracksSDK = niv.require('barracks-sdk@v2-preview');
 
 class BarracksSDK2Proxy {
 
@@ -16,13 +16,12 @@ class BarracksSDK2Proxy {
       logger.debug('Checking update:', device);
       const sdk = new BarracksSDK({
         baseURL: this.baseUrl,
-        apiKey,
-        unitId: device.unitId
+        apiKey
       });
-      sdk.checkUpdate(device.packages, device.customClientData).then(packages => {
-        resolve(packages);
+      sdk.getDevicePackages(device.unitId, device.packages, device.customClientData).then(response => {
+        resolve(response);
       }).catch(err => {
-        logger.debug('check update failed:', err);
+        logger.debug('Resolve device packages failed:', err);
         reject(err);
       });
     });
