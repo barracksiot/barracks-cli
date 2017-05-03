@@ -12,12 +12,11 @@ chai.use(sinonChai);
 
 function getProxifiedBarracks(constructorSpy, checkUpdateSpy) {
   return proxyquire(sdkProxyPath, {
-    'npm-install-version': {
-      install: sinon.spy(),
-      require: sinon.stub().returns(function Constructor(options) {
+    'multidep': function () {
+      return function Constructor(options) {
         constructorSpy(options);
         this.checkUpdate = checkUpdateSpy;
-      })
+      };
     }
   });
 }

@@ -9,6 +9,7 @@ services:
   - docker
 
 script:
+  - ./node_modules/.bin/multidep multidep.json
   - npm test
   - npm run coveralls 
   - docker build -t barracksiot/cli:travis-$TRAVIS_JOB_NUMBER .

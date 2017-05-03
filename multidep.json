@@ -1,0 +1,6 @@
+{
+  "path": "multidep_modules",
+  "versions": {
+    "barracks-sdk": ["v2-preview", "0.0.2"]
+  }
+}

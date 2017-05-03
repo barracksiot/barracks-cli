@@ -9,7 +9,8 @@ ENV         BARRACKS_ENABLE_EXPERIMENTAL  0
 WORKDIR     /usr/local/lib/barracks-cli
 
 COPY        package.json .
-RUN         npm install
+COPY        multidep.json .
+RUN         npm install && ./node_modules/.bin/multidep multidep.json
 COPY        src/ src/
 RUN         ln -s /usr/local/lib/barracks-cli/src/bin/barracks /usr/local/bin/barracks
 

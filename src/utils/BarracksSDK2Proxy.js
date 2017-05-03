@@ -1,9 +1,6 @@
-const niv = require('npm-install-version');
+const multidep = require('multidep');
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
-
-niv.install('barracks-sdk@v2-preview', { quiet: true });
-const BarracksSDK = niv.require('barracks-sdk@v2-preview');
 
 class BarracksSDK2Proxy {
 
@@ -14,6 +11,7 @@ class BarracksSDK2Proxy {
   resolveDevicePackages(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('Checking update:', device);
+      const BarracksSDK = multidep('barracks-sdk', 'v2-preview');
       const sdk = new BarracksSDK({
         baseURL: this.baseUrl,
         apiKey
