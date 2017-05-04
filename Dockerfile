@@ -9,7 +9,6 @@ ENV         BARRACKS_ENABLE_EXPERIMENTAL  0
 WORKDIR     /usr/local/lib/barracks-cli
 
 COPY        package.json .
-COPY        multidep.json .
 COPY        src/ src/
 RUN         ln -s /usr/local/lib/barracks-cli/src/bin/barracks /usr/local/bin/barracks
 
