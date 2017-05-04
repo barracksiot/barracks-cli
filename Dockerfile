@@ -10,7 +10,6 @@ WORKDIR     /usr/local/lib/barracks-cli
 
 COPY        package.json .
 COPY        multidep.json .
-RUN         npm install && ./node_modules/.bin/multidep multidep.json
 COPY        src/ src/
 RUN         ln -s /usr/local/lib/barracks-cli/src/bin/barracks /usr/local/bin/barracks
 
