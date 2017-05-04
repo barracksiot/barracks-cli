@@ -1,6 +1,6 @@
-const multidep = require('multidep');
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
+const BarracksSDK = require('barracks-sdk');
 
 class BarracksSDK2Proxy {
 
@@ -11,7 +11,6 @@ class BarracksSDK2Proxy {
   resolveDevicePackages(apiKey, device) {
     return new Promise((resolve, reject) => {
       logger.debug('Checking update:', device);
-      const BarracksSDK = multidep('barracks-sdk', 'v2-preview');
       const sdk = new BarracksSDK({
         baseURL: this.baseUrl,
         apiKey
