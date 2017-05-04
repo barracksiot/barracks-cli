@@ -1,6 +1,6 @@
 {
   "name": "barracks-cli",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A CLI tool for Barracks",
   "scripts": {
     "start": "./src/bin/barracks",
@@ -44,6 +44,7 @@
   "author": "contact@barracks.io",
   "license": "Apache-2.0",
   "dependencies": {
+    "barracks-sdk": "0.0.2",
     "commander": "2.9.0",
     "in-stream": "0.1.7",
     "mkdirp": "0.5.1",
