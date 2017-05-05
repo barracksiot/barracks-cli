@@ -112,6 +112,7 @@ describe('Barracks', () => {
       // Then
       expect(barracksClient).to.have.property('checkUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('checkUpdateAndDownload').and.to.be.a('function');
+      expect(barracksClient).to.have.property('resolveDevicePackages').and.to.be.a('function');
     });
   });
 });

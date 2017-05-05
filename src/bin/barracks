@@ -31,8 +31,10 @@ if (config.v2Enabled) {
     program.command('filter [cmd]', 'Manage filters')
       .command('integration [cmd]', 'Manage third-party integrations');
   }
-  program.command('check-update', 'Check for updates the same way a device would');
 }
+
+program.command('check-update', 'Check for updates the same way a device would');
+
 program.parse(process.argv);
 
 process.on('SIGINT', () => {
