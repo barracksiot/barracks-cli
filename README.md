@@ -95,6 +95,7 @@ Currently, the following features are available through the CLI:
     * Schedule an update
 * Manage devices
     * List all registered devices
+    * Display detailed information of a device
     * List event history of a device
 * Manage segments
     * List all segments
