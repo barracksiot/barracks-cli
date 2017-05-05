@@ -12,7 +12,7 @@ chai.use(sinonChai);
 
 function getProxifiedBarracks(constructorSpy, checkUpdateSpy) {
   return proxyquire(sdkProxyPath, {
-    'barracks-sdk': function Constructor(options) {
+    'barracks-sdk-legacy': function Constructor(options) {
       constructorSpy(options);
       this.checkUpdate = checkUpdateSpy;
     }

@@ -1,6 +1,6 @@
 {
   "name": "barracks-cli",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A CLI tool for Barracks",
   "scripts": {
     "start": "./src/bin/barracks",
@@ -44,11 +44,11 @@
   "author": "contact@barracks.io",
   "license": "Apache-2.0",
   "dependencies": {
-    "barracks-sdk": "0.0.2",
+    "barracks-sdk": "2.0.2",
+    "barracks-sdk-legacy": "0.0.2",
     "commander": "2.9.0",
     "in-stream": "0.1.7",
     "mkdirp": "0.5.1",
-    "npm-install-version": "^6.0.1",
     "pjson": "1.0.7",
     "prettyjson": "1.1.3",
     "proxyquire": "1.7.10",

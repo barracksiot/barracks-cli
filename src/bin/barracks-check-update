@@ -2,6 +2,10 @@
 
 const config = require('../config.js');
 
-const CheckUpdateCommand = require('../commands/CheckUpdateCommand');
+if (config.v2Enabled) {   
+  CheckUpdateCommand = require('../commands/CheckUpdateV2Command');   
+} else {    
+  CheckUpdateCommand = require('../commands/CheckUpdateCommand');   
+}
 
 new CheckUpdateCommand().render();

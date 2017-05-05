@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
-const BarracksSDK = require('barracks-sdk');
+const BarracksSDK = require('barracks-sdk-legacy');
 
 class BarracksSDKProxy {
 

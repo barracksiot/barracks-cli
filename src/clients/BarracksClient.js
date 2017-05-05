@@ -8,6 +8,7 @@ const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
+const BarracksSDK2Proxy = require('../utils/BarracksSDK2Proxy');
 
 function mergeAccountClient(barracksClient) {
   const accountClient = new AccountClient();
@@ -80,6 +81,8 @@ function mergeSDKProxy(barracksClient) {
   const proxyV1 = new BarracksSDKProxy();
   barracksClient.checkUpdate = proxyV1.checkUpdate.bind(proxyV1);
   barracksClient.checkUpdateAndDownload = proxyV1.checkUpdateAndDownload.bind(proxyV1);
+  const proxyV2 = new BarracksSDK2Proxy();
+  barracksClient.resolveDevicePackages = proxyV2.resolveDevicePackages.bind(proxyV2);
 }
 
 class BarracksClient {
