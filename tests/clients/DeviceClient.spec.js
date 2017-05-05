@@ -38,7 +38,7 @@ describe('DeviceClient', () => {
         expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'GET',
-            path: '/v2/api/member/devices/:unitId'
+            path: '/api/member/devices/:unitId'
           },
           {
             headers: { 'x-auth-token': token },
@@ -51,6 +51,63 @@ describe('DeviceClient', () => {
 
     it('should return the device information when request succeed', done => {
       // Given
+      const device = {
+        unitId,
+        lastEvent: {},
+        lastSeen: 'some date'
+      };
+      const response = { body: device };
+      deviceClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      deviceClient.getDevice(token, unitId).then(result => {
+        expect(result).to.deep.equals(device);
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/member/devices/:unitId'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { unitId }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return an error message when request fails and V2 enabled', done => {
+      // Given
+      deviceClient.v2Enabled = true;
+      const error = { message: 'Error !' };
+      deviceClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      deviceClient.getDevice(token, unitId).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(deviceClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/v2/api/member/devices/:unitId'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { unitId }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the device information when request succeed and V2 enabled', done => {
+      // Given
+      deviceClient.v2Enabled = true;
       const device = {
         unitId,
         lastEvent: {},

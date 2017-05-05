@@ -1,9 +1,14 @@
 const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
+const config = require('../config');
 
 const endpoints = {
-  getDevice: {
+  getDeviceV1: {
+    method: 'GET',
+    path: '/api/member/devices/:unitId'
+  },
+  getDeviceV2: {
     method: 'GET',
     path: '/v2/api/member/devices/:unitId'
   },
@@ -41,13 +46,15 @@ class DeviceClient {
 
   constructor() {
     this.httpClient = new HTTPClient();
+    this.v2Enabled = config.v2Enabled;
   }
 
   getDevice(token, unitId) {
     return new Promise((resolve, reject) => {
       logger.debug(`Getting device ${unitId}`);
+      const endpointKey = this.v2Enabled ? 'getDeviceV2' : 'getDeviceV1';
       this.httpClient.sendEndpointRequest(
-        endpoints.getDevice,
+        endpoints[endpointKey],
         {
           headers: {
             'x-auth-token': token
