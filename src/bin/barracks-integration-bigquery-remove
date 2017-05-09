@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const RemoveGoogleClientSecretCommand = require('../commands/integration/RemoveGoogleClientSecretCommand');
+new RemoveGoogleClientSecretCommand().render();
