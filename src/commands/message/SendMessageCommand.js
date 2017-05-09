@@ -3,13 +3,13 @@ const BarracksCommand = require('../BarracksCommand');
 class SendMessageCommand extends BarracksCommand {
 
   configureCommand(program) {
-    return program.option('--device [value]', 'The device(s) to which the message will be sent')
+    return program.option('--target [value]', 'The target(s) to which the message will be sent')
       .option('--message [value]', 'The content of the message');
   }
 
   validateCommand(program) {
     return !!(
-      program.device && program.device !== true &&
+      program.target && program.target !== true &&
       program.message && program.message !== true
     );
   }
@@ -17,7 +17,7 @@ class SendMessageCommand extends BarracksCommand {
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       return this.barracks.sendMessage(token, {
-        device: program.device,
+        target: program.target,
         message: program.message
       });
     });

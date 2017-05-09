@@ -16,7 +16,7 @@ describe('SendMessageCommand', () => {
   const message = 'Hello Mr.Device, how are you doing ?';
 
   const validProgram = {
-    device: unitId,
+    target: unitId,
     message: message
   };
 
@@ -37,9 +37,9 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when only device option given', () => {
+    it('should return false when only target option given', () => {
       // Given
-      const program = { device: unitId };
+      const program = { target: unitId };
       // When
       const result = sendMessageCommand.validateCommand(program);
       // Then
@@ -55,9 +55,9 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when empty device option given', () => {
+    it('should return false when empty target option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { device: true });
+      const program = Object.assign({}, validProgram, { target: true });
       // When
       const result = sendMessageCommand.validateCommand(program);
       // Then
@@ -73,7 +73,7 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return true when both device and message options given', () => {
+    it('should return true when both target and message options given', () => {
       // Given
       const program = validProgram;
       // When
@@ -85,12 +85,12 @@ describe('SendMessageCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should forward to barracks client when valid device and message are given', done => {
+    it('should forward to barracks client when valid target and message are given', done => {
       // Given
       const program = validProgram;
       const response = {
         id: 'aMessageId',
-        device: unitId,
+        target: unitId,
         message: message
       };
       sendMessageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -103,7 +103,7 @@ describe('SendMessageCommand', () => {
         expect(sendMessageCommand.barracks.sendMessage).to.have.been.calledWithExactly(
           token,
           {
-            device: unitId,
+            target: unitId,
             message: message
           }
         );
