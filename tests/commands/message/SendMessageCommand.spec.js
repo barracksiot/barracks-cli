@@ -99,8 +99,8 @@ describe('SendMessageCommand', () => {
       // When / Then
       sendMessageCommand.execute(program).then(result => {
         expect(result).to.be.equals(response);
-        expect(sendMessageCommand.barracks.createPackage).to.have.been.calledOnce;
-        expect(sendMessageCommand.barracks.createPackage).to.have.been.calledWithExactly(
+        expect(sendMessageCommand.barracks.sendMessage).to.have.been.calledOnce;
+        expect(sendMessageCommand.barracks.sendMessage).to.have.been.calledWithExactly(
           token,
           {
             device: unitId,
