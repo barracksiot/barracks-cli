@@ -5,6 +5,7 @@ const config = require('../config.js');
 const pjson = require('../../package.json');
 
 const barracks = program
+  .version(pjson.version)
   .command('ls', 'List packages')
   .command('get', 'Display detailed information of a package')
   .command('create', 'Create a package')
