@@ -51,6 +51,14 @@ describe('Barracks', () => {
       expect(barracksClient).to.have.property('deleteFilter').and.to.be.a('function');
     });
 
+    it('should initialize methods from messageClient when constructor called', () => {
+      // When
+      const barracksClient = new Barracks();
+
+      // Then
+      expect(barracksClient).to.have.property('sendMessage').and.to.be.a('function');
+    })
+
     it('should initialize methods from packageClient when constructor called', () => {
       // When
       const barracksClient = new Barracks();
