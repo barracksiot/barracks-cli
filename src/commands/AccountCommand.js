@@ -7,7 +7,6 @@ class AccountCommand extends BarracksCommand {
       return this.barracks.getAccount(token);
     });
   }
-
 }
 
 module.exports = AccountCommand;
