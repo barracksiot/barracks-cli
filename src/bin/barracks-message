@@ -4,9 +4,9 @@ const program = require('commander');
 const config = require('../config.js');
 const pjson = require('../../package.json');
 
-const barracks = program
-  .version(pjson.version)
-  .command('send', 'Send a message');
+const barracks = program.version(pjson.version);
+
+barracks.command('send', 'Send a message');
 
 barracks.parse(process.argv);
 
