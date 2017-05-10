@@ -3,6 +3,7 @@
 const AccountClient = require('./AccountClient');
 const DeviceClient = require('./DeviceClient');
 const FilterClient = require('./FilterClient');
+const MessageClient = require('./MessageClient');
 const PackageClient = require('./PackageClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
@@ -33,6 +34,11 @@ function mergeFilterClient(barracksClient) {
   barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
   barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
   barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);
+}
+
+function mergeMessageClient(barracksClient) {
+  const messageClient = new MessageClient();
+  barracksClient.sendMessage = messageClient.sendMessage.bind(messageClient);
 }
 
 function mergePackageClient(barracksClient) {
@@ -91,6 +97,7 @@ class BarracksClient {
     mergeAccountClient(this);
     mergeDeviceClient(this);
     mergeFilterClient(this);
+    mergeMessageClient(this);
     mergePackageClient(this);
     mergeSegmentClient(this);
     mergeTokenClient(this);

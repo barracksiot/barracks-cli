@@ -6,11 +6,7 @@ const pjson = require('../../package.json');
 
 const barracks = program.version(pjson.version);
 
-barracks.command('ls', 'List packages')
-  .command('get', 'Display detailed information of a package')
-  .command('create', 'Create a package')
-  .command('version [cmd]', 'Manage versions')
-  .command('plan [cmd]', 'Manage deployment plans');
+barracks.command('send', 'Send a message');
 
 barracks.parse(process.argv);
 

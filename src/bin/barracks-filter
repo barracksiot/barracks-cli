@@ -5,6 +5,7 @@ const config = require('../config.js');
 const pjson = require('../../package.json');
 
 const barracks = program.version(pjson.version);
+
 if (config.v2Enabled) {
   barracks.command('ls', 'List filters')
     .command('create', 'Create a filter')
