@@ -238,4 +238,58 @@ describe('AccountClient', () => {
       });
     });
   });
+
+  describe('#removeGoogleClientSecret()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      accountClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      accountClient.removeGoogleClientSecret(token).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/auth/me/googleClientSecret'
+          },
+          {
+            headers: {
+              'x-auth-token': token
+            }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the server response when request succeeds', done => {
+      // Given
+      const account = { apiKey: 'qwertyuiop', username: 'coucou', googleClientSecret: {} };
+      const response = { body: account };
+      accountClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      accountClient.removeGoogleClientSecret(token).then(result => {
+        expect(result).to.be.equals(account);
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(accountClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/auth/me/googleClientSecret'
+          },
+          {
+            headers: { 'x-auth-token': token }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
 });

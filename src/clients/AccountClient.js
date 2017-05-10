@@ -17,6 +17,10 @@ const endpoints = {
   setGoogleClientSecret: {
     method: 'PUT',
     path: '/api/auth/me/googleClientSecret'
+  },
+  removeGoogleClientSecret: {
+    method: 'DELETE',
+    path: '/api/auth/me/googleClientSecret'
   }
 };
 
@@ -103,6 +107,25 @@ class AccountClient {
         resolve(response.body);
       }).catch(err => {
         logger.debug('Google Client Secret setting failed.');
+        reject(err.message);
+      });
+    });
+  }
+
+  removeGoogleClientSecret(token) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.removeGoogleClientSecret,
+        {
+          headers: {
+            'x-auth-token': token
+          }
+        }
+      ).then(response => {
+        logger.debug('Google Client Secret successfully removed ; no more link with Big Query.');
+        resolve(response.body);
+      }).catch(err => {
+        logger.debug('Failed to remove Google Client Secret.');
         reject(err.message);
       });
     });
