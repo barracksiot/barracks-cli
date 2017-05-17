@@ -7,7 +7,7 @@ const pjson = require('../../package.json');
 const barracks = program
   .version(pjson.version)
   .command('init', 'Setup Big Query integration')
-  .command('remove', 'Remove the link with BigQuery');
+  .command('rm', 'Remove the link with BigQuery');
 
 barracks.parse(process.argv);
 
