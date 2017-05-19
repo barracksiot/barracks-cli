@@ -1,0 +1,14 @@
+{
+  "package": "reference1",
+  "allow": {
+    "filters": []
+  },
+  "rules": [
+    {
+      "version": "v_id1",
+      "allow": {
+        "filters": []
+      }
+    }
+  ]
+}

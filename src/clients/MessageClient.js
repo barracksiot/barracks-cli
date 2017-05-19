@@ -6,6 +6,10 @@ const endpoints = {
   sendMessage: {
     method: 'POST',
     path: '/v2/api/member/messages/send/:unitId'
+  },
+  sendMessageToAll: {
+    method: 'POST',
+    path: '/v2/api/member/messages/send/all'
   }
 };
 
@@ -17,9 +21,10 @@ class MessageClient {
   }
 
   sendMessage(token, message) {
+    const endpoint = (message.target === 'all' ? endpoints.sendMessageToAll : endpoints.sendMessage) ;
     return new Promise((resolve, reject) => {
       this.httpClient.sendEndpointRequest(
-        endpoints.sendMessage,
+        endpoint,
         {
           headers: {
             'x-auth-token': token
