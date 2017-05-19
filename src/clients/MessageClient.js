@@ -60,14 +60,14 @@ class MessageClient {
         logger.debug('Client connected to ' + mqttEndpoint);
         setTimeout(() => {
           client.end();
-        }, 1000);
+        }, 100000);
       });
 
       client.on('message', (topic, message, packet) => {
+        logger.debug('Received ' + message.toString() + 'on topic ' + topic);
         if (!messageConsumed && !packet.retain) {
-          logger.debug('Received ' + message.toString() + 'on topic ' + topic);
-          client.end();
-          resolve(message.toString());
+          //client.end();
+          //resolve(message.toString());
           logger.debug('Client disconnected');
         }
       });
