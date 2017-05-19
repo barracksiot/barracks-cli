@@ -2,9 +2,6 @@ const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
 const config = require('../config');
 const mqtt = require('mqtt');
-var net = require('net');
-var mqttpacket = require('mqtt-packet');
-
 
 const endpoints = {
   sendMessage: {
