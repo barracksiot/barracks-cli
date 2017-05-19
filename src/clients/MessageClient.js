@@ -44,34 +44,39 @@ class MessageClient {
     });
   }
 
-  listen(info) {
-    const client = mqtt.connect('mqtt://' + info.host, {
-      clientId: info.deviceId,
-      username: info.username,
-      password: 'azerty',
-      clean: false,
-      keepalive: 0
-    });
+  popMessage(apiKey, unitId) {
+    return new Promise((resolve, reject) => {
+      let messageConsumed = false;
+      const mqttEndpoint = config.barracks.messaging.mqtt.endpoint;
+      const client = mqtt.connect(mqttEndpoint, {
+        clientId: unitId,
+        username: apiKey,
+        password: 'ignored but needed',
+        clean: false,
+        keepalive: 1000
+      });
 
-    const that = this;
+      client.on('connect', () => {
+        logger.debug('Client connected to ' + mqttEndpoint);
+        setTimeout(() => {
+          client.end();
+        }, 1000);
+      });
 
-    client.on('connect', () => {
-      const message = {
-        target: info.deviceId,
-        message: 'Bonjour monsieur ' + info.deviceId
-      };
-      const token = 'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3NDQyOTA5Yy0yNjZkLTRlM2EtODNiZS05Y2JkYjJlN2E2N2QiLCJzdWIiOiJkYXJrcm95MTRAb3JhbmdlLmZyIiwiaWF0IjoxNDk1MjE3MzU4LCJleHAiOjE0OTUzMDM3NTh9.yCR7f2hWnvdDsnGnmOKs0tsY3bRlZsSMFKeB-fz5dqJ0ryoMVzL64gYN5NjgEvDYXQ6n6pNE0lsmIQr3ercSYg';
-      const tokenDdns = 'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJmOWIzYzQ4NC00NTZkLTRhMGEtOGQwZS0wOTE1NGRiZmUxNjIiLCJzdWIiOiJ2bGFkaW1pckBiYXJyYWNrcy5pbyIsImlhdCI6MTQ5NTIwNzE5MiwiZXhwIjoxNDk1MjkzNTkyfQ.SkApqA7IxmrNyu5QeO350Eh8UQgQIJEOJce1wNptbM3-0U_kx9AHT6Iy4epbdBhPoqoEf0r04ZF2hHvUh2Rd-g';
-      that.sendMessage(tokenDdns, message).then(() => {
-        console.log('Le message envoyé est : ' + message.message);
+      client.on('message', (topic, message) => {
+        logger.debug('Received ' + message.toString() + 'on topic ' + topic);
+        messageConsumed = true;
+        client.end();
+        resolve(message.toString());
+        logger.debug('Client disconnected');
+      });
+
+      client.on('close', () => {
+        if (!messageConsumed) {
+          reject('No message to consume');
+        }
       });
     });
-
-    client.on('message', (topic, message) => {
-        console.log('Received ' + message + 'on topic ' + topic);
-
-    });
-
   }
 }
 

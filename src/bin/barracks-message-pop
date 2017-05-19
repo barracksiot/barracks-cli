@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const PopMessageCommand = require('../commands/message/PopMessageCommand');
+new PopMessageCommand().render();
