@@ -16,7 +16,7 @@ describe('SendMessageCommand', () => {
   const message = 'Hello Mr.Device, how are you doing ?';
 
   const validProgram = {
-    target: unitId,
+    unitId: unitId,
     message: message
   };
 
@@ -39,7 +39,7 @@ describe('SendMessageCommand', () => {
 
     it('should return false when only target option given', () => {
       // Given
-      const program = { target: unitId };
+      const program = { unitId: unitId };
       // When
       const result = sendMessageCommand.validateCommand(program);
       // Then
@@ -57,7 +57,7 @@ describe('SendMessageCommand', () => {
 
     it('should return false when empty target option given', () => {
       // Given
-      const program = Object.assign({}, validProgram, { target: true });
+      const program = Object.assign({}, validProgram, { unitId: true });
       // When
       const result = sendMessageCommand.validateCommand(program);
       // Then
@@ -90,7 +90,7 @@ describe('SendMessageCommand', () => {
       const program = validProgram;
       const response = {
         id: 'aMessageId',
-        target: unitId,
+        unitId: unitId,
         message: message
       };
       sendMessageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -103,7 +103,7 @@ describe('SendMessageCommand', () => {
         expect(sendMessageCommand.barracks.sendMessage).to.have.been.calledWithExactly(
           token,
           {
-            target: unitId,
+            unitId: unitId,
             message: message
           }
         );
