@@ -2,6 +2,8 @@ const HTTPClient = require('./HTTPClient');
 const logger = require('../utils/logger');
 const config = require('../config');
 const mqtt = require('mqtt');
+var net = require('net');
+var mqttpacket = require('mqtt-packet');
 
 const endpoints = {
   sendMessage: {
@@ -54,6 +56,7 @@ class MessageClient {
       });
 
       client.on('connect', () => {
+        client.subscribe(apiKey + '/' + unitId);
         logger.debug('Client connected to ' + mqttEndpoint);
         setTimeout(() => {
           client.end();
@@ -61,15 +64,17 @@ class MessageClient {
       });
 
       client.on('message', (topic, message) => {
-        logger.debug('Received ' + message.toString() + 'on topic ' + topic);
-        messageConsumed = true;
-        client.end();
-        resolve(message.toString());
-        logger.debug('Client disconnected');
+        if (!messageConsumed) {
+          logger.debug('Received ' + message.toString() + 'on topic ' + topic);
+          client.end();
+          resolve(message.toString());
+          logger.debug('Client disconnected');
+        }
       });
 
       client.on('close', () => {
         if (!messageConsumed) {
+          logger.debug('Connection closed without message');
           reject('No message to consume');
         }
       });
