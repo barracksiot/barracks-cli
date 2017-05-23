@@ -15,7 +15,6 @@ class MessageClient {
   constructor() {
     this.httpClient = new HTTPClient();
     this.v2Enabled = config.v2Enabled;
-    this.sendMessage = this.sendMessage.bind(this);
   }
 
   sendMessage(token, message) {
@@ -41,43 +40,41 @@ class MessageClient {
     });
   }
 
-  popMessage(apiKey, unitId) {
+  listenMessages(apiKey, unitId, timeout) {
     return new Promise((resolve, reject) => {
-      let messageConsumed = false;
       const mqttEndpoint = config.barracks.messaging.mqtt.endpoint;
       const client = mqtt.connect(mqttEndpoint, {
-        clientId: unitId,
-        username: apiKey,
-        password: 'ignored but needed',
-        clean: false,
-        keepalive: 1000
+        clientId: `${apiKey}.${unitId}`,
+        clean: false
       });
 
       client.on('connect', () => {
-        client.subscribe(apiKey + '/' + unitId, {
-          qos: 2
-        });
-        logger.debug('Client connected to ' + mqttEndpoint);
-        setTimeout(() => {
-          client.end();
-        }, 100000);
+        console.log('Connected to ' + mqttEndpoint);
+        client.subscribe(`${apiKey}.${unitId}`, { qos: 2 });
       });
 
       client.on('message', (topic, message, packet) => {
-        logger.debug('Received ' + message.toString() + 'on topic ' + topic);
-        if (!messageConsumed && !packet.retain) {
-          //client.end();
-          //resolve(message.toString());
-          logger.debug('Client disconnected');
-        }
+        console.log('Received: ' + message.toString() + ' [retain=' + packet.retain + ']');
+      });
+
+      client.on('error', (error) => {
+        logger.error(error);
+        client.end();
+        reject('Connection error:' + error);
       });
 
       client.on('close', () => {
-        if (!messageConsumed) {
-          logger.debug('Connection closed without message');
-          reject('No message to consume');
-        }
+        logger.debug('Connection closed');
+        resolve();
       });
+
+      if (timeout) {
+        setTimeout(function () {
+          client.end();
+          resolve();
+        }, timeout);
+      }
+
     });
   }
 }

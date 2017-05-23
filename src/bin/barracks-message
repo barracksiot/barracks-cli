@@ -7,7 +7,7 @@ const pjson = require('../../package.json');
 const barracks = program.version(pjson.version);
 
 barracks.command('send', 'Send a message')
-  .command('pop', 'Retrieves one message if messages are available');
+  .command('listen', 'Retrieves messages if available');
 
 barracks.parse(process.argv);
 
