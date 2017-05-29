@@ -2,7 +2,7 @@ function write(content) {
   console.log(content);
 }
 
-module.exports = promise => new Promise(resolve => {
+module.exports = promise => new Promise((resolve, reject) => {
   promise.then(result => {
     if (result && result.constructor.name === 'PageableStream') {
       let firstPage = true;
@@ -23,6 +23,6 @@ module.exports = promise => new Promise(resolve => {
     resolve();
   }).catch(err => {
     console.error(JSON.stringify({ error: err }));
-    resolve();
+    reject();
   });
 });
