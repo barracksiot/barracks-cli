@@ -4,4 +4,3 @@ multidep_modules
 npm-debug.log
 coverage
 .idea
-node_modules.tar.gz
