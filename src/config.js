@@ -3,6 +3,11 @@ const path = require('path');
 module.exports = {
   barracks: {
     baseUrl: process.env.BARRACKS_BASE_URL || 'https://app.barracks.io',
+    messaging: {
+      mqtt: {
+        endpoint: process.env.BARRACKS_MQTT_ENDPOINT || 'mqtt://app.barracks.io'
+      }
+    }
   },
   userConfig: {
     folder: path.join(

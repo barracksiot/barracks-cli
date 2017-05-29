@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const ListenMessagesCommand = require('../commands/message/ListenMessagesCommand');
+new ListenMessagesCommand().render();

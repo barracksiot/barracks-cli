@@ -25,7 +25,7 @@ describe('MessageClient', () => {
     const unitId = 'aShortUnitId';
     const messageContent = 'messageInABottle';
     const message = {
-      target: unitId,
+      unitId: unitId,
       message: messageContent
     }
 
