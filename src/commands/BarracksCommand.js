@@ -119,11 +119,11 @@ class BarracksCommand {
     this.cleanupProgramOptions(program);
     if (this.validateCommand(program)) {
       const result = this.execute(program);
-      if (program.json) {
-        jsonRenderer(result);
-      } else {
-        prettyRenderer(result);
-      }
+      const renderer = program.json ? jsonRenderer : prettyRenderer;
+
+      renderer(result).catch(() => {
+        process.exitCode = 1;
+      });
     } else {
       this.error(program);
     }
@@ -131,9 +131,11 @@ class BarracksCommand {
 
   error(program) {
     console.error('Mandatory arguments are missing or invalid.');
-    program.help();
+    program.help(helpData => {
+      process.exitCode = 1;
+      return helpData;      
+    });
   }
-
 }
 
 module.exports = BarracksCommand;
