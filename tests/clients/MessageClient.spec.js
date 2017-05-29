@@ -43,11 +43,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/member/messages/send/:unitId'
+            path: '/v2/api/messaging/messages?unitId=:unitId'
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { unitId },
+            pathParameters: { unitId },
             body: message.message
           }
         );
@@ -67,11 +67,69 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/member/messages/send/:unitId'
+            path: '/v2/api/messaging/messages?unitId=:unitId'
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { unitId },
+            pathParameters: { unitId },
+            body: message.message
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#sendMessageToAll()', () => {
+
+    const messageContent = 'messageInABottle';
+    const message = {
+      message: messageContent
+    }
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      messageClient.sendMessageToAll(token, message).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/messaging/messages'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: message.message
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the message sent when request succeeds', done => {
+      // Given
+      const response = { body: message.message };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      messageClient.sendMessageToAll(token, message).then(result => {
+        expect(result).to.be.equals(message.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/messaging/messages'
+          },
+          {
+            headers: { 'x-auth-token': token },
             body: message.message
           }
         );

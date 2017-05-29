@@ -40,6 +40,7 @@ function mergeFilterClient(barracksClient) {
 function mergeMessageClient(barracksClient) {
   const messageClient = new MessageClient();
   barracksClient.sendMessage = messageClient.sendMessage.bind(messageClient);
+  barracksClient.sendMessageToAll = messageClient.sendMessageToAll.bind(messageClient);
   barracksClient.listenMessages = messageClient.listenMessages.bind(messageClient);
 }
 

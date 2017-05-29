@@ -20,6 +20,11 @@ describe('SendMessageCommand', () => {
     message: message
   };
 
+  const validProgramWithAll = {
+    all: true,
+    message: message
+  }
+
   before(() => {
     sendMessageCommand = new SendMessageCommand();
     sendMessageCommand.barracks = {};
@@ -37,7 +42,7 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when only target option given', () => {
+    it('should return false when only unitId option given', () => {
       // Given
       const program = { unitId: unitId };
       // When
@@ -55,7 +60,16 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when empty target option given', () => {
+    it('should return false when only all option given', () => {
+      // Given
+      const program = { all: true };
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when empty unitId option given', () => {
       // Given
       const program = Object.assign({}, validProgram, { unitId: true });
       // When
@@ -73,6 +87,24 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
+    it('should return false when both unitId and all option given', () => {
+      // Given
+      const program = Object.assign({}, validProgram, {all: true });
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when "all" option is false', () => {
+      // Given
+      const program = Object.assign({}, validProgramWithAll, {all: false});
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
     it('should return true when both target and message options given', () => {
       // Given
       const program = validProgram;
@@ -81,11 +113,20 @@ describe('SendMessageCommand', () => {
       // Then
       expect(result).to.be.true;
     });
-  })
+
+    it('should return true when both "all" option and message option given', () => {
+      // Given
+      const program = validProgramWithAll;
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+  });
 
   describe('#execute(program)', () => {
 
-    it('should forward to barracks client when valid target and message are given', done => {
+    it('should forward to barracks client when valid unit and message are given', done => {
       // Given
       const program = validProgram;
       const response = {
@@ -104,6 +145,33 @@ describe('SendMessageCommand', () => {
           token,
           {
             unitId: unitId,
+            message: message
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should forward to barracks client when "all" parameter and message are given', done => {
+      // Given
+      const program = validProgramWithAll;
+      const response = {
+        id: 'aMessageId',
+        all: true,
+        message: message
+      };
+      sendMessageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      sendMessageCommand.barracks.sendMessageToAll = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      sendMessageCommand.execute(program).then(result => {
+        expect(result).to.be.equals(response);
+        expect(sendMessageCommand.barracks.sendMessageToAll).to.have.been.calledOnce;
+        expect(sendMessageCommand.barracks.sendMessageToAll).to.have.been.calledWithExactly(
+          token,
+          {
             message: message
           }
         );
