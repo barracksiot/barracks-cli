@@ -792,15 +792,11 @@ describe('BarracksCommand', () => {
   describe('#render()', () => {
 
     let mockedBarracksCommand;
+    let mockedRender;
     let spyRender;
+    let mockedJsonRender;
     let spyJsonRender;
 
-    const mockedRender = (data) => {
-      spyRender(data);
-    };
-    const mockedJsonRender = (data) => {
-      spyJsonRender(data);
-    };
     const program = {
       option: () => { return program; },
       parse: () => { return program; },
@@ -808,10 +804,10 @@ describe('BarracksCommand', () => {
     };
     const MockedBarracksCommand = proxyquire(barracksCommandPath, {
       '../renderers/prettyRenderer': (data) => {
-        mockedRender(data);
+        return mockedRender(data);
       },
       '../renderers/jsonRenderer': (data) => {
-        mockedJsonRender(data);
+        return mockedJsonRender(data);
       },
       commander: program
     });
@@ -842,6 +838,10 @@ describe('BarracksCommand', () => {
       // Given
       const executeResponse = { the: 'response' };
       spyRender = sinon.spy();
+      mockedRender = (data) => {
+        spyRender(data);
+        return Promise.resolve();
+      };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
@@ -865,6 +865,10 @@ describe('BarracksCommand', () => {
       const executeResponse = { the: 'response' };
       program.json = true;
       spyJsonRender = sinon.spy();
+      mockedJsonRender = (data) => {
+        spyJsonRender(data);
+        return Promise.resolve();
+      };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
