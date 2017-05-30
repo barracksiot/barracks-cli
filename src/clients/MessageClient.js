@@ -6,7 +6,11 @@ const mqtt = require('mqtt');
 const endpoints = {
   sendMessage: {
     method: 'POST',
-    path: '/v2/api/member/messages/send/:unitId'
+    path: '/v2/api/messaging/messages?unitId=:unitId'
+  },
+  sendMessageToAll: {
+    method: 'POST',
+    path: '/v2/api/messaging/messages'
   }
 };
 
@@ -25,7 +29,7 @@ class MessageClient {
           headers: {
             'x-auth-token': token
           },
-          pathVariables: {
+          pathParameters: {
             unitId: message.unitId
           },
           body: message.message
@@ -35,6 +39,26 @@ class MessageClient {
         resolve(response.body);
       }).catch(err => {
         logger.debug('failed to send message to' + message.unitId);
+        reject(err.message);
+      });
+    });
+  }
+
+  sendMessageToAll(token, message) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.sendMessageToAll,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          body: message.message
+        }
+      ).then(response => {
+        logger.debug('Message sent to all devices' + ' : ' + message.message);
+        resolve(response.body);
+      }).catch(err => {
+        logger.debug('failed to send message to all devices');
         reject(err.message);
       });
     });
@@ -74,7 +98,6 @@ class MessageClient {
           resolve();
         }, timeout);
       }
-
     });
   }
 }
