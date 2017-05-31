@@ -10,6 +10,7 @@ const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
 const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
 const BarracksSDK2Proxy = require('../utils/BarracksSDK2Proxy');
+const BarracksMessagingSDKProxy = require('../utils/BarracksMessagingSDKProxy');
 
 function mergeAccountClient(barracksClient) {
   const accountClient = new AccountClient();
@@ -41,7 +42,6 @@ function mergeMessageClient(barracksClient) {
   const messageClient = new MessageClient();
   barracksClient.sendMessage = messageClient.sendMessage.bind(messageClient);
   barracksClient.sendMessageToAll = messageClient.sendMessageToAll.bind(messageClient);
-  barracksClient.listenMessages = messageClient.listenMessages.bind(messageClient);
 }
 
 function mergePackageClient(barracksClient) {
@@ -94,6 +94,11 @@ function mergeSDKProxy(barracksClient) {
   barracksClient.resolveDevicePackages = proxyV2.resolveDevicePackages.bind(proxyV2);
 }
 
+function mergeMessagingSDKProxy(barracksClient) {
+  const proxyMessaging = new BarracksMessagingSDKProxy();
+  barracksClient.listenMessages = proxyMessaging.listenMessages.bind(proxyMessaging);
+}
+
 class BarracksClient {
 
   constructor() {
@@ -106,6 +111,7 @@ class BarracksClient {
     mergeTokenClient(this);
     mergeUpdateClient(this);
     mergeSDKProxy(this);
+    mergeMessagingSDKProxy(this);
   }
 }
 
