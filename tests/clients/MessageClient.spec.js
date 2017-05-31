@@ -43,7 +43,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages?unitId=:unitId'
+            path: '/api/messaging/messages?unitId=:unitId'
           },
           {
             headers: { 'x-auth-token': token },
@@ -67,7 +67,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages?unitId=:unitId'
+            path: '/api/messaging/messages?unitId=:unitId'
           },
           {
             headers: { 'x-auth-token': token },
@@ -103,7 +103,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages'
+            path: '/api/messaging/messages'
           },
           {
             headers: { 'x-auth-token': token },
@@ -126,7 +126,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages'
+            path: '/api/messaging/messages'
           },
           {
             headers: { 'x-auth-token': token },
