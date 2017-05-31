@@ -46,10 +46,11 @@
   "dependencies": {
     "barracks-sdk": "2.0.2",
     "barracks-sdk-legacy": "0.0.2",
+    "barracks-messenger-sdk-betatest": "0.0.1",
     "commander": "2.9.0",
     "in-stream": "0.1.7",
     "mkdirp": "0.5.1",
-    "mqtt": "^2.7.2",
+    "mqtt": "^2.5.2",
     "mqtt-connection": "^3.1.0",
     "mqtt-packet": "^5.3.0",
     "pjson": "1.0.7",
