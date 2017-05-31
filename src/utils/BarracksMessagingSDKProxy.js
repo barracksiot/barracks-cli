@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const baseUrl = require('../config').barracks.baseUrl;
-const BarracksMessengerSDK = require('barracks-messenger-sdk');
+const BarracksMessengerSDK = require('barracks-messenger-sdk-betatest');
 
 class BarracksMessagingSDKProxy {
 
