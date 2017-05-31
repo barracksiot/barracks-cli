@@ -23,3 +23,5 @@ class BarracksMessagingSDKProxy {
     });
   }
 }
+
+module.exports = BarracksMessagingSDKProxy;
