@@ -27,7 +27,6 @@ describe('BarracksSDK2Proxy', () => {
   const versionId = 'version1';
   
   describe('#resolveDevicePackages()', () => {
-
     const packages = [
       {
         reference: "io.baracks.app1",
