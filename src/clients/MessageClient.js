@@ -10,7 +10,7 @@ const endpoints = {
   },
   sendMessageToAll: {
     method: 'POST',
-    path: '/v2/api/messaging/messages'
+    path: '/api/messaging/messages'
   }
 };
 

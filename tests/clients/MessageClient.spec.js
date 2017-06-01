@@ -23,9 +23,11 @@ describe('MessageClient', () => {
   describe('#sendMessage()', () => {
 
     const unitId = 'aShortUnitId';
+    const filter = 'superfilter';
     const messageContent = 'messageInABottle';
     const message = {
       unitId: unitId,
+      filter: filter,
       message: messageContent
     }
 
@@ -43,11 +45,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages?unitId=:unitId'
+            path: '/api/messaging/messages/:query'
           },
           {
             headers: { 'x-auth-token': token },
-            pathParameters: { unitId },
+            pathVariables: { query: '?unitId=' + message.unitId + '&filter=' + message.filter },
             body: message.message
           }
         );
@@ -67,11 +69,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages?unitId=:unitId'
+            path: '/api/messaging/messages/:query'
           },
           {
             headers: { 'x-auth-token': token },
-            pathParameters: { unitId },
+            pathVariables: { query: '?unitId=' + message.unitId + '&filter=' + message.filter},
             body: message.message
           }
         );
@@ -103,7 +105,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages'
+            path: '/api/messaging/messages'
           },
           {
             headers: { 'x-auth-token': token },
@@ -126,7 +128,7 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/v2/api/messaging/messages'
+            path: '/api/messaging/messages'
           },
           {
             headers: { 'x-auth-token': token },

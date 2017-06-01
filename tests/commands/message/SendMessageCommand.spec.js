@@ -14,10 +14,12 @@ describe('SendMessageCommand', () => {
   const token = '89zer4568.token.z8s4f25';
   const unitId = 'unitId51478a657z2';
   const message = 'Hello Mr.Device, how are you doing ?';
+  const filter = 'coffeefilter';
 
   const validProgram = {
     unitId: unitId,
-    message: message
+    message: message,
+    filter: filter
   };
 
   const validProgramWithAll = {
@@ -60,6 +62,15 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
+    it('should return false when only filter option given', () => {
+      // Given
+      const program = { filter: filter };
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
     it('should return false when only all option given', () => {
       // Given
       const program = { all: true };
@@ -78,6 +89,15 @@ describe('SendMessageCommand', () => {
       expect(result).to.be.false;
     });
 
+    it('should return false when empty filter option and no unitID given', () => {
+      // Given
+      const program = Object.assign({}, validProgramWithAll, { filter: true });
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
     it('should return false when empty message option given', () => {
       // Given
       const program = Object.assign({}, validProgram, { message: true });
@@ -90,6 +110,15 @@ describe('SendMessageCommand', () => {
     it('should return false when both unitId and all option given', () => {
       // Given
       const program = Object.assign({}, validProgram, {all: true });
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when both filter and all option given', () => {
+      // Given
+      const program = Object.assign({}, validProgramWithAll, {filter: filter});
       // When
       const result = sendMessageCommand.validateCommand(program);
       // Then
@@ -126,12 +155,13 @@ describe('SendMessageCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should forward to barracks client when valid unit and message are given', done => {
+    it('should forward to barracks client when valid unit, filter and message are given', done => {
       // Given
       const program = validProgram;
       const response = {
         id: 'aMessageId',
         unitId: unitId,
+        filter: filter,
         message: message
       };
       sendMessageCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
@@ -145,6 +175,7 @@ describe('SendMessageCommand', () => {
           token,
           {
             unitId: unitId,
+            filter: filter,
             message: message
           }
         );
