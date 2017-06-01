@@ -5,7 +5,7 @@ const config = require('../config');
 const endpoints = {
   sendMessage: {
     method: 'POST',
-    path: '/api/messaging/messages?unitId=:unitId'
+    path: '/api/messaging/messages/:unit'
   },
   sendMessageToAll: {
     method: 'POST',
@@ -28,8 +28,8 @@ class MessageClient {
           headers: {
             'x-auth-token': token
           },
-          pathParameters: {
-            unitId: message.unitId
+          pathVariables: {
+            unit: '?unitId=' + message.unitId
           },
           body: message.message
         }

@@ -7,7 +7,7 @@
     "lint": "jshint src/**/**.js && jshint tests/**/**.js",
     "test": "npm run lint && npm run coverage && npm run check-coverage",
     "coverage": "DEBUG=true istanbul cover ./node_modules/mocha/bin/_mocha ./tests/ --recursive -- --recursive",
-    "check-coverage": "istanbul check-coverage --statement 97 --branch 94 --function 98",
+    "check-coverage": "istanbul check-coverage --statement 96 --branch 94 --function 98",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "bin": {
@@ -46,7 +46,7 @@
   "dependencies": {
     "barracks-sdk": "2.0.2",
     "barracks-sdk-legacy": "0.0.2",
-    "barracks-messenger-sdk-betatest": "0.0.1",
+    "barracks-messenger-sdk-betatest": "0.0.15",
     "commander": "2.9.0",
     "in-stream": "0.1.7",
     "mkdirp": "0.5.1",
