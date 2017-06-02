@@ -30,7 +30,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: '?unitId=' + message.unitId + '&filter=' + message.filter
+            query: '?unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
           },
           body: message.message
         }
@@ -74,7 +74,7 @@ class MessageClient {
 
       client.on('connect', () => {
         console.log('Connected to ' + mqttEndpoint);
-        client.subscribe(`${apiKey}.${unitId}`, { qos: 2 });
+        client.subscribe(`${apiKey}/${unitId}`, { qos: 2 });
       });
 
       client.on('message', (topic, message, packet) => {
