@@ -6,11 +6,11 @@ const mqtt = require('mqtt');
 const endpoints = {
   sendMessage: {
     method: 'POST',
-    path: '/v2/api/messaging/messages?unitId=:unitId'
+    path: '/api/messaging/messages?:query'
   },
   sendMessageToAll: {
     method: 'POST',
-    path: '/v2/api/messaging/messages'
+    path: '/api/messaging/messages'
   }
 };
 
@@ -29,16 +29,16 @@ class MessageClient {
           headers: {
             'x-auth-token': token
           },
-          pathParameters: {
-            unitId: message.unitId
+          pathVariables: {
+            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
           },
           body: message.message
         }
       ).then(response => {
-        logger.debug('Message sent to ' + message.unitId + ' : ' + message.message);
+        logger.debug('Message sent to ' + message.unitId + ' and/or filter ' + message.filter + ' : ' + message.message);
         resolve(response.body);
       }).catch(err => {
-        logger.debug('failed to send message to' + message.unitId);
+        logger.debug('Failed to send message to ' + message.unitId + ' and/or ' + message.filter );
         reject(err.message);
       });
     });
@@ -74,7 +74,7 @@ class MessageClient {
 
       client.on('connect', () => {
         console.log('Connected to ' + mqttEndpoint);
-        client.subscribe(`${apiKey}.${unitId}`, { qos: 2 });
+        client.subscribe(`${apiKey}/${unitId}`, { qos: 1 });
       });
 
       client.on('message', (topic, message, packet) => {
