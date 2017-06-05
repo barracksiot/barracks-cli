@@ -6,7 +6,7 @@ const mqtt = require('mqtt');
 const endpoints = {
   sendMessage: {
     method: 'POST',
-    path: '/api/messaging/messages/:query'
+    path: '/api/messaging/messages?:query'
   },
   sendMessageToAll: {
     method: 'POST',
@@ -30,7 +30,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: '?unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
+            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
           },
           body: message.message
         }
@@ -74,7 +74,7 @@ class MessageClient {
 
       client.on('connect', () => {
         console.log('Connected to ' + mqttEndpoint);
-        client.subscribe(`${apiKey}/${unitId}`, { qos: 2 });
+        client.subscribe(`${apiKey}/${unitId}`, { qos: 1 });
       });
 
       client.on('message', (topic, message, packet) => {
