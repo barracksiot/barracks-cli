@@ -15,10 +15,20 @@ describe('prettyRenderer', () => {
   const originalConsoleLog = console.log;
   const originalConsoleError = console.error;
   const originalPrettyRender = prettyjson.render;
+  let consoleLogSpy;
+  let consoleErrorSpy;
 
   beforeEach(() => {
-    console.log = sinon.spy();
-    console.error = sinon.spy();
+    consoleLogSpy = sinon.spy();
+    consoleErrorSpy = sinon.spy();
+    console.log = (data) => {
+      consoleLogSpy(data);
+      originalConsoleLog(data);
+    };
+    console.error = (data) => {
+      consoleErrorSpy(data);
+      originalConsoleError(data);
+    };
   });
 
   afterEach(() => {
@@ -38,8 +48,8 @@ describe('prettyRenderer', () => {
     prettyRenderer(promise).then(() => {
       expect(prettyjson.render).to.have.been.calledOnce;
       expect(prettyjson.render).to.have.been.calledWithExactly(object);
-      expect(console.log).to.have.been.calledOnce;
-      expect(console.log).to.have.been.calledWithExactly(prettyString);
+      expect(consoleLogSpy).to.have.been.calledOnce;
+      expect(consoleLogSpy).to.have.been.calledWithExactly(prettyString);
       done();
     }).catch(err => {
       done(err);
@@ -51,14 +61,15 @@ describe('prettyRenderer', () => {
     const error = 'Error';
     const promise = Promise.reject(error);
     prettyjson.render = sinon.spy();
+    
     // When / Then
     prettyRenderer(promise).then(() => {
-      expect(prettyjson.render).to.have.not.been.called;
-      expect(console.error).to.have.been.calledOnce;
-      expect(console.error).to.have.been.calledWithExactly(error);
-      done();
+      done('Should have failed');
     }).catch(err => {
-      done(err);
+      expect(prettyjson.render).to.have.not.been.called;
+      expect(consoleErrorSpy).to.have.been.calledOnce;
+      expect(consoleErrorSpy).to.have.been.calledWithExactly(error);
+      done();
     });
   });
 
@@ -77,8 +88,8 @@ describe('prettyRenderer', () => {
       stream.write(chunk2);
       stream.lastPage();
       expect(prettyjson.render).to.have.been.called.twice;
-      expect(console.log).to.have.been.called.twice;
-      expect(console.log).to.have.always.been.calledWithExactly(prettyString);
+      expect(consoleLogSpy).to.have.been.called.twice;
+      expect(consoleLogSpy).to.have.always.been.calledWithExactly(prettyString);
       done();
     }).catch(err => {
       done(err);

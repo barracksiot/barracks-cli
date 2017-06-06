@@ -23,9 +23,11 @@ describe('MessageClient', () => {
   describe('#sendMessage()', () => {
 
     const unitId = 'aShortUnitId';
+    const filter = 'superfilter';
     const messageContent = 'messageInABottle';
     const message = {
-      unitId: unitId,
+      unitId,
+      filter,
       message: messageContent
     }
 
@@ -43,11 +45,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages/:unit'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { unit: '?unitId=' + unitId },
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter },
             body: message.message
           }
         );
@@ -67,11 +69,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages/:unit'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { unit: '?unitId=' + unitId },
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter},
             body: message.message
           }
         );

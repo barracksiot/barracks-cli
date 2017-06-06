@@ -770,8 +770,12 @@ describe('BarracksCommand', () => {
     it('should print error and display help', () => {
       // Given
       const originalConsoleError = console.error;
+      const helpSpy = sinon.spy();
       const program = {
-        help: sinon.spy()
+        help: (callback) => {
+          helpSpy(callback);
+          callback();
+        }
       };
       console.error = sinon.spy();
 
@@ -779,7 +783,8 @@ describe('BarracksCommand', () => {
       barracksCommand.error(program);
 
       // Then
-      expect(program.help).to.have.been.calledOnce;
+      expect(helpSpy).to.have.been.calledOnce;
+      expect(helpSpy).to.have.been.calledWithExactly(sinon.match.func);
       expect(console.error).to.have.been.calledOnce;
       expect(console.error).to.have.been.calledWithExactly(
         'Mandatory arguments are missing or invalid.'
@@ -792,15 +797,11 @@ describe('BarracksCommand', () => {
   describe('#render()', () => {
 
     let mockedBarracksCommand;
+    let mockedRender;
     let spyRender;
+    let mockedJsonRender;
     let spyJsonRender;
 
-    const mockedRender = (data) => {
-      spyRender(data);
-    };
-    const mockedJsonRender = (data) => {
-      spyJsonRender(data);
-    };
     const program = {
       option: () => { return program; },
       parse: () => { return program; },
@@ -808,10 +809,10 @@ describe('BarracksCommand', () => {
     };
     const MockedBarracksCommand = proxyquire(barracksCommandPath, {
       '../renderers/prettyRenderer': (data) => {
-        mockedRender(data);
+        return mockedRender(data);
       },
       '../renderers/jsonRenderer': (data) => {
-        mockedJsonRender(data);
+        return mockedJsonRender(data);
       },
       commander: program
     });
@@ -842,6 +843,36 @@ describe('BarracksCommand', () => {
       // Given
       const executeResponse = { the: 'response' };
       spyRender = sinon.spy();
+      mockedRender = (data) => {
+        spyRender(data);
+        return Promise.resolve();
+      };
+      mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
+      mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
+      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+
+      // When
+      mockedBarracksCommand.render();
+
+      // Then
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(spyRender).to.have.been.calledOnce;
+      expect(spyRender).to.have.been.calledWithExactly(executeResponse);
+    });
+
+    it('should call renderer if execution successful and exit with code != 0 when renderer reject', () => {
+      // Given
+      const executeResponse = { the: 'response' };
+      spyRender = sinon.spy();
+      mockedRender = (data) => {
+        spyRender(data);
+        return Promise.reject();
+      };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
@@ -865,6 +896,37 @@ describe('BarracksCommand', () => {
       const executeResponse = { the: 'response' };
       program.json = true;
       spyJsonRender = sinon.spy();
+      mockedJsonRender = (data) => {
+        spyJsonRender(data);
+        return Promise.resolve();
+      };
+      mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
+      mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
+      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+
+      // When
+      mockedBarracksCommand.render();
+
+      // Then
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(spyJsonRender).to.have.been.calledOnce;
+      expect(spyJsonRender).to.have.been.calledWithExactly(executeResponse);
+    });
+
+    it('should call json renderer if execution successful and json flag and exit with code != 0 when renderer reject', () => {
+      // Given
+      const executeResponse = { the: 'response' };
+      program.json = true;
+      spyJsonRender = sinon.spy();
+      mockedJsonRender = (data) => {
+        spyJsonRender(data);
+        return Promise.reject();
+      };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
       mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);

@@ -5,7 +5,7 @@ const config = require('../config');
 const endpoints = {
   sendMessage: {
     method: 'POST',
-    path: '/api/messaging/messages/:unit'
+    path: '/api/messaging/messages?:query'
   },
   sendMessageToAll: {
     method: 'POST',
@@ -29,15 +29,15 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            unit: '?unitId=' + message.unitId
+            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
           },
           body: message.message
         }
       ).then(response => {
-        logger.debug('Message sent to ' + message.unitId + ' : ' + message.message);
+        logger.debug('Message sent to ' + message.unitId + ' and/or filter ' + message.filter + ' : ' + message.message);
         resolve(response.body);
       }).catch(err => {
-        logger.debug('failed to send message to' + message.unitId);
+        logger.debug('Failed to send message to ' + message.unitId + ' and/or ' + message.filter );
         reject(err.message);
       });
     });

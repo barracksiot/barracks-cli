@@ -22,10 +22,20 @@ describe('jsonRenderer', () => {
 
   const originalConsoleLog = console.log;
   const originalConsoleError = console.error;
+  let consoleLogSpy;
+  let consoleErrorSpy;
 
   beforeEach(() => {
-    console.log = sinon.spy();
-    console.error = sinon.spy();
+    consoleLogSpy = sinon.spy();
+    consoleErrorSpy = sinon.spy();
+    console.log = (data) => {
+      consoleLogSpy(data);
+      originalConsoleLog(data);
+    };
+    console.error = (data) => {
+      consoleErrorSpy(data);
+      originalConsoleError(data);
+    };
   });
 
   afterEach(() => {
@@ -42,8 +52,8 @@ describe('jsonRenderer', () => {
 
     // When / Then
     jsonRenderer(promise).then(() => {
-      expect(console.log).to.have.been.calledOnce;
-      expect(console.log).to.have.been.calledWithExactly(JSON.stringify(object));
+      expect(consoleLogSpy).to.have.been.calledOnce;
+      expect(consoleLogSpy).to.have.been.calledWithExactly(JSON.stringify(object));
       done();
     }).catch(err => {
       done(err);
@@ -57,11 +67,11 @@ describe('jsonRenderer', () => {
 
     // When / Then
     jsonRenderer(promise).then(() => {
-      expect(console.error).to.have.been.calledOnce;
-      expect(console.error).to.have.been.calledWithExactly(JSON.stringify({ error }));
-      done();
+      done('Should have failed');
     }).catch(err => {
-      done(err);
+      expect(consoleErrorSpy).to.have.been.calledOnce;
+      expect(consoleErrorSpy).to.have.been.calledWithExactly(JSON.stringify({ error }));
+      done();
     });
   });
 
@@ -77,7 +87,7 @@ describe('jsonRenderer', () => {
       stream.write(chunk1);
       stream.write(chunk2);
       stream.lastPage();
-      expect(getRenderedJson(console.log)).to.be.deep.equal([].concat(chunk1, chunk2));
+      expect(getRenderedJson(consoleLogSpy)).to.be.deep.equal([].concat(chunk1, chunk2));
       done();
     }).catch(err => {
       done(err);
@@ -90,7 +100,7 @@ describe('jsonRenderer', () => {
 
     // When / Then
     jsonRenderer(promise).then(() => {
-      expect(console.log).to.not.have.been.calledOnce;
+      expect(consoleLogSpy).to.not.have.been.calledOnce;
       done();
     }).catch(err => {
       done(err);
