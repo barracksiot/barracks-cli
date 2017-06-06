@@ -10,11 +10,15 @@ const proxyquire = require('proxyquire').noCallThru();
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function getProxifiedBarracks(constructorSpy, listenMessagesSpy) {
+function getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy) {
   return proxyquire(messagingSDKProxyPath, {
-    'barracks-messenger-sdk-betatest':  function Constructor(options) {
-      constructorSpy(options);
-      this.listenMessages = listenMessagesSpy;
+    'barracks-messenger-sdk-betatest':  {
+      BarracksMessenger: function Constructor(options) {
+        constructorSpy(options);
+        this.connect = connectSpy;
+        this.subscribe = subscribeSpy;
+        this.end = endSpy;
+      }
     }
   });
 }
@@ -22,9 +26,10 @@ function getProxifiedBarracks(constructorSpy, listenMessagesSpy) {
 describe('BarracksMessagingSDKProxy', () => {
 
   const baseUrl = 'https://app.barracks.io';
+  const mqttEndpoint = 'mqtt://app.barracks.io';
   const apiKey = 'myApiKey';
   const unitId = 'unitId';
-  const timeout = 60000;
+  const timeout = 500;
 
   describe('#listenMessages()', () => {
 
@@ -32,10 +37,13 @@ describe('BarracksMessagingSDKProxy', () => {
 
     it('should reject an error if client fails', done => {
       // Given
-      const error = 'error';
+      const error = 'a dramatic error';
       const constructorSpy = sinon.spy();
-      const listenMessagesSpy = sinon.stub().returns(Promise.reject(error));
-      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, listenMessagesSpy);
+      const subscribeSpy = sinon.spy();
+      const connectSpy = sinon.spy(this.connect);
+
+      const endSpy = sinon.spy();
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy);
       const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
 
@@ -43,17 +51,15 @@ describe('BarracksMessagingSDKProxy', () => {
       barracks.listenMessages(apiKey, unitId, timeout).then(result => {
         done('should have failed');
       }).catch(err => {
+        expect(err).to.be.equals(error);
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           apiKey,
-          baseUrl: baseUrl,
+          baseUrl,
+          mqttEndpoint,
+          unitId
         });
-        expect(listenMessagesSpy).to.have.been.calledWithExactly(
-          apiKey,
-          unitId,
-          60000
-        );
-        expect(listenMessagesSpy).to.have.been.calledOnce;
+        expect(connectSpy).to.have.been.calledOnce;
         done();
       });
     });
@@ -62,26 +68,25 @@ describe('BarracksMessagingSDKProxy', () => {
       // Given
       const response = { a: 'response' };
       const constructorSpy = sinon.spy();
-      const listenMessagesSpy = sinon.stub().returns(Promise.resolve(response));
-      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, listenMessagesSpy);
+      const connectSpy = sinon.spy();
+      const subscribeSpy = sinon.spy();
+      const endSpy = sinon.spy();
+      const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy);
 
       const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
+      barracks.mqttEndpoint = mqttEndpoint;
 
       // When / Then
-      barracks.listenMessages(apiKey, unitId, 60000).then(result => {
-        expect(result).to.be.equals(response);
+      barracks.listenMessages(apiKey, unitId, timeout).then(result => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           apiKey,
-          baseUrl: baseUrl
+          baseUrl,
+          mqttEndpoint,
+          unitId
         });
-        expect(listenMessagesSpy).to.have.been.calledOnce;
-        expect(listenMessagesSpy).to.have.been.calledWithExactly(
-          apiKey,
-          unitId,
-          60000
-        );
+        expect(connectSpy).to.have.been.calledOnce;
         done();
       }).catch(err => {
         done(err);
