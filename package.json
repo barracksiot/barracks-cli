@@ -46,7 +46,7 @@
   "dependencies": {
     "barracks-sdk": "2.0.2",
     "barracks-sdk-legacy": "0.0.2",
-    "barracks-messenger-sdk-betatest": "0.1.2",
+    "barracks-messenger-sdk-betatest": "0.1.3",
     "commander": "2.9.0",
     "in-stream": "0.1.7",
     "mkdirp": "0.5.1",
