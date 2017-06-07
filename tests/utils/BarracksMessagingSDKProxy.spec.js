@@ -35,7 +35,7 @@ describe('BarracksMessagingSDKProxy', () => {
 
     const message = 'Bonjour !';
 
-    it('should reject an error if client fails', done => {
+    /*it('should reject an error if client fails', done => {
       // Given
       const error = 'a dramatic error';
       const constructorSpy = sinon.spy();
@@ -62,7 +62,7 @@ describe('BarracksMessagingSDKProxy', () => {
         expect(connectSpy).to.have.been.calledOnce;
         done();
       });
-    });
+    });*/
 
     it('should call client when apiKey and deviceId provided', done => {
       // Given
