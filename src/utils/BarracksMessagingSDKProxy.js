@@ -40,10 +40,12 @@ class BarracksMessagingSDKProxy {
         console.log('qos ' + messageReceived.qos);
       }, { qos: 1 });
 
-      setTimeout(function () {
-        barracksMessenger.end();
-        resolve();
-      }, timeout);
+      if (timeout) {
+        setTimeout(function() {
+          barracksMessenger.end();
+          resolve();
+        }, timeout);
+      }
     });
   }
 }
