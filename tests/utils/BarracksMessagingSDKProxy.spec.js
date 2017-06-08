@@ -12,7 +12,7 @@ chai.use(sinonChai);
 
 function getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy) {
   return proxyquire(messagingSDKProxyPath, {
-    'barracks-messenger-sdk-betatest':  {
+    'barracks-messenger-sdk':  {
       BarracksMessenger: function Constructor(options) {
         constructorSpy(options);
         this.connect = connectSpy;
@@ -33,16 +33,14 @@ describe('BarracksMessagingSDKProxy', () => {
 
   describe('#listenMessages()', () => {
 
-    const message = 'Bonjour !';
-
-    /*it('should reject an error if client fails', done => {
+    it('should reject an error if client fails', done => {
       // Given
       const error = 'a dramatic error';
       const constructorSpy = sinon.spy();
       const subscribeSpy = sinon.spy();
-      const connectSpy = sinon.spy(this.connect);
-
+      const connectSpy = sinon.spy();
       const endSpy = sinon.spy();
+
       const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy);
       const barracks = new ProxifiedBarracks();
       barracks.baseUrl = baseUrl;
@@ -60,9 +58,13 @@ describe('BarracksMessagingSDKProxy', () => {
           unitId
         });
         expect(connectSpy).to.have.been.calledOnce;
+        expect(subscribeSpy).to.have.been.calledOnce;
+        expect(endSpy).not.to.have.been.calledOnce;
         done();
       });
-    });*/
+
+      connectSpy.args[0][0].onError(error) ;
+    });
 
     it('should call client when apiKey and deviceId provided', done => {
       // Given
@@ -87,6 +89,8 @@ describe('BarracksMessagingSDKProxy', () => {
           unitId
         });
         expect(connectSpy).to.have.been.calledOnce;
+        expect(subscribeSpy).to.have.been.calledOnce;
+        expect(endSpy).to.have.been.calledOnce;
         done();
       }).catch(err => {
         done(err);
