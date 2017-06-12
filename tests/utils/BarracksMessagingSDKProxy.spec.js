@@ -26,7 +26,7 @@ function getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy) 
 describe('BarracksMessagingSDKProxy', () => {
 
   const baseUrl = 'https://app.barracks.io';
-  const mqttEndpoint = 'mqtt://app.barracks.io';
+  const mqttEndpoint = 'mqtt://mqtt.barracks.io';
   const apiKey = 'myApiKey';
   const unitId = 'unitId';
   const timeout = 500;
