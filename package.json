@@ -1,6 +1,6 @@
 {
   "name": "barracks-cli",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A CLI tool for Barracks",
   "scripts": {
     "start": "./src/bin/barracks",
