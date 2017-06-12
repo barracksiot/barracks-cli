@@ -33,7 +33,7 @@ class BarracksMessagingSDKProxy {
           console.log('On Reconnect');
         }
       });
-      barracksMessenger.subscribe(apiKey + '.' + unitId, function (messageReceived) {
+      barracksMessenger.subscribe(function (messageReceived) {
         console.log('Received: ' + messageReceived.payload);
         console.log('retain : ' + messageReceived.retained);
         console.log('topic : ' + messageReceived.topic);
