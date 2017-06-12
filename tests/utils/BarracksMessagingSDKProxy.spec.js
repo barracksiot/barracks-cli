@@ -25,8 +25,6 @@ function getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy) 
 
 describe('BarracksMessagingSDKProxy', () => {
 
-  const baseUrl = 'https://app.barracks.io';
-  const mqttEndpoint = 'mqtt://mqtt.barracks.io';
   const apiKey = 'myApiKey';
   const unitId = 'unitId';
   const timeout = 500;
@@ -43,7 +41,6 @@ describe('BarracksMessagingSDKProxy', () => {
 
       const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy);
       const barracks = new ProxifiedBarracks();
-      barracks.baseUrl = baseUrl;
 
       // When / Then
       barracks.listenMessages(apiKey, unitId, timeout).then(result => {
@@ -53,8 +50,8 @@ describe('BarracksMessagingSDKProxy', () => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           apiKey,
-          baseUrl,
-          mqttEndpoint,
+          baseUrl: barracks.baseUrl,
+          mqttEndpoint: barracks.mqttEndpoint,
           unitId
         });
         expect(connectSpy).to.have.been.calledOnce;
@@ -76,16 +73,14 @@ describe('BarracksMessagingSDKProxy', () => {
       const ProxifiedBarracks = getProxifiedBarracks(constructorSpy, connectSpy, subscribeSpy, endSpy);
 
       const barracks = new ProxifiedBarracks();
-      barracks.baseUrl = baseUrl;
-      barracks.mqttEndpoint = mqttEndpoint;
 
       // When / Then
       barracks.listenMessages(apiKey, unitId, timeout).then(result => {
         expect(constructorSpy).to.have.been.calledOnce;
         expect(constructorSpy).to.have.been.calledWithExactly({
           apiKey,
-          baseUrl,
-          mqttEndpoint,
+          baseUrl: barracks.baseUrl,
+          mqttEndpoint: barracks.mqttEndpoint,
           unitId
         });
         expect(connectSpy).to.have.been.calledOnce;
