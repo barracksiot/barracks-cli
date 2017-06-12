@@ -4,3 +4,5 @@ multidep_modules
 npm-debug.log
 coverage
 .idea
+component.json
+deploymentplan.json

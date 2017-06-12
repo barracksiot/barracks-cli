@@ -60,7 +60,6 @@ describe('Barracks', () => {
       // Then
       expect(barracksClient).to.have.property('sendMessage').and.to.be.a('function');
       expect(barracksClient).to.have.property('sendMessageToAll').and.to.be.a('function');
-      expect(barracksClient).to.have.property('listenMessages').and.to.be.a('function');
     })
 
     it('should initialize methods from packageClient when constructor called', () => {
@@ -125,6 +124,14 @@ describe('Barracks', () => {
       expect(barracksClient).to.have.property('checkUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('checkUpdateAndDownload').and.to.be.a('function');
       expect(barracksClient).to.have.property('resolveDevicePackages').and.to.be.a('function');
+    });
+
+    it('should initialize method from sdk messaging proxy when constructor called', () => {
+      // When
+      const barracksClient = new Barracks();
+
+      // Then
+      expect(barracksClient).to.have.property('listenMessages').and.to.be.a('function');
     });
   });
 });

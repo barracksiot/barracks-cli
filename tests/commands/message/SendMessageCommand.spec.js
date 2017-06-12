@@ -25,7 +25,7 @@ describe('SendMessageCommand', () => {
   const validProgramWithAll = {
     all: true,
     message: message
-  }
+  };
 
   before(() => {
     sendMessageCommand = new SendMessageCommand();
