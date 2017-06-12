@@ -4,9 +4,8 @@ const program = require('commander');
 const config = require('../config.js');
 const pjson = require('../../package.json');
 
-const barracks = program.version(pjson.version);
-
-barracks.command('ls', 'List packages')
+const barracks = program
+  .command('ls', 'List packages')
   .command('get', 'Display detailed information of a package')
   .command('create', 'Create a package')
   .command('version [cmd]', 'Manage versions')
