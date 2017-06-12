@@ -5,7 +5,7 @@ module.exports = {
     baseUrl: process.env.BARRACKS_BASE_URL || 'https://app.barracks.io',
     messaging: {
       mqtt: {
-        endpoint: process.env.BARRACKS_MQTT_ENDPOINT || 'mqtt://app.barracks.io'
+        endpoint: process.env.BARRACKS_MQTT_ENDPOINT || 'mqtt://mqtt.barracks.io'
       }
     }
   },
