@@ -25,10 +25,12 @@ describe('MessageClient', () => {
     const unitId = 'aShortUnitId';
     const filter = 'superfilter';
     const messageContent = 'messageInABottle';
+    const retained = 'true';
     const message = {
       unitId,
       filter,
-      message: messageContent
+      message: messageContent,
+      retained
     }
 
     it('should return an error message when request fails', done => {
@@ -49,7 +51,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter },
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter + '&retained=' + message.retained},
             body: message.message
           }
         );
@@ -73,7 +75,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter},
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter + '&retained=' + message.retained},
             body: message.message
           }
         );
@@ -105,10 +107,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
+            pathVariables: { query: 'retained=' + message.retained },
             body: message.message
           }
         );
@@ -128,10 +131,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
+            pathVariables: { query: 'retained=' + message.retained },
             body: message.message
           }
         );

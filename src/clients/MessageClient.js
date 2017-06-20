@@ -9,7 +9,7 @@ const endpoints = {
   },
   sendMessageToAll: {
     method: 'POST',
-    path: '/api/messaging/messages'
+    path: '/api/messaging/messages?:query'
   }
 };
 
@@ -29,7 +29,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
+            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter) + '&retained=' + encodeURI(message.retained)
           },
           body: message.message
         }
@@ -50,6 +50,9 @@ class MessageClient {
         {
           headers: {
             'x-auth-token': token
+          },
+          pathVariables: {
+            query: 'retained=' + encodeURI(message.retained)
           },
           body: message.message
         }
