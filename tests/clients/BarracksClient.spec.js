@@ -48,6 +48,7 @@ describe('Barracks', () => {
 
       // Then
       expect(barracksClient).to.have.property('createFilter').and.to.be.a('function');
+      expect(barracksClient).to.have.property('updateFilter').and.to.be.a('function');
       expect(barracksClient).to.have.property('getFilter').and.to.be.a('function');
       expect(barracksClient).to.have.property('getFilters').and.to.be.a('function');
       expect(barracksClient).to.have.property('deleteFilter').and.to.be.a('function');
