@@ -21,6 +21,7 @@ class MessageClient {
   }
 
   sendMessage(token, message) {
+    /*jshint maxcomplexity:5 */
     return new Promise((resolve, reject) => {
       this.httpClient.sendEndpointRequest(
         endpoints.sendMessage,
@@ -29,7 +30,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter) + '&retained=' + encodeURI(message.retained)
+            query: 'unitId=' + encodeURI(message.unitId || '') + '&filter=' + encodeURI(message.filter || '') + '&retained=' + encodeURI(message.retained || '')
           },
           body: message.message
         }
@@ -52,7 +53,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'retained=' + encodeURI(message.retained)
+            query: 'retained=' + encodeURI(message.retained || '')
           },
           body: message.message
         }

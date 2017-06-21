@@ -111,7 +111,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'retained=' + message.retained },
+            pathVariables: { query: 'retained=' + (message.retained || '')},
             body: message.message
           }
         );
@@ -135,7 +135,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'retained=' + message.retained },
+            pathVariables: { query: 'retained=' + (message.retained || '')},
             body: message.message
           }
         );
