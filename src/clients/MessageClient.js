@@ -29,7 +29,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'unitId=' + encodeURI(message.unitId) + '&filter=' + encodeURI(message.filter)
+            query: 'unitId=' + encodeURI(message.unitId || '') + '&filter=' + encodeURI(message.filter || '')
           },
           body: message.message
         }
