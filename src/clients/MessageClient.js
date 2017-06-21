@@ -30,7 +30,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'unitId=' + encodeURI(message.unitId || '') + '&filter=' + encodeURI(message.filter || '') + '&retained=' + encodeURI(message.retained || '')
+            query: 'unitId=' + encodeURI(message.unitId || '') + '&filter=' + encodeURI(message.filter || '') + '&retained=' + encodeURI(message.retained || 'false')
           },
           body: message.message
         }
@@ -53,7 +53,7 @@ class MessageClient {
             'x-auth-token': token
           },
           pathVariables: {
-            query: 'retained=' + encodeURI(message.retained || '')
+            query: 'retained=' + encodeURI(message.retained || 'false')
           },
           body: message.message
         }
