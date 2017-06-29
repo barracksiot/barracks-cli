@@ -13,6 +13,7 @@ describe('UpdateFilterCommand', () => {
   let updateFilterCommand;
   let proxyIsJsonObject;
   let proxyFileExists;
+  let proxyAsk;
 
   const UpdateFilterCommand = proxyquire('../../../src/commands/filter/UpdateFilterCommand', {
     '../../utils/Validator': {
@@ -21,6 +22,11 @@ describe('UpdateFilterCommand', () => {
       },
       fileExists: (path) => {
         return proxyFileExists(path);
+      }
+    },
+    'yesno': {
+      ask: (str, boolean, callback) => {
+        return proxyAsk(str, boolean, callback);
       }
     }
   });
@@ -68,6 +74,7 @@ describe('UpdateFilterCommand', () => {
     updateFilterCommand.userConfiguration = {};
     proxyIsJsonObject = undefined;
     proxyFileExists = undefined;
+    proxyAsk = undefined;
   });
 
   describe('#validateCommand(program)', () => {
@@ -79,7 +86,7 @@ describe('UpdateFilterCommand', () => {
       proxyIsJsonObject = (str) => {
         spyIsJsonObject(str);
         return true;
-      }
+      };
 
       // When
       const result = updateFilterCommand.validateCommand(program);
@@ -131,11 +138,19 @@ describe('UpdateFilterCommand', () => {
 
   describe('#execute(program)', () => {
 
-    it('should return the updated filter when the request was successful', done => {
+    const filter = {
+      name: 'filterName',
+      query: '{"eq": { "customClientData": { "key": "value" } } }',
+      deviceCount: 0,
+      deploymentCount: 0
+    };
+
+    it('should return the updated filter when filter is not used', done => {
       // Given
       updateFilterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updateFilterCommand.barracks = {
-        updateFilter: sinon.stub().returns(Promise.resolve(updatedFilter))
+        updateFilter: sinon.stub().returns(Promise.resolve(updatedFilter)),
+        getFilter:  sinon.stub().returns(Promise.resolve(filter))
       };
 
       // When / Then
@@ -159,7 +174,8 @@ describe('UpdateFilterCommand', () => {
       const error = 'Marche pas!!!';
       updateFilterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updateFilterCommand.barracks = {
-        updateFilter: sinon.stub().returns(Promise.reject(error))
+        updateFilter: sinon.stub().returns(Promise.reject(error)),
+        getFilter: sinon.stub().returns(Promise.resolve(filter))
       };
 
       // When / Then
