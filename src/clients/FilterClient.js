@@ -12,6 +12,10 @@ const endpoints = {
     method: 'POST',
     path: '/v2/api/member/filters'
   },
+  updateFilter: {
+    method: 'POST',
+    path: '/v2/api/member/filters/:filter'
+  },
   getFilter: {
     method: 'GET',
     path: '/v2/api/member/filters/:filter'
@@ -51,6 +55,28 @@ class FilterClient {
             'x-auth-token': token
           },
           body: filter
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
+    });
+  }
+
+  updateFilter(token, filter) {
+    return new Promise((resolve, reject) => {
+      const endpointKey = 'updateFilter';
+      this.httpClient.sendEndpointRequest(
+        endpoints[endpointKey],
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            filter: filter.name
+          },
+          body: filter.query
         }
       ).then(response => {
         resolve(response.body);

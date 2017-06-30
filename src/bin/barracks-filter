@@ -9,6 +9,7 @@ const barracks = program.version(pjson.version);
 if (config.v2Enabled) {
   barracks.command('ls', 'List filters')
     .command('create', 'Create a filter')
+    .command('update', 'Update a filter')
     .command('get', 'Get a filter')
     .command('rm', 'Remove a filter');
 } else {

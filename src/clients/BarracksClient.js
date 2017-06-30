@@ -33,6 +33,7 @@ function mergeDeviceClient(barracksClient) {
 function mergeFilterClient(barracksClient) {
   const filterClient = new FilterClient();
   barracksClient.createFilter = filterClient.createFilter.bind(filterClient);
+  barracksClient.updateFilter = filterClient.updateFilter.bind(filterClient);
   barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
   barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
   barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);

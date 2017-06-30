@@ -131,6 +131,64 @@ describe('FilterClient', () => {
     });
   });
 
+  describe('#updateFilter()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const error = { message: 'Error !' };
+      filterClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      filterClient.updateFilter(token, filter).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { filter : filter.name},
+            body: filter.query
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the updated filter', done => {
+      // Given
+      const filter = { name: 'Filter', query: { eq: { unitId: 'value' } } };
+      const savedFilter = Object.assign({}, filter, { userId: '123456789' });
+      const response = { body: savedFilter };
+      filterClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      filterClient.updateFilter(token, filter).then(result => {
+        expect(result).to.be.equals(savedFilter);
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(filterClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/v2/api/member/filters/:filter'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { filter: filter.name},
+            body: filter.query
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getFilter()', () => {
 
     const filterName = 'myCoolFilter';
