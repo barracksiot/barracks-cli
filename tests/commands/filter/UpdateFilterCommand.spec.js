@@ -49,8 +49,44 @@ describe('UpdateFilterCommand', () => {
       ]
     })
   };
+
+  const programWithValidOptions2 = {
+    name: 'FilterName2',
+    query: JSON.stringify({
+      and: [
+        {
+          eq: {
+            unitId: '1234567890'
+          }
+        },
+        {
+          eq: {
+            versionId: 'v1'
+          }
+        }
+      ]
+    })
+  };
   const updatedFilter = {
     name: 'FilterName',
+    userId: '12345',
+    query: {
+      and: [
+        {
+          eq: {
+            unitId: '1234567890'
+          }
+        },
+        {
+          eq: {
+            versionId: 'v1'
+          }
+        }
+      ]
+    }
+  };
+  const updatedFilter2 = {
+    name: 'FilterName2',
     userId: '12345',
     query: {
       and: [
@@ -145,9 +181,17 @@ describe('UpdateFilterCommand', () => {
       deploymentCount: 0
     };
 
+    const filterUsed = {
+      name: 'filterName2',
+      query: '{"eq": { "customClientData": { "key2": "value2" } } }',
+      deviceCount: 2,
+      deploymentCount: 0
+    };
+
     it('should return the updated filter when filter is not used', done => {
       // Given
       updateFilterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      updateFilterCommand.confirmUpdate = sinon.stub().returns(Promise.resolve(true));
       updateFilterCommand.barracks = {
         updateFilter: sinon.stub().returns(Promise.resolve(updatedFilter)),
         getFilter:  sinon.stub().returns(Promise.resolve(filter))
@@ -163,6 +207,61 @@ describe('UpdateFilterCommand', () => {
           name: programWithValidOptions.name,
           query: JSON.parse(programWithValidOptions.query)
         });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the updated filter when filter is used and user agrees', done => {
+      // Given
+      const spyOnAsk = sinon.spy();
+      proxyAsk = (str, boolean, callback) => {
+        spyOnAsk(str, boolean, callback);
+        callback('ok');
+      };
+
+      updateFilterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      updateFilterCommand.barracks = {
+        updateFilter: sinon.stub().returns(Promise.resolve(updatedFilter2)),
+        getFilter:  sinon.stub().returns(Promise.resolve(filterUsed))
+      };
+
+      // When / Then
+      updateFilterCommand.execute(programWithValidOptions2).then(result => {
+        expect(result).to.be.equals(updatedFilter2);
+        expect(updateFilterCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(updateFilterCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(updateFilterCommand.barracks.updateFilter).to.have.been.calledOnce;
+        expect(updateFilterCommand.barracks.updateFilter).to.have.been.calledWithExactly(token, {
+          name: programWithValidOptions2.name,
+          query: JSON.parse(programWithValidOptions2.query)
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should abort when filter is used and user disagrees', done => {
+      // Given
+      const spyOnAsk = sinon.spy();
+      proxyAsk = (str, boolean, callback) => {
+        spyOnAsk(str, boolean, callback);
+        callback();
+      };
+
+      updateFilterCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      updateFilterCommand.barracks = {
+        updateFilter: sinon.stub().returns(Promise.resolve(updatedFilter2)),
+        getFilter:  sinon.stub().returns(Promise.resolve(filterUsed))
+      };
+
+      // When / Then
+      updateFilterCommand.execute(programWithValidOptions2).then(result => {
+        expect(updateFilterCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(updateFilterCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(updateFilterCommand.barracks.updateFilter).to.have.not.been.calledOnce;
         done();
       }).catch(err => {
         done(err);
