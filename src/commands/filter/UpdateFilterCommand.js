@@ -5,7 +5,7 @@ const yesno = require('yesno');
 function confirmUpdate(filter) {
   return new Promise((resolve, reject) => {
     if (filter.deviceCount !== 0) {
-      yesno.ask('WARNING: Your filter is already being used by ' + filter.deviceCount + ' device(s). Do you want to continue ? (y/n)', true, function(ok) {
+      yesno.ask('WARNING: Your filter is already being used by ' + filter.deviceCount + ' device(s). Do you want to continue ? (y/n)', true, (ok) => {
         if (ok) {
           console.log('Update confirmed.');
           resolve(true);
