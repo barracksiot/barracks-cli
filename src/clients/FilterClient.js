@@ -12,7 +12,7 @@ const endpoints = {
     method: 'POST',
     path: '/v2/api/member/filters'
   },
-  updateFilterV2: {
+  updateFilter: {
     method: 'POST',
     path: '/v2/api/member/filters/:filter'
   },
@@ -66,7 +66,7 @@ class FilterClient {
 
   updateFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      const endpointKey = 'updateFilterV2';
+      const endpointKey = 'updateFilter';
       this.httpClient.sendEndpointRequest(
         endpoints[endpointKey],
         {

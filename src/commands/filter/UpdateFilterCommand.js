@@ -2,6 +2,24 @@ const Validator = require('../../utils/Validator');
 const BarracksCommand = require('../BarracksCommand');
 const yesno = require('yesno');
 
+function confirmUpdate(filter) {
+  return new Promise((resolve, reject) => {
+    if (filter.deviceCount !== 0) {
+      yesno.ask('WARNING: Your filter is already being used by ' + filter.deviceCount + ' device(s). Do you want to continue ? (y/n)', true, function(ok) {
+        if (ok) {
+          console.log('Update confirmed.');
+          resolve(true);
+        } else {
+          console.log("Aborted.");
+          resolve(false);
+        }
+      }, [ 'y' ], [ 'n' ]);
+    } else {
+      resolve(true);
+    }
+  });
+}
+
 class UpdateFilterCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -22,23 +40,14 @@ class UpdateFilterCommand extends BarracksCommand {
     return this.getAuthenticationToken().then(token => {
       return this.barracks.getFilter(token, program.name).then(filter => {
         const that = this;
-        if (filter.deviceCount !== 0) {
-          yesno.ask('WARNING: Your filter is already being used by ' + filter.deviceCount + ' device(s). Do you want to continue ? (y/n)', true, function(ok) {
-            if(ok) {
-              return that.barracks.updateFilter(token, {
-                name: program.name,
-                query: JSON.parse(program.query)
-              });
-            } else {
-              console.log("Aborted.");
-            }
-          }, ['y'], ['n']);
-        } else {
-          return this.barracks.updateFilter(token, {
-            name: program.name,
-            query: JSON.parse(program.query)
-          });
-        }
+        return confirmUpdate(filter).then(confirm => {
+          if (confirm === true) {
+            return that.barracks.updateFilter(token, {
+              name: program.name,
+              query: JSON.parse(program.query)
+            });
+          }
+        });
       });
     });
   }
