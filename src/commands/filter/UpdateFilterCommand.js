@@ -7,7 +7,7 @@ function confirmUpdate(filter) {
     if (filter.deviceCount !== 0) {
       yesno.ask('WARNING: Your filter is already being used by ' + filter.deviceCount + ' device(s). Do you want to continue ? (y/n)', true, (ok) => {
         if (ok) {
-          console.log('Update confirmed.');
+          console.log('Updating filter...');
           resolve(true);
         } else {
           console.log("Aborted.");
