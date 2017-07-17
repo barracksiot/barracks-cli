@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-const CreateHook = require('../commands/hook/CreateHook');
+const CreateHook = require('../commands/hook/CreateHookCommand');
 new CreateHook().render();

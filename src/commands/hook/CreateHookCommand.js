@@ -1,5 +1,11 @@
 const BarracksCommand = require('../BarracksCommand');
 
+function getType(program) {
+  if (program.web) {
+    return 'web';
+  }
+}
+
 class CreateHookCommand extends BarracksCommand {
 
   configureCommand(program) {
@@ -13,15 +19,14 @@ class CreateHookCommand extends BarracksCommand {
     return !!(
       program.web &&
       program.url && program.url !== true && 
-      program.name && program.name !== true &&
-      (!program.description || (program.description && program.description !== true))
+      program.name && program.name !== true
     );
   }
 
   execute(program) {
     return this.getAuthenticationToken().then(token => {
       return this.barracks.createHook(token,  {
-        type: program.web,
+        type: getType(program),
         name: program.name,
         url: program.url
       });

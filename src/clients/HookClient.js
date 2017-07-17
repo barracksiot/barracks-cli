@@ -1,5 +1,5 @@
 const HTTPClient = require('./HTTPClient');
-const logger = require('../utils/logger');
+//const logger = require('../utils/logger');
 
 const endpoints = {
   createHook: {
@@ -14,10 +14,10 @@ class HookClient {
     this.httpClient = new HTTPClient();
   }
 
-  createSegment(token, hook) {
+  createHook(token, hook) {
     return new Promise((resolve, reject) => {
       this.httpClient.sendEndpointRequest(
-        endpoints.createSegment,
+        endpoints.createHook,
         {
           headers: {
             'x-auth-token': token
@@ -31,5 +31,6 @@ class HookClient {
       });
     });
   }
+}
 
 module.exports = HookClient;
