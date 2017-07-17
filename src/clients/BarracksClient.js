@@ -8,6 +8,7 @@ const PackageClient = require('./PackageClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
+const HookClient = require('./HookClient');
 const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
 const BarracksSDK2Proxy = require('../utils/BarracksSDK2Proxy');
 const BarracksMessagingSDKProxy = require('../utils/BarracksMessagingSDKProxy');
@@ -87,6 +88,11 @@ function mergeUpdateClient(barracksClient) {
   barracksClient.scheduleUpdate = updateClient.scheduleUpdate.bind(updateClient);
 }
 
+function mergeHookClient(barracksClient) {
+  const hookClient = new HookClient();
+  barracksClient.createHook = hookClient.createHook.bind(hookClient);
+}
+
 function mergeSDKProxy(barracksClient) {
   const proxyV1 = new BarracksSDKProxy();
   barracksClient.checkUpdate = proxyV1.checkUpdate.bind(proxyV1);
@@ -111,6 +117,7 @@ class BarracksClient {
     mergeSegmentClient(this);
     mergeTokenClient(this);
     mergeUpdateClient(this);
+    mergeHookClient(this);
     mergeSDKProxy(this);
     mergeMessagingSDKProxy(this);
   }

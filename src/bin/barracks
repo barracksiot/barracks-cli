@@ -18,6 +18,7 @@ if (config.v2Enabled) {
   if (config.experimental) {
     program.command('integration [cmd]', 'Manage third-party integrations');
     program.command('message [cmd]', 'Send messages to devices');
+    program.command('hook [cmd]', 'Manage hooks');
   }
 } else {
   program.command('login', 'Authenticate to Barracks')
