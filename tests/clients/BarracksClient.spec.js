@@ -117,6 +117,14 @@ describe('Barracks', () => {
       expect(barracksClient).to.have.property('scheduleUpdate').and.to.be.a('function');
     });
 
+    it('should initialize methods from hookClient when constructor called', () => {
+      // When
+      const barracksClient = new Barracks();
+
+      // Then
+      expect(barracksClient).to.have.property('createHook').and.to.be.a('function');
+    });
+
     it('should initialize methods from sdk proxy when constructor called', () => {
       // When
       const barracksClient = new Barracks();
