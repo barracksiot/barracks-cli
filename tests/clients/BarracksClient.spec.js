@@ -123,6 +123,7 @@ describe('Barracks', () => {
 
       // Then
       expect(barracksClient).to.have.property('createHook').and.to.be.a('function');
+      expect(barracksClient).to.have.property('deleteHook').and.to.be.a('function');
     });
 
     it('should initialize methods from sdk proxy when constructor called', () => {

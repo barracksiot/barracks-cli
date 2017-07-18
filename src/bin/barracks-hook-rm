@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const DeleteHookCommand = require('../commands/hook/DeleteHookCommand');
+new DeleteHookCommand().render();
