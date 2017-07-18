@@ -1,5 +1,4 @@
 const HTTPClient = require('./HTTPClient');
-//const logger = require('../utils/logger');
 
 const endpoints = {
   createHook: {
