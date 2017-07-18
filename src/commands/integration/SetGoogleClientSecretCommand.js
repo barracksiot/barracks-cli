@@ -9,6 +9,7 @@ function getObject(program) {
     return ObjectReader.readObjectFromStdin();
   }
 }
+
 class SetGoogleClientSecretCommand extends BarracksCommand {
 
   configureCommand(program) {
