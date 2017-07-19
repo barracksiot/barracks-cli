@@ -81,4 +81,58 @@ describe('hookClient', () => {
     });
   });
 
+  describe('#deleteHook()', () => {
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const name = 'aHook';
+      const error = { message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.deleteHook(token, name).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook: name }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return nothing when hook is deleted', done => {
+      // Given
+      const name = 'aHook';
+      const response = { body: undefined };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      hookClient.deleteHook(token, name).then(result => {
+        expect(result).to.be.equals(undefined);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook: name }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
 });

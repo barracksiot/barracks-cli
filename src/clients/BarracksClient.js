@@ -91,6 +91,7 @@ function mergeUpdateClient(barracksClient) {
 function mergeHookClient(barracksClient) {
   const hookClient = new HookClient();
   barracksClient.createHook = hookClient.createHook.bind(hookClient);
+  barracksClient.deleteHook = hookClient.deleteHook.bind(hookClient);
 }
 
 function mergeSDKProxy(barracksClient) {

@@ -4,6 +4,10 @@ const endpoints = {
   createHook: {
     method: 'POST',
     path: '/api/dispatcher/hooks'
+  },
+  deleteHook: {
+    method: 'DELETE',
+    path: '/api/dispatcher/hooks/:hook'
   }
 };
 
@@ -30,6 +34,27 @@ class HookClient {
       });
     });
   }
+
+  deleteHook(token, hook) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.deleteHook,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            hook
+          }
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
+    });
+  }
+
 }
 
 module.exports = HookClient;

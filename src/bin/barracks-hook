@@ -6,7 +6,8 @@ const pjson = require('../../package.json');
 
 const barracks = program
   .version(pjson.version)
-  .command('create', 'Manage hooks creation');
+  .command('create', 'Manage hooks creation')
+  .command('rm', 'Delete hook');
   
 barracks.parse(process.argv);
 
