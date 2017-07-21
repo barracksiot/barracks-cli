@@ -53,6 +53,32 @@ describe('hookClient', () => {
       });
     });
 
+    it('should return an error message when request fails with statusCode 400', done => {
+      // Given
+      const hook = { type: 'web', name: 'Hook', url: 'https://localhost/hookName' };
+      const error = { message: 'Error !', statusCode: 400 };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.createHook(token, hook).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('A hook with this name already exists.');
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/dispatcher/hooks'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            body: hook
+          }
+        );
+        done();
+      });
+    });
+
     it('should return the created hook', done => {
       // Given
       const hook = { type: 'web', name: 'Hook', url: 'https://localhost/hookName' };
@@ -94,6 +120,32 @@ describe('hookClient', () => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'DELETE',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook: name }
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return an error message when request fails with a 404', done => {
+      // Given
+      const name = 'aHook';
+      const error = { message: 'Error !', statusCode: 404 };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.deleteHook(token, name).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('The hook you are trying to remove does not exist.');
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
