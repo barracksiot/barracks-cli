@@ -1,8 +1,14 @@
+const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
+const logger = require('../utils/logger');
 
 const endpoints = {
   createHook: {
     method: 'POST',
+    path: '/api/dispatcher/hooks'
+  },
+  getHooks: {
+    method: 'GET',
     path: '/api/dispatcher/hooks'
   },
   deleteHook: {
@@ -30,7 +36,12 @@ class HookClient {
       ).then(response => {
         resolve(response.body);
       }).catch(err => {
-        reject(err.message);
+        if (err.statusCode === 400) {
+          reject('A hook with this name already exists.');
+        }
+        else {
+          reject(err.message);
+        }
       });
     });
   }
@@ -50,7 +61,12 @@ class HookClient {
       ).then(response => {
         resolve(response.body);
       }).catch(err => {
-        reject(err.message);
+        if (err.statusCode === 404) {
+          reject('The hook you are trying to remove does not exist.');
+        }
+        else {
+          reject(err.message);
+        }
       });
     });
   }
