@@ -13,6 +13,8 @@ describe('hookClient', () => {
 
   let hookClient;
   const token = 'i8uhkj.token.65ryft';
+  const hookName = 'myHook';
+  const hook = { type: 'web', name: hookName, url: 'https://mysite.io/callDaHook' };
 
   beforeEach(() => {
     hookClient = new HookClient();
@@ -23,7 +25,6 @@ describe('hookClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const hook = { type: 'web', name: 'Hook', url: 'https://localhost/hookName' };
       const error = { message: 'Error !' };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
@@ -49,7 +50,6 @@ describe('hookClient', () => {
 
     it('should return an error message when request fails with statusCode 400', done => {
       // Given
-      const hook = { type: 'web', name: 'Hook', url: 'https://localhost/hookName' };
       const error = { message: 'Error !', statusCode: 400 };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
@@ -75,7 +75,6 @@ describe('hookClient', () => {
 
     it('should return the created hook', done => {
       // Given
-      const hook = { type: 'web', name: 'Hook', url: 'https://localhost/hookName' };
       const savedHook = Object.assign({}, hook, { userId: '123456789' });
       const response = { body: savedHook };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
@@ -102,9 +101,6 @@ describe('hookClient', () => {
   });
 
   describe('#getHook()', () => {
-
-    const hookName = 'myHook';
-    const hook = { type: 'web', name: hookName, url: 'https://plop/callMyHook' };
 
     it('should return an error when request fails', done => {
       // Given
@@ -194,12 +190,11 @@ describe('hookClient', () => {
 
     it('should return an error message when request fails', done => {
       // Given
-      const name = 'aHook';
       const error = { message: 'Error !' };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      hookClient.deleteHook(token, name).then(result => {
+      hookClient.deleteHook(token, hookName).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
@@ -211,7 +206,7 @@ describe('hookClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { hook: name }
+            pathVariables: { hook: hookName }
           }
         );
         done();
@@ -220,12 +215,11 @@ describe('hookClient', () => {
 
     it('should return an error message when request fails with a 404', done => {
       // Given
-      const name = 'aHook';
       const error = { message: 'Error !', statusCode: 404 };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then
-      hookClient.deleteHook(token, name).then(result => {
+      hookClient.deleteHook(token, hookName).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals('The hook you are trying to remove does not exist.');
@@ -237,7 +231,7 @@ describe('hookClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { hook: name }
+            pathVariables: { hook: hookName }
           }
         );
         done();
@@ -246,12 +240,11 @@ describe('hookClient', () => {
 
     it('should return nothing when hook is deleted', done => {
       // Given
-      const name = 'aHook';
       const response = { body: undefined };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      hookClient.deleteHook(token, name).then(result => {
+      hookClient.deleteHook(token, hookName).then(result => {
         expect(result).to.be.equals(undefined);
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
@@ -261,7 +254,7 @@ describe('hookClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { hook: name }
+            pathVariables: { hook: hookName }
           }
         );
         done();
