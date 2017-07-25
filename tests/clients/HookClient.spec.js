@@ -1,3 +1,4 @@
+const PageableStream = require('../../src/clients/PageableStream');
 const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
@@ -99,6 +100,35 @@ describe('hookClient', () => {
             headers: { 'x-auth-token': token },
             body: hook
           }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('#getHooks()', () => {
+
+    it('should forward to the client with correct headers', done => {
+      // Given
+      const options = {
+        headers: { 'x-auth-token': token },
+      }
+      hookClient.httpClient.retrieveAllPages = sinon.spy();
+
+      // When / Then
+      hookClient.getHooks(token).then(result => {
+        expect(result).to.be.instanceOf(PageableStream);
+        expect(hookClient.httpClient.retrieveAllPages).to.have.been.calledOnce;
+        expect(hookClient.httpClient.retrieveAllPages).to.have.been.calledWithExactly(
+          new PageableStream(),
+          {
+            method: 'GET',
+            path: '/api/dispatcher/hooks'
+          },
+          options,
+          'hookEntities'
         );
         done();
       }).catch(err => {

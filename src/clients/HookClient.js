@@ -1,4 +1,6 @@
+const PageableStream = require('./PageableStream');
 const HTTPClient = require('./HTTPClient');
+const logger = require('../utils/logger');
 
 const endpoints = {
   createHook: {
@@ -41,6 +43,24 @@ class HookClient {
           reject(err.message);
         }
       });
+    });
+  }
+
+  getHooks(token) {
+    return new Promise(resolve => {
+      logger.debug('Getting hooks');
+      const stream = new PageableStream();
+      resolve(stream);
+      this.httpClient.retrieveAllPages(
+        stream,
+        endpoints.getHooks,
+        {
+          headers: {
+            'x-auth-token': token
+          }
+        },
+        'hookEntities'
+      );
     });
   }
 
