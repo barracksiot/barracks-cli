@@ -66,9 +66,8 @@ class FilterClient {
 
   updateFilter(token, filter) {
     return new Promise((resolve, reject) => {
-      const endpointKey = 'updateFilter';
       this.httpClient.sendEndpointRequest(
-        endpoints[endpointKey],
+        endpoints.updateFilter,
         {
           headers: {
             'x-auth-token': token
