@@ -36,7 +36,12 @@ class HookClient {
       ).then(response => {
         resolve(response.body);
       }).catch(err => {
-        reject(err.message);
+        if (err.statusCode === 400) {
+          reject('A hook with this name already exists.');
+        }
+        else {
+          reject(err.message);
+        }
       });
     });
   }
@@ -74,7 +79,12 @@ class HookClient {
       ).then(response => {
         resolve(response.body);
       }).catch(err => {
-        reject(err.message);
+        if (err.statusCode === 404) {
+          reject('The hook you are trying to remove does not exist.');
+        }
+        else {
+          reject(err.message);
+        }
       });
     });
   }
