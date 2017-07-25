@@ -102,7 +102,7 @@ describe('hookClient', () => {
             path: '/api/dispatcher/hooks'
           },
           options,
-          'webhooks'
+          'hookEntities'
         );
         done();
       }).catch(err => {

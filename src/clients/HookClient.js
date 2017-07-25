@@ -54,7 +54,7 @@ class HookClient {
             'x-auth-token': token
           }
         },
-        'webhooks'
+        'hookEntities'
       );
     });
   }
