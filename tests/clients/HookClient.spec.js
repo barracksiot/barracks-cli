@@ -9,13 +9,6 @@ const HookClient = require('../../src/clients/HookClient');
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function buildSegment(segmentId) {
-  return {
-    id: segmentId,
-    name: 'Plop'
-  };
-}
-
 describe('hookClient', () => {
 
   let hookClient;
@@ -113,9 +106,8 @@ describe('hookClient', () => {
     const hookName = 'myHook';
     const hook = { type: 'web', name: hookName, url: 'https://plop/callMyHook' };
 
-    it('should return an error if v2Enabled and request fails', done => {
+    it('should return an error when request fails', done => {
       // Given
-      hookClient.v2Enabled = true;
       const error = { message: 'Error !' };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
@@ -141,9 +133,8 @@ describe('hookClient', () => {
       });
     });
    
-    it('should return specified filter when v2Enabled and request succeeds', done => {
+    it('should return specified filter when request succeeds', done => {
       // Given
-      hookClient.v2Enabled = true;
       const response = { body: hook };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
 
