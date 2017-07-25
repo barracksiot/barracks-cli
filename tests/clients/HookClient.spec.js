@@ -186,6 +186,65 @@ describe('hookClient', () => {
     });
   });
 
+  describe('#updateHook()', () => {
+
+    const newHook = Object.assign({}, hook, {
+      name: 'aNewName',
+      url: 'https://a.new.site/callDaHook'
+    });
+
+    it('should return an error message when request fails', done => {
+      // Given
+      const error = { message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.updateHook(token, hookName, newHook).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/dispatcher/hooks/:hook'
+          }, {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook : hookName},
+            body: newHook
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return the updated hook', done => {
+      // Given
+      const response = { body: newHook };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      hookClient.updateHook(token, hookName, newHook).then(result => {
+        expect(result).to.be.equals(newHook);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook: hookName},
+            body: newHook
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#deleteHook()', () => {
 
     it('should return an error message when request fails', done => {

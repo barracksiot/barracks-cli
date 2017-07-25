@@ -15,6 +15,10 @@ const endpoints = {
     method: 'GET',
     path: '/api/dispatcher/hooks'
   },
+  updateHook: {
+    method: 'PUT',
+    path: '/api/dispatcher/hooks/:hook'
+  },
   deleteHook: {
     method: 'DELETE',
     path: '/api/dispatcher/hooks/:hook'
@@ -86,6 +90,27 @@ class HookClient {
         },
         'hookEntities'
       );
+    });
+  }
+
+  updateHook(token, name, hook) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.updateHook,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            hook: name
+          },
+          body: hook
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
     });
   }
 
