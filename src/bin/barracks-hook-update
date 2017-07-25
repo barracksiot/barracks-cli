@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const UpdateHook = require('../commands/hook/UpdateHookCommand');
+new UpdateHook().render();
