@@ -7,6 +7,10 @@ const endpoints = {
     method: 'POST',
     path: '/api/dispatcher/hooks'
   },
+  getHook: {
+    method: 'GET',
+    path: '/api/dispatcher/hooks/:hook'
+  },
   getHooks: {
     method: 'GET',
     path: '/api/dispatcher/hooks'
@@ -42,6 +46,27 @@ class HookClient {
         else {
           reject(err.message);
         }
+      });
+    });
+  }
+
+  getHook(token, name) {
+    return new Promise((resolve, reject) => {
+      logger.debug(`Getting hook ${name}`);
+      this.httpClient.sendEndpointRequest(
+        endpoints.getHook,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            hook: name
+          }
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
       });
     });
   }

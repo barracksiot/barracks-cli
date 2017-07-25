@@ -108,6 +108,68 @@ describe('hookClient', () => {
     });
   });
 
+  describe('#getHook()', () => {
+
+    const hookName = 'myHook';
+    const hook = { type: 'web', name: hookName, url: 'https://plop/callMyHook' };
+
+    it('should return an error if v2Enabled and request fails', done => {
+      // Given
+      hookClient.v2Enabled = true;
+      const error = { message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.getHook(token, hookName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              hook: hookName
+            }
+          }
+        );
+        done();
+      });
+    });
+   
+    it('should return specified filter when v2Enabled and request succeeds', done => {
+      // Given
+      hookClient.v2Enabled = true;
+      const response = { body: hook };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      hookClient.getHook(token, hookName).then(result => {
+        expect(result).to.be.equals(hook);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              hook: hookName
+            }
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('#getHooks()', () => {
 
     it('should forward to the client with correct headers', done => {
