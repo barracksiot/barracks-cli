@@ -9,7 +9,6 @@ const barracks = program
   .command('create', 'Manage hooks creation')
   .command('ls', 'List the hooks')
   .command('rm', 'Delete hook');
-
   
 barracks.parse(process.argv);
 
