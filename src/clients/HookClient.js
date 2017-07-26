@@ -88,7 +88,7 @@ class HookClient {
             'x-auth-token': token
           }
         },
-        'hookEntities'
+        'hooks'
       );
     });
   }
