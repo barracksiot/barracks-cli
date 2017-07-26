@@ -129,7 +129,7 @@ describe('hookClient', () => {
       });
     });
    
-    it('should return specified filter when request succeeds', done => {
+    it('should return specified hook when request succeeds', done => {
       // Given
       const response = { body: hook };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
