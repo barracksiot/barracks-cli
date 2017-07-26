@@ -7,9 +7,17 @@ const endpoints = {
     method: 'POST',
     path: '/api/dispatcher/hooks'
   },
+  getHook: {
+    method: 'GET',
+    path: '/api/dispatcher/hooks/:hook'
+  },
   getHooks: {
     method: 'GET',
     path: '/api/dispatcher/hooks'
+  },
+  updateHook: {
+    method: 'PUT',
+    path: '/api/dispatcher/hooks/:hook'
   },
   deleteHook: {
     method: 'DELETE',
@@ -46,6 +54,27 @@ class HookClient {
     });
   }
 
+  getHook(token, name) {
+    return new Promise((resolve, reject) => {
+      logger.debug(`Getting hook ${name}`);
+      this.httpClient.sendEndpointRequest(
+        endpoints.getHook,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            hook: name
+          }
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(errResponse => {
+        reject(errResponse.message);
+      });
+    });
+  }
+
   getHooks(token) {
     return new Promise(resolve => {
       logger.debug('Getting hooks');
@@ -59,8 +88,29 @@ class HookClient {
             'x-auth-token': token
           }
         },
-        'hookEntities'
+        'hooks'
       );
+    });
+  }
+
+  updateHook(token, name, hook) {
+    return new Promise((resolve, reject) => {
+      this.httpClient.sendEndpointRequest(
+        endpoints.updateHook,
+        {
+          headers: {
+            'x-auth-token': token
+          },
+          pathVariables: {
+            hook: name
+          },
+          body: hook
+        }
+      ).then(response => {
+        resolve(response.body);
+      }).catch(err => {
+        reject(err.message);
+      });
     });
   }
 
