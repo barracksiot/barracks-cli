@@ -11,9 +11,9 @@ class UpdateHookCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--name [value]', 'The unique name of the webhook')
-      .option('--newName [value]', '(Optionnal) A new unique name for the webhook')
-      .option('--url [value]', '(Optionnal) A new URL for this webhook');
+      .option('--name [hookName]', 'The unique name of the webhook')
+      .option('--newName [newHookName]', '(Optionnal) A new unique name for the webhook')
+      .option('--url [newUrl]', '(Optionnal) A new URL for this webhook');
   }
 
   validateCommand(program) {
