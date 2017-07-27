@@ -15,6 +15,7 @@ describe('UpdateHookCommand', () => {
   const token = 'i8uhkj.token.65ryft';
   const name = 'MyHook';
   const newName = 'MyNewHook';
+  const type = 'web';
   const url = 'https://new.url/callDaHook';
   const programWithNameOptions = { name };
   const programWithValidOptions = {
@@ -152,11 +153,14 @@ describe('UpdateHookCommand', () => {
     
     const oldUrl = 'https://old.url/callDaHook';
     const hook = {
+      hookType: 'WEB',
       name: name,
       url: oldUrl
     };
 
     const newHook = {
+      hookType: 'WEB',
+      type: 'web',
       name: newName,
       url: url
     };
@@ -231,6 +235,8 @@ describe('UpdateHookCommand', () => {
     it('should resolve the new hook when updateHook request succeed and only name was changed', done => {
       // Given
       const partialNewHook = {
+        hookType: 'WEB', 
+        type: 'web',
         name: newName,
         url: oldUrl
       };
@@ -263,7 +269,7 @@ describe('UpdateHookCommand', () => {
 
     it('should resolve the new hook when updateHook request succeed and only url was changed', done => {
       // Given
-      const partialNewHook = { name, url };
+      const partialNewHook = { hookType: 'WEB', type, name, url };
       const program = Object.assign({}, programWithNameOptions, { url });
       updateHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updateHookCommand.barracks.getHook = sinon.stub().returns(Promise.resolve(hook));

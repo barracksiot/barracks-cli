@@ -129,6 +129,33 @@ describe('hookClient', () => {
       });
     });
    
+    it('should return an error when request fails with 404', done => {
+      // Given
+      const error = { statusCode: 404, message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.getHook(token, hookName).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('This is not the hook you are looking for.');
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'GET',
+            path: '/api/dispatcher/hooks/:hook'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: {
+              hook: hookName
+            }
+          }
+        );
+        done();
+      });
+    });
+
     it('should return specified hook when request succeeds', done => {
       // Given
       const response = { body: hook };
@@ -203,6 +230,56 @@ describe('hookClient', () => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(error.message);
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/dispatcher/hooks/:hook'
+          }, {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook : hookName},
+            body: newHook
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return an error message when request fails with 404', done => {
+      // Given
+      const error = { statusCode: 404, message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.updateHook(token, hookName, newHook).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('The hook you want to update does not exist.');
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'PUT',
+            path: '/api/dispatcher/hooks/:hook'
+          }, {
+            headers: { 'x-auth-token': token },
+            pathVariables: { hook : hookName},
+            body: newHook
+          }
+        );
+        done();
+      });
+    });
+
+    it('should return an error message when request fails with 400', done => {
+      // Given
+      const error = { statusCode: 400, message: 'Error !' };
+      hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      hookClient.updateHook(token, hookName, newHook).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals('A hook with this name already exists.');
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
