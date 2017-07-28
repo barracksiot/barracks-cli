@@ -270,9 +270,9 @@ describe('hookClient', () => {
       });
     });
 
-    it('should return an error message when request fails with 400', done => {
+    it('should return an error message when request fails with 409', done => {
       // Given
-      const error = { statusCode: 400, message: 'Error !' };
+      const error = { statusCode: 409, message: 'Error !' };
       hookClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
 
       // When / Then

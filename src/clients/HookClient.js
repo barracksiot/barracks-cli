@@ -117,7 +117,7 @@ class HookClient {
         if (errResponse.statusCode === 404) {
           reject('The hook you want to update does not exist.');
         }
-        else if (errResponse.statusCode === 400){
+        else if (errResponse.statusCode === 409){
           reject('A hook with this name already exists.');
         } else {
           reject(errResponse.message);

@@ -153,13 +153,12 @@ describe('UpdateHookCommand', () => {
     
     const oldUrl = 'https://old.url/callDaHook';
     const hook = {
-      hookType: 'WEB',
+      type: 'web',
       name: name,
       url: oldUrl
     };
 
     const newHook = {
-      hookType: 'WEB',
       type: 'web',
       name: newName,
       url: url
@@ -235,7 +234,6 @@ describe('UpdateHookCommand', () => {
     it('should resolve the new hook when updateHook request succeed and only name was changed', done => {
       // Given
       const partialNewHook = {
-        hookType: 'WEB', 
         type: 'web',
         name: newName,
         url: oldUrl
@@ -269,7 +267,7 @@ describe('UpdateHookCommand', () => {
 
     it('should resolve the new hook when updateHook request succeed and only url was changed', done => {
       // Given
-      const partialNewHook = { hookType: 'WEB', type, name, url };
+      const partialNewHook = { type: 'web', type, name, url };
       const program = Object.assign({}, programWithNameOptions, { url });
       updateHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       updateHookCommand.barracks.getHook = sinon.stub().returns(Promise.resolve(hook));

@@ -2,7 +2,6 @@ const BarracksCommand = require('../BarracksCommand');
 
 function buildNewHook(currentHook, program) {
   return Object.assign({}, currentHook, {
-    type: currentHook.hookType.toLowerCase(),
     name: program.newName || currentHook.name,
     url: program.url || currentHook.url
   });
