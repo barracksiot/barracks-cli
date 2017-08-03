@@ -46,13 +46,22 @@ describe('SetGoogleClientSecretCommand', () => {
 
   describe('#validateCommand(program)', () => {
 
-    it('should return true when no option given', () => {
+    it('should return false when no option given', () => {
       // Given
       const program = {};
       // When
       const result = setGoogleClientSecretCommand.validateCommand(program);
       // Then
-      expect(result).to.be.true;
+      expect(result).to.be.false;
+    });
+
+    it('should return false when no value for file', () => {
+      // Given
+      const program = { file: true};
+      // When
+      const result = setGoogleClientSecretCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
     });
 
     it('should return true when valid file path given', () => {

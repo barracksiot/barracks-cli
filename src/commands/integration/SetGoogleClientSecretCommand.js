@@ -17,7 +17,7 @@ class SetGoogleClientSecretCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(!program.file || Validator.fileExists(program.file));
+    return !!(program.file && program.file !== true && Validator.fileExists(program.file));
   }
 
   execute(program) {
