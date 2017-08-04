@@ -25,7 +25,7 @@ function getObject(program) {
   if (program.googleClientSecret) {
     return ObjectReader.readObjectFromFile(program.googleClientSecret);
   } else {
-    return ObjectReader.readObjectFromStdin();
+    return null;
   }
 }
 
