@@ -17,9 +17,6 @@ function mergeAccountClient(barracksClient) {
   const accountClient = new AccountClient();
   barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
-  barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
-  barracksClient.setGoogleClientSecret = accountClient.setGoogleClientSecret.bind(accountClient);
-  barracksClient.removeGoogleClientSecret = accountClient.removeGoogleClientSecret.bind(accountClient);
 }
 
 function mergeDeviceClient(barracksClient) {
