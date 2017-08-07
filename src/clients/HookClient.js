@@ -70,7 +70,12 @@ class HookClient {
       ).then(response => {
         resolve(response.body);
       }).catch(errResponse => {
-        reject(errResponse.message);
+        if (errResponse.statusCode === 404) {
+          reject('This is not the hook you are looking for.');
+        }
+        else {
+          reject(errResponse.message);
+        }
       });
     });
   }
@@ -108,8 +113,15 @@ class HookClient {
         }
       ).then(response => {
         resolve(response.body);
-      }).catch(err => {
-        reject(err.message);
+      }).catch(errResponse => {
+        if (errResponse.statusCode === 404) {
+          reject('The hook you want to update does not exist.');
+        }
+        else if (errResponse.statusCode === 409){
+          reject('A hook with this name already exists.');
+        } else {
+          reject(errResponse.message);
+        }
       });
     });
   }
