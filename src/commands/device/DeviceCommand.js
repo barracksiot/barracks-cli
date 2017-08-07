@@ -1,6 +1,6 @@
-const BarracksCommand = require('../BarracksCommand');
+const AuthenticatedBarracksCommand = require('../AuthenticatedBarracksCommand');
 
-class DeviceCommand extends BarracksCommand {
+class DeviceCommand extends AuthenticatedBarracksCommand {
 
   configureCommand(program) {
     return program.arguments('<unit-id>');
@@ -10,10 +10,8 @@ class DeviceCommand extends BarracksCommand {
     return !!(program.args && program.args.length === 1);
   }
 
-  execute(program) {
-    return this.getAuthenticationToken().then(token => {
-      return this.barracks.getDevice(token, program.args[0]);
-    });
+  execute(program, token) {
+    return this.barracks.getDevice(token, program.args[0]);
   }
 }
 

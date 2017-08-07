@@ -1,4 +1,4 @@
-const BarracksCommand = require('../BarracksCommand');
+const AuthenticatedBarracksCommand = require('../AuthenticatedBarracksCommand');
 
 function getAllDevicesFromFilter(token, barracks, filterName) {
   return new Promise((resolve, reject) => {
@@ -45,7 +45,7 @@ function configureCommandV2(program) {
   return program.option('--filter [filterName]', '(Optional) Apply a filter on the device list (Cannot be used with --segment).');
 }
 
-class DevicesCommand extends BarracksCommand {
+class DevicesCommand extends AuthenticatedBarracksCommand {
 
   validateCommand(program) {
     if (program.segment || program.filter) {
@@ -63,16 +63,14 @@ class DevicesCommand extends BarracksCommand {
     }
   }
 
-  execute(program) {
-    return this.getAuthenticationToken().then(token => {
-      if (program.segment && !this.v2Enabled) {
-        return getAllDevicesFromSegment(token, this.barracks, program.segment);
-      } else if (program.filter) {
-        return getAllDevicesFromFilter(token, this.barracks, program.filter);
-      } else {
-        return this.barracks.getDevices(token);
-      }
-    });
+  execute(program, token) {
+    if (program.segment && !this.v2Enabled) {
+      return getAllDevicesFromSegment(token, this.barracks, program.segment);
+    } else if (program.filter) {
+      return getAllDevicesFromFilter(token, this.barracks, program.filter);
+    } else {
+      return this.barracks.getDevices(token);
+    }
   }
 }
 

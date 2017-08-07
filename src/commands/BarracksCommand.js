@@ -111,6 +111,10 @@ class BarracksCommand {
     }, true);
   }
 
+  getResult(program) {
+    return this.execute(program);
+  }
+
   execute() {
     return Promise.reject('Need to be overridden');
   }
@@ -118,7 +122,7 @@ class BarracksCommand {
   render() {
     this.cleanupProgramOptions(program);
     if (this.validateCommand(program)) {
-      const result = this.execute(program);
+      const result = this.getResult(program);
       const renderer = program.json ? jsonRenderer : prettyRenderer;
 
       renderer(result).catch(() => {

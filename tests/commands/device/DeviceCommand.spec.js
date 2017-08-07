@@ -60,16 +60,13 @@ describe('DeviceCommand', () => {
       // Given
       const errorMessage = 'error';
       const program = Object.assign({}, programWithValidOptions);
-      deviceCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       deviceCommand.barracks.getDevice = sinon.stub().returns(Promise.reject(errorMessage));
 
       // When / Then
-      deviceCommand.execute(program).then(result => {
+      deviceCommand.execute(program, token).then(result => {
         done('should have failed');
       }).catch(err => {
         expect(err).to.be.equals(errorMessage);
-        expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(deviceCommand.barracks.getDevice).to.have.been.calledOnce;
         expect(deviceCommand.barracks.getDevice).to.have.been.calledWithExactly(token, unitId);
         done();
@@ -84,14 +81,11 @@ describe('DeviceCommand', () => {
         lastSeen: 'sometime before now'
       };
       const program = Object.assign({}, programWithValidOptions);
-      deviceCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       deviceCommand.barracks.getDevice = sinon.stub().returns(Promise.resolve(response));
 
       // When / Then
-      deviceCommand.execute(program).then(result => {
+      deviceCommand.execute(program, token).then(result => {
         expect(result).to.deep.equals(response);
-        expect(deviceCommand.getAuthenticationToken).to.have.been.calledOnce;
-        expect(deviceCommand.getAuthenticationToken).to.have.been.calledWithExactly();
         expect(deviceCommand.barracks.getDevice).to.have.been.calledOnce;
         expect(deviceCommand.barracks.getDevice).to.have.been.calledWithExactly(token, unitId);
         done();

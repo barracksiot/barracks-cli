@@ -1,6 +1,6 @@
-const BarracksCommand = require('../BarracksCommand');
+const AuthenticatedBarracksCommand = require('../AuthenticatedBarracksCommand');
 
-class DeviceHistoryCommand extends BarracksCommand {
+class DeviceHistoryCommand extends AuthenticatedBarracksCommand {
 
   configureCommand(program) {
     return program
@@ -14,10 +14,8 @@ class DeviceHistoryCommand extends BarracksCommand {
     return hasUnitId && hasValidFromDate;
   }
 
-  execute(program) {
-    return this.getAuthenticationToken().then(token => {
-      return this.barracks.getDeviceEvents(token, program.args[0], program.fromDate);
-    });
+  execute(program, token) {
+    return this.barracks.getDeviceEvents(token, program.args[0], program.fromDate);
   }
 }
 

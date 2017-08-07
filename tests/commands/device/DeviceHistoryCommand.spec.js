@@ -88,18 +88,15 @@ describe('DeviceHistoryCommand', () => {
       const errorMessage = 'error';
       const program = Object.assign({}, programWithValidOptions);
       const bufferStream = new PageableStream();
-      deviceHistoryCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       deviceHistoryCommand.barracks = {
         getDeviceEvents: sinon.stub().returns(Promise.resolve(bufferStream))
       };
 
       // When / Then
-      deviceHistoryCommand.execute(program).then(result => {
+      deviceHistoryCommand.execute(program, token).then(result => {
         expect(result).to.be.equals(bufferStream);
         result.onError(err => {
           expect(err).to.be.equals(errorMessage);
-          expect(deviceHistoryCommand.getAuthenticationToken).to.have.been.calledOnce;
-          expect(deviceHistoryCommand.getAuthenticationToken).to.have.been.calledWithExactly();
           expect(deviceHistoryCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
           expect(deviceHistoryCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
           done();
@@ -115,18 +112,15 @@ describe('DeviceHistoryCommand', () => {
       const response = [{unitId: 'unit1'}, {unitId: 'unit2'}];
       const program = Object.assign({}, programWithValidOptions);
       const bufferStream = new PageableStream();
-      deviceHistoryCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       deviceHistoryCommand.barracks = {
         getDeviceEvents: sinon.stub().returns(Promise.resolve(bufferStream))
       };
 
       // When / Then
-      deviceHistoryCommand.execute(program).then(result => {
+      deviceHistoryCommand.execute(program, token).then(result => {
         expect(result).to.be.equals(bufferStream);
         result.onPageReceived(data => {
           expect(data).to.be.equals(response);
-          expect(deviceHistoryCommand.getAuthenticationToken).to.have.been.calledOnce;
-          expect(deviceHistoryCommand.getAuthenticationToken).to.have.been.calledWithExactly();
           expect(deviceHistoryCommand.barracks.getDeviceEvents).to.have.been.calledOnce;
           expect(deviceHistoryCommand.barracks.getDeviceEvents).to.have.been.calledWithExactly(token, program.args[0], undefined);
           done();

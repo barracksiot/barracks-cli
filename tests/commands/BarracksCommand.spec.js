@@ -748,6 +748,28 @@ describe('BarracksCommand', () => {
     });
   });
 
+
+  describe('#getResult', () => {
+
+    const program = { option: 'value' };
+
+    it('Should return the result of execute command ', () => {
+      // Given
+      const executeResponse = { the: 'response' };
+      barracksCommand.execute = sinon.stub().returns(executeResponse);
+
+      // When
+      const result = barracksCommand.getResult(program);
+
+      // Then
+      expect(result).to.be.equals(executeResponse);
+      expect(barracksCommand.execute).to.have.been.calledOnce;
+      expect(barracksCommand.execute).to.have.been.calledWithExactly(
+        program
+      );
+    });
+  });
+
   describe('#execute()', () => {
 
     before(() => {
@@ -802,6 +824,8 @@ describe('BarracksCommand', () => {
     let mockedJsonRender;
     let spyJsonRender;
 
+    const getResultResponse = { the: 'response' };
+
     const program = {
       option: () => { return program; },
       parse: () => { return program; },
@@ -841,7 +865,6 @@ describe('BarracksCommand', () => {
 
     it('should call renderer if execution successful', () => {
       // Given
-      const executeResponse = { the: 'response' };
       spyRender = sinon.spy();
       mockedRender = (data) => {
         spyRender(data);
@@ -849,7 +872,7 @@ describe('BarracksCommand', () => {
       };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
-      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+      mockedBarracksCommand.getResult = sinon.stub().returns(getResultResponse);
 
       // When
       mockedBarracksCommand.render();
@@ -859,15 +882,14 @@ describe('BarracksCommand', () => {
       expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
-      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
-      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.getResult).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.getResult).to.have.been.calledWithExactly(program);
       expect(spyRender).to.have.been.calledOnce;
-      expect(spyRender).to.have.been.calledWithExactly(executeResponse);
+      expect(spyRender).to.have.been.calledWithExactly(getResultResponse);
     });
 
     it('should call renderer if execution successful and exit with code != 0 when renderer reject', () => {
       // Given
-      const executeResponse = { the: 'response' };
       spyRender = sinon.spy();
       mockedRender = (data) => {
         spyRender(data);
@@ -875,7 +897,7 @@ describe('BarracksCommand', () => {
       };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
-      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+      mockedBarracksCommand.getResult = sinon.stub().returns(getResultResponse);
 
       // When
       mockedBarracksCommand.render();
@@ -885,15 +907,14 @@ describe('BarracksCommand', () => {
       expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
-      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
-      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.getResult).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.getResult).to.have.been.calledWithExactly(program);
       expect(spyRender).to.have.been.calledOnce;
-      expect(spyRender).to.have.been.calledWithExactly(executeResponse);
+      expect(spyRender).to.have.been.calledWithExactly(getResultResponse);
     });
 
     it('should call json renderer if execution successful and json flag', () => {
       // Given
-      const executeResponse = { the: 'response' };
       program.json = true;
       spyJsonRender = sinon.spy();
       mockedJsonRender = (data) => {
@@ -902,7 +923,7 @@ describe('BarracksCommand', () => {
       };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
-      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+      mockedBarracksCommand.getResult = sinon.stub().returns(getResultResponse);
 
       // When
       mockedBarracksCommand.render();
@@ -912,15 +933,14 @@ describe('BarracksCommand', () => {
       expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
-      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
-      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.getResult).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.getResult).to.have.been.calledWithExactly(program);
       expect(spyJsonRender).to.have.been.calledOnce;
-      expect(spyJsonRender).to.have.been.calledWithExactly(executeResponse);
+      expect(spyJsonRender).to.have.been.calledWithExactly(getResultResponse);
     });
 
     it('should call json renderer if execution successful and json flag and exit with code != 0 when renderer reject', () => {
       // Given
-      const executeResponse = { the: 'response' };
       program.json = true;
       spyJsonRender = sinon.spy();
       mockedJsonRender = (data) => {
@@ -929,7 +949,7 @@ describe('BarracksCommand', () => {
       };
       mockedBarracksCommand.cleanupProgramOptions = sinon.spy();
       mockedBarracksCommand.validateCommand = sinon.stub().returns(true);
-      mockedBarracksCommand.execute = sinon.stub().returns(executeResponse);
+      mockedBarracksCommand.getResult = sinon.stub().returns(getResultResponse);
 
       // When
       mockedBarracksCommand.render();
@@ -939,10 +959,10 @@ describe('BarracksCommand', () => {
       expect(mockedBarracksCommand.cleanupProgramOptions).to.have.been.calledWithExactly(program);
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledOnce;
       expect(mockedBarracksCommand.validateCommand).to.have.been.calledWithExactly(program);
-      expect(mockedBarracksCommand.execute).to.have.been.calledOnce;
-      expect(mockedBarracksCommand.execute).to.have.been.calledWithExactly(program);
+      expect(mockedBarracksCommand.getResult).to.have.been.calledOnce;
+      expect(mockedBarracksCommand.getResult).to.have.been.calledWithExactly(program);
       expect(spyJsonRender).to.have.been.calledOnce;
-      expect(spyJsonRender).to.have.been.calledWithExactly(executeResponse);
+      expect(spyJsonRender).to.have.been.calledWithExactly(getResultResponse);
     });
   });
 });
