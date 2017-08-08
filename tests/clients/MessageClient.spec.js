@@ -38,10 +38,17 @@ describe('MessageClient', () => {
       message: messageContent,
       retained
     };
+
     const messageNoUnitId = {
       filter,
       message: messageContent,
       retained
+    };
+
+    const messageNoRetained = {
+      unitId,
+      filter,
+      message: messageContent
     };
 
     it('should return an error message when request fails', done => {
@@ -96,6 +103,7 @@ describe('MessageClient', () => {
       });
     });
 
+
     it('should return the message sent when request succeeds', done => {
       // Given
       const response = { body: message.message };
@@ -147,6 +155,34 @@ describe('MessageClient', () => {
         done(err);
       });
     });
+
+    it('should return the message sent when request succeeds and should use false instead of undefined when no retained provided', done => {
+      // Given
+      const response = { body: messageNoRetained.message };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      messageClient.sendMessage(token, messageNoRetained).then(result => {
+        expect(result).to.be.equals(messageNoRetained.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/messaging/messages?:query'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { query: 'unitId=' + messageNoRetained.unitId + '&filter=' + messageNoRetained.filter + '&retained=false'},
+            body: messageNoRetained.message
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+
   });
 
   describe('#sendMessageToAll()', () => {
