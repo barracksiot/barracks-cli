@@ -24,12 +24,20 @@ function getEventType(program) {
   }
 }
 
-function getObject(program) {
-  if (program.googleClientSecret) {
-    return ObjectReader.readObjectFromFile(program.googleClientSecret);
-  } else {
-    return null;
-  }
+function getGoogleClientSecret(program) {
+  return ObjectReader.readObjectFromFile(program.googleClientSecret);
+}
+
+function hasValidEventType(program) {
+  return (!program.ping && program.enrollment && !program.deviceDataChange ||
+        program.ping && !program.enrollment && !program.deviceDataChange ||
+        !program.ping && !program.enrollment && program.deviceDataChange);
+}
+
+function hasValidHookTypeAndArguments(program) {
+  return (program.web && !program.googleAnalytics && !program.bigquery && program.url && program.url !== true ||
+        !program.web && program.googleAnalytics && !program.bigquery && program.gaTrackingId && program.gaTrackingId !== true ||
+        !program.web && !program.googleAnalytics && program.bigquery && program.googleClientSecret && Validator.fileExists(program.googleClientSecret));
 }
 
 class CreateHookCommand extends BarracksCommand {
@@ -49,13 +57,8 @@ class CreateHookCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(
-      (!program.ping && program.enrollment && !program.deviceDataChange ||
-        program.ping && !program.enrollment && !program.deviceDataChange ||
-        !program.ping && !program.enrollment && program.deviceDataChange) &&
-      (program.web && !program.googleAnalytics && !program.bigquery && program.url && program.url !== true ||
-        !program.web && program.googleAnalytics && !program.bigquery && program.gaTrackingId && program.gaTrackingId !== true ||
-        !program.web && !program.googleAnalytics && program.bigquery && program.googleClientSecret && Validator.fileExists(program.googleClientSecret)) &&
+    return !!(hasValidEventType(program) &&
+      hasValidHookTypeAndArguments(program) &&
       program.name && program.name !== true
     );
   }
@@ -64,15 +67,17 @@ class CreateHookCommand extends BarracksCommand {
     let token;
     return this.getAuthenticationToken().then(authToken => {
       token = authToken;
-      return getObject(program);
+      if (program.googleClientSecret) {
+        return getGoogleClientSecret(program);
+      }
     }).then(secret => {
       return this.barracks.createHook(token, {
         type: getHookType(program),
         name: program.name,
         eventType: getEventType(program),
         url: program.url,
-        gaTrackingId: program.gaTrackingId || null,
-        googleClientSecret: secret || null
+        gaTrackingId: program.gaTrackingId,
+        googleClientSecret: secret
       });
     });
   }

@@ -51,6 +51,16 @@ describe('CreateHookCommand', () => {
     userId: '12345'
   };
 
+  const validSecret = {
+    web: {
+      client_id: 'aRandomClientId',
+      project_id: 'aRandomProjectId',
+      auth_uri: 'aRandomAuthenticationURI',
+      token_uri: 'aRandomTokenURI',
+      client_secret: 'aRandomClientSecret'
+    }
+  };
+
   before(() => {
     createHookCommand = new CreateHookCommand();
     createHookCommand.barracks = {};
@@ -60,16 +70,6 @@ describe('CreateHookCommand', () => {
   });
 
   describe('#validateCommand(program)', () => {
-
-    const validSecret = {
-      web: {
-        client_id: 'aRandomClientId',
-        project_id: 'aRandomProjectId',
-        auth_uri: 'aRandomAuthenticationURI',
-        token_uri: 'aRandomTokenURI',
-        client_secret: 'aRandomClientSecret'
-      }
-    };
 
     it('should return true when all the options are valid and present', () => {
       // Given
@@ -181,9 +181,9 @@ describe('CreateHookCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when web and BQ', () => {
+    it('should return false when GA and BQ', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { googleAnalytics:true, bigquery: true });
+      const program = Object.assign({}, programWithValidOptions, { web:false, googleAnalytics:true, bigquery: true });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -253,21 +253,11 @@ describe('CreateHookCommand', () => {
 
   describe('#execute(program)', () => {
 
-    const validSecret = {
-      web: {
-        client_id: 'aRandomClientId',
-        project_id: 'aRandomProjectId',
-        auth_uri: 'aRandomAuthenticationURI',
-        token_uri: 'aRandomTokenURI',
-        client_secret: 'aRandomClientSecret'
-      }
-    };
-
     it('should return the created hook when the request was successful and event type is ping', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
+      const spyReadObjectFromFile = sinon.spy();
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return undefined;
       };
 
@@ -287,8 +277,8 @@ describe('CreateHookCommand', () => {
           type: 'web',
           name: programWithValidOptions.name,
           url: programWithValidOptions.url,
-          gaTrackingId: null,
-          googleClientSecret: null
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
       });
         done();
       }).catch(err => {
@@ -298,9 +288,9 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is enrollment', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
+      const spyReadObjectFromFile = sinon.spy();
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return undefined;
       };
 
@@ -321,8 +311,8 @@ describe('CreateHookCommand', () => {
           type: 'web',
           name: program.name,
           url: program.url,
-          gaTrackingId: null,
-          googleClientSecret: null
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
         });
         done();
       }).catch(err => {
@@ -366,9 +356,9 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and hook type is google analytics', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
+      const spyReadObjectFromFile = sinon.spy();
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return undefined;
       };
 
@@ -390,7 +380,7 @@ describe('CreateHookCommand', () => {
           name: programWithValidOptions.name,
           url: programWithValidOptions.url,
           gaTrackingId: 'UA-12453453-23',
-          googleClientSecret: null
+          googleClientSecret: undefined
       });
         done();
       }).catch(err => {
@@ -423,7 +413,7 @@ describe('CreateHookCommand', () => {
           type: 'bigquery',
           name: program.name,
           url: program.url,
-          gaTrackingId: null,
+          gaTrackingId: undefined,
           googleClientSecret: validSecret
         });
         done();
@@ -434,9 +424,9 @@ describe('CreateHookCommand', () => {
 
     it('should return error when the request failed', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
+      const spyReadObjectFromFile = sinon.spy();
+      proxyReadObjectFromFile = (file) => {
+        spyReadObjectFromFile(file);
         return undefined;
       };
 
@@ -460,8 +450,8 @@ describe('CreateHookCommand', () => {
             type: 'web',
             name: programWithValidOptions.name,
             url: programWithValidOptions.url,
-            gaTrackingId: null,
-            googleClientSecret: null
+            gaTrackingId: undefined,
+            googleClientSecret: undefined
           });
           done();
         } catch (e) {
