@@ -9,18 +9,6 @@ const endpoints = {
   me: {
     method: 'GET',
     path: '/api/auth/me'
-  },
-  setGoogleAnalyticsTrackingId: {
-    method: 'PUT',
-    path: '/api/auth/me/gaTrackingId'
-  },
-  setGoogleClientSecret: {
-    method: 'PUT',
-    path: '/api/auth/me/googleClientSecret'
-  },
-  removeGoogleClientSecret: {
-    method: 'DELETE',
-    path: '/api/auth/me/googleClientSecret'
   }
 };
 
@@ -64,68 +52,6 @@ class AccountClient {
         resolve(account);
       }).catch(err => {
         logger.debug('Account information request failure.');
-        reject(err.message);
-      });
-    });
-  }
-
-  setGoogleAnalyticsTrackingId(token, googleId) {
-    return new Promise((resolve, reject) => {
-      logger.debug('Setting Google Analytics Id:', googleId);
-      this.httpClient.sendEndpointRequest(
-        endpoints.setGoogleAnalyticsTrackingId,
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          body: {
-            value: googleId
-          }
-        }
-      ).then(response => {
-        logger.debug('GA Id successfully set.');
-        resolve(response.body);
-      }).catch(err => {
-        logger.debug('GA Id setting failed.');
-        reject(err.message);
-      });
-    });
-  }
-
-  setGoogleClientSecret(token, secret) {
-    return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest(
-        endpoints.setGoogleClientSecret,
-        {
-          headers: {
-            'x-auth-token': token
-          },
-          body: secret
-        }
-      ).then(response => {
-        logger.debug('Google Client Secret successfully set.');
-        resolve(response.body);
-      }).catch(err => {
-        logger.debug('Google Client Secret setting failed.');
-        reject(err.message);
-      });
-    });
-  }
-
-  removeGoogleClientSecret(token) {
-    return new Promise((resolve, reject) => {
-      this.httpClient.sendEndpointRequest(
-        endpoints.removeGoogleClientSecret,
-        {
-          headers: {
-            'x-auth-token': token
-          }
-        }
-      ).then(response => {
-        logger.debug('Google Client Secret successfully removed ; no more link with Big Query.');
-        resolve(response.body);
-      }).catch(err => {
-        logger.debug('Failed to remove Google Client Secret.');
         reject(err.message);
       });
     });

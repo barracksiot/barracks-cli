@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const HooksCommand = require('../commands/hook/HooksCommand');
+new HooksCommand().render();

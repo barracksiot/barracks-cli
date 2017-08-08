@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const GetHookCommand = require('../commands/hook/GetHookCommand');
+new GetHookCommand().render();

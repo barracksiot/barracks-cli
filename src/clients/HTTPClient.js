@@ -77,7 +77,6 @@ class HTTPClient {
       pageableStream.lastPage();
     }
   }
-
 }
 
 module.exports = HTTPClient;

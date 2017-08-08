@@ -25,9 +25,6 @@ describe('Barracks', () => {
       // Then
       expect(barracksClient).to.have.property('authenticate').and.to.be.a('function');
       expect(barracksClient).to.have.property('getAccount').and.to.be.a('function');
-      expect(barracksClient).to.have.property('setGoogleAnalyticsTrackingId').and.to.be.a('function');
-      expect(barracksClient).to.have.property('setGoogleClientSecret').and.to.be.a('function');
-      expect(barracksClient).to.have.property('removeGoogleClientSecret').and.to.be.a('function');
     });
 
     it('should initialize methods from deviceClient when constructor called', () => {
@@ -48,6 +45,7 @@ describe('Barracks', () => {
 
       // Then
       expect(barracksClient).to.have.property('createFilter').and.to.be.a('function');
+      expect(barracksClient).to.have.property('updateFilter').and.to.be.a('function');
       expect(barracksClient).to.have.property('getFilter').and.to.be.a('function');
       expect(barracksClient).to.have.property('getFilters').and.to.be.a('function');
       expect(barracksClient).to.have.property('deleteFilter').and.to.be.a('function');
@@ -114,6 +112,18 @@ describe('Barracks', () => {
       expect(barracksClient).to.have.property('publishUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('archiveUpdate').and.to.be.a('function');
       expect(barracksClient).to.have.property('scheduleUpdate').and.to.be.a('function');
+    });
+
+    it('should initialize methods from hookClient when constructor called', () => {
+      // When
+      const barracksClient = new Barracks();
+
+      // Then
+      expect(barracksClient).to.have.property('createHook').and.to.be.a('function');
+      expect(barracksClient).to.have.property('getHook').and.to.be.a('function');
+      expect(barracksClient).to.have.property('getHooks').and.to.be.a('function');
+      expect(barracksClient).to.have.property('updateHook').and.to.be.a('function');
+      expect(barracksClient).to.have.property('deleteHook').and.to.be.a('function');
     });
 
     it('should initialize methods from sdk proxy when constructor called', () => {

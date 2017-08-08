@@ -6,9 +6,12 @@ const pjson = require('../../package.json');
 
 const barracks = program
   .version(pjson.version)
-  .command('ganalytics [cmd]', 'Manage Google Analytics integration')
-  .command('bigquery [cmd]', 'Manage Big Query integration');
-
+  .command('create [cmd]', 'Manage hooks creation')
+  .command('get', 'Display detailed information of a hook')
+  .command('update', 'Update a hook')
+  .command('ls', 'List the hooks')
+  .command('rm', 'Delete hook');
+  
 barracks.parse(process.argv);
 
 process.on('SIGINT', () => {

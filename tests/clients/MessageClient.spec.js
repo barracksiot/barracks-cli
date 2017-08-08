@@ -33,6 +33,17 @@ describe('MessageClient', () => {
       retained
     }
 
+    const messageNoFilter = {
+      unitId,
+      message: messageContent,
+      retained
+    };
+    const messageNoUnitId = {
+      filter,
+      message: messageContent,
+      retained
+    };
+
     it('should return an error message when request fails', done => {
       // Given
       const error = { message: 'Error !' };
@@ -59,6 +70,32 @@ describe('MessageClient', () => {
       });
     });
 
+    it('should return an error message when request fails and should use empty string instead of undefined when no filter provided', done => {
+      // Given
+      const error = { message: 'Error !' };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.reject(error));
+
+      // When / Then
+      messageClient.sendMessage(token, messageNoFilter).then(result => {
+        done('should have failed');
+      }).catch(err => {
+        expect(err).to.be.equals(error.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/messaging/messages?:query'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { query: 'unitId=' + messageNoFilter.unitId + '&filter=' + '&retained=' + message.retained},
+            body: messageNoFilter.message
+          }
+        );
+        done();
+      });
+    });
+
     it('should return the message sent when request succeeds', done => {
       // Given
       const response = { body: message.message };
@@ -77,6 +114,32 @@ describe('MessageClient', () => {
             headers: { 'x-auth-token': token },
             pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter + '&retained=' + message.retained},
             body: message.message
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the message sent when request succeeds and should use empty string instead of undefined when no unitId provided', done => {
+      // Given
+      const response = { body: messageNoUnitId.message };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      messageClient.sendMessage(token, messageNoUnitId).then(result => {
+        expect(result).to.be.equals(messageNoUnitId.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/messaging/messages?:query'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { query: 'unitId=' + '&filter=' + messageNoUnitId.filter + '&retained=' + message.retained},
+            body: messageNoUnitId.message
           }
         );
         done();

@@ -8,6 +8,7 @@ const PackageClient = require('./PackageClient');
 const SegmentClient = require('./SegmentClient');
 const TokenClient = require('./TokenClient');
 const UpdateClient = require('./UpdateClient');
+const HookClient = require('./HookClient');
 const BarracksSDKProxy = require('../utils/BarracksSDKProxy');
 const BarracksSDK2Proxy = require('../utils/BarracksSDK2Proxy');
 const BarracksMessagingSDKProxy = require('../utils/BarracksMessagingSDKProxy');
@@ -16,9 +17,6 @@ function mergeAccountClient(barracksClient) {
   const accountClient = new AccountClient();
   barracksClient.authenticate = accountClient.authenticate.bind(accountClient);
   barracksClient.getAccount = accountClient.getAccount.bind(accountClient);
-  barracksClient.setGoogleAnalyticsTrackingId = accountClient.setGoogleAnalyticsTrackingId.bind(accountClient);
-  barracksClient.setGoogleClientSecret = accountClient.setGoogleClientSecret.bind(accountClient);
-  barracksClient.removeGoogleClientSecret = accountClient.removeGoogleClientSecret.bind(accountClient);
 }
 
 function mergeDeviceClient(barracksClient) {
@@ -33,6 +31,7 @@ function mergeDeviceClient(barracksClient) {
 function mergeFilterClient(barracksClient) {
   const filterClient = new FilterClient();
   barracksClient.createFilter = filterClient.createFilter.bind(filterClient);
+  barracksClient.updateFilter = filterClient.updateFilter.bind(filterClient);
   barracksClient.getFilter = filterClient.getFilter.bind(filterClient);
   barracksClient.getFilters = filterClient.getFilters.bind(filterClient);
   barracksClient.deleteFilter = filterClient.deleteFilter.bind(filterClient);
@@ -86,6 +85,15 @@ function mergeUpdateClient(barracksClient) {
   barracksClient.scheduleUpdate = updateClient.scheduleUpdate.bind(updateClient);
 }
 
+function mergeHookClient(barracksClient) {
+  const hookClient = new HookClient();
+  barracksClient.createHook = hookClient.createHook.bind(hookClient);
+  barracksClient.getHook = hookClient.getHook.bind(hookClient);
+  barracksClient.getHooks = hookClient.getHooks.bind(hookClient);
+  barracksClient.updateHook = hookClient.updateHook.bind(hookClient);
+  barracksClient.deleteHook = hookClient.deleteHook.bind(hookClient);
+}
+
 function mergeSDKProxy(barracksClient) {
   const proxyV1 = new BarracksSDKProxy();
   barracksClient.checkUpdate = proxyV1.checkUpdate.bind(proxyV1);
@@ -110,6 +118,7 @@ class BarracksClient {
     mergeSegmentClient(this);
     mergeTokenClient(this);
     mergeUpdateClient(this);
+    mergeHookClient(this);
     mergeSDKProxy(this);
     mergeMessagingSDKProxy(this);
   }
