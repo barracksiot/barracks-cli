@@ -118,7 +118,7 @@ describe('CreateHookCommand', () => {
       expect(result).to.be.true;
     });
 
-    it('should return true when event type is enrollment', () => {
+    it('should return true when event type is deviceDataChange', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
       // When
@@ -126,6 +126,16 @@ describe('CreateHookCommand', () => {
       // Then
       expect(result).to.be.true;
     });
+
+    it('should return true when event type is devicePackageChange', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { ping: false, devicePackageChange:true });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
 
     it('should return false when event type is missing', () => {
       // Given
@@ -157,6 +167,15 @@ describe('CreateHookCommand', () => {
     it('should return false when enrollment and deviceDataChange', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { ping:false, enrollment: true, deviceDataChange:true });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when devicePackageChange and deviceDataChange', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { ping:false, deviceDataChange: true, devicePackageChange:true });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -255,12 +274,6 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is ping', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
-      };
-
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
@@ -288,12 +301,6 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is enrollment', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
-      };
-
       const program = Object.assign({}, programWithValidOptions, { ping: false, enrollment:true });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
@@ -322,12 +329,6 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is deviceDataChange', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
-        return undefined;
-      };
-
       const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
@@ -354,14 +355,36 @@ describe('CreateHookCommand', () => {
       });
     });
 
-    it('should return the created hook when the request was successful and hook type is google analytics', done => {
+    it('should return the created hook when the request was successful and event type is devicePackageChange', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
+      const program = Object.assign({}, programWithValidOptions, { ping: false, devicePackageChange:true });
+      createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createHookCommand.barracks = {
+        createHook: sinon.stub().returns(Promise.resolve(createdHook))
       };
 
+      // When / Then
+      createHookCommand.execute(program).then(result => {
+        expect(result).to.be.equals(createdHook);
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createHookCommand.barracks.createHook).to.have.been.calledOnce;
+        expect(createHookCommand.barracks.createHook).to.have.been.calledWithExactly(token, {
+          eventType: 'DEVICE_PACKAGE_CHANGE',
+          type: 'web',
+          name: program.name,
+          url: program.url,
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the created hook when the request was successful and hook type is google analytics', done => {
+      // Given
       const program = Object.assign({}, programWithValidOptions, { web: false, googleAnalytics: true, gaTrackingId: 'UA-12453453-23' });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {

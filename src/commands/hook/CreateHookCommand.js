@@ -22,6 +22,9 @@ function getEventType(program) {
   if(program.deviceDataChange) {
     return 'DEVICE_DATA_CHANGE';
   }
+  if(program.devicePackageChange) {
+    return 'DEVICE_PACKAGE_CHANGE';
+  }
 }
 
 function getGoogleClientSecret(program) {
@@ -29,9 +32,10 @@ function getGoogleClientSecret(program) {
 }
 
 function hasValidEventType(program) {
-  return (!program.ping && program.enrollment && !program.deviceDataChange ||
-        program.ping && !program.enrollment && !program.deviceDataChange ||
-        !program.ping && !program.enrollment && program.deviceDataChange);
+  return (!program.ping && program.enrollment && !program.deviceDataChange && !program.devicePackageChange ||
+        program.ping && !program.enrollment && !program.deviceDataChange && !program.devicePackageChange  ||
+        !program.ping && !program.enrollment && program.deviceDataChange && !program.devicePackageChange  ||
+        !program.ping && !program.enrollment && !program.deviceDataChange && program.devicePackageChange);
 }
 
 function hasValidHookTypeAndArguments(program) {
@@ -47,6 +51,7 @@ class CreateHookCommand extends BarracksCommand {
       .option('--ping', 'To create a hook triggered by the ping of a device.')
       .option('--enrollment', 'To create a hook for the first ping of a device.')
       .option('--deviceDataChange', 'To create a hook triggered when a device pings with new custom client data.')
+      .option('--devicePackageChange', 'To create a hook triggered when a device pings with new packages.')
       .option('--web', 'To create a web hook')
       .option('--googleAnalytics', 'To create a Google Analytics hook')
       .option('--bigquery', 'To create a BigQuery hook')
