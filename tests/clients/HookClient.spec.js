@@ -138,7 +138,7 @@ describe('hookClient', () => {
       hookClient.getHook(token, hookName).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('This is not the hook you are looking for.');
+        expect(err).to.be.equals('Hook "myHook" could not be found');
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
@@ -254,7 +254,7 @@ describe('hookClient', () => {
       hookClient.updateHook(token, hookName, newHook).then(result => {
         done('should have failed');
       }).catch(err => {
-        expect(err).to.be.equals('The hook you want to update does not exist.');
+        expect(err).to.be.equals('Hook "myHook" does not exists.');
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
         expect(hookClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
