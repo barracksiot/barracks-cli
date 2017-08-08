@@ -345,8 +345,8 @@ describe('CreateHookCommand', () => {
           type: 'web',
           name: program.name,
           url: program.url,
-          gaTrackingId: null,
-          googleClientSecret: null
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
         });
         done();
       }).catch(err => {
