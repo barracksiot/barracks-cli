@@ -25,9 +25,6 @@ describe('Barracks', () => {
       // Then
       expect(barracksClient).to.have.property('authenticate').and.to.be.a('function');
       expect(barracksClient).to.have.property('getAccount').and.to.be.a('function');
-      expect(barracksClient).to.have.property('setGoogleAnalyticsTrackingId').and.to.be.a('function');
-      expect(barracksClient).to.have.property('setGoogleClientSecret').and.to.be.a('function');
-      expect(barracksClient).to.have.property('removeGoogleClientSecret').and.to.be.a('function');
     });
 
     it('should initialize methods from deviceClient when constructor called', () => {

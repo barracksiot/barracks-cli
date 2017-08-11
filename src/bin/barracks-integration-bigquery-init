@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-const SetGoogleClientSecretCommand = require('../commands/integration/SetGoogleClientSecretCommand');
-new SetGoogleClientSecretCommand().render();

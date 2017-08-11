@@ -16,7 +16,6 @@ if (config.v2Enabled) {
     .command('token [cmd]', 'Manage tokens');
 
   if (config.experimental) {
-    program.command('integration [cmd]', 'Manage third-party integrations');
     program.command('message [cmd]', 'Send messages to devices');
     program.command('hook [cmd]', 'Manage hooks');
   }
