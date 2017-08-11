@@ -151,13 +151,49 @@ describe('SendMessageCommand', () => {
       // Then
       expect(result).to.be.true;
     });
+
+    it('should return false when retained option is given with invalid argument', () => {
+      // Given
+      const program = Object.assign({}, validProgram, {retained: 'schtroumpf'});
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when empty retained option is given', () => {
+      // Given
+      const program = Object.assign({}, validProgram, {retained: true});
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when retained option is true', () => {
+      // Given
+      const program = Object.assign({}, validProgram, {retained: 'true'});
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('should return false when retained option is false', () => {
+      // Given
+      const program = Object.assign({}, validProgram, {retained: 'false'});
+      // When
+      const result = sendMessageCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
   });
 
   describe('#execute(program)', () => {
 
     it('should forward to barracks client when valid unit, filter and message are given', done => {
       // Given
-      const program = validProgram;
+      const program = Object.assign({}, validProgram, {retained: true});
       const response = {
         id: 'aMessageId',
         unitId: unitId,
@@ -176,7 +212,8 @@ describe('SendMessageCommand', () => {
           {
             unitId: unitId,
             filter: filter,
-            message: message
+            message: message,
+            retained: true
           }
         );
         done();
@@ -187,7 +224,7 @@ describe('SendMessageCommand', () => {
 
     it('should forward to barracks client when "all" parameter and message are given', done => {
       // Given
-      const program = validProgramWithAll;
+      const program = Object.assign({}, validProgramWithAll, {retained: true});
       const response = {
         id: 'aMessageId',
         all: true,
@@ -203,7 +240,8 @@ describe('SendMessageCommand', () => {
         expect(sendMessageCommand.barracks.sendMessageToAll).to.have.been.calledWithExactly(
           token,
           {
-            message: message
+            message: message,
+            retained: true
           }
         );
         done();

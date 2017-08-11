@@ -25,16 +25,28 @@ describe('MessageClient', () => {
     const unitId = 'aShortUnitId';
     const filter = 'superfilter';
     const messageContent = 'messageInABottle';
+    const retained = 'true';
     const message = {
       unitId,
       filter,
-      message: messageContent
-    };
+      message: messageContent,
+      retained
+    }
+
     const messageNoFilter = {
       unitId,
-      message: messageContent
+      message: messageContent,
+      retained
     };
+
     const messageNoUnitId = {
+      filter,
+      message: messageContent,
+      retained
+    };
+
+    const messageNoRetained = {
+      unitId,
       filter,
       message: messageContent
     };
@@ -57,7 +69,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter },
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter + '&retained=' + message.retained},
             body: message.message
           }
         );
@@ -83,13 +95,14 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + messageNoFilter.unitId + '&filter='},
+            pathVariables: { query: 'unitId=' + messageNoFilter.unitId + '&filter=' + '&retained=' + message.retained},
             body: messageNoFilter.message
           }
         );
         done();
       });
     });
+
 
     it('should return the message sent when request succeeds', done => {
       // Given
@@ -107,7 +120,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + messageNoFilter.unitId + '&filter=' + message.filter},
+            pathVariables: { query: 'unitId=' + message.unitId + '&filter=' + message.filter + '&retained=' + message.retained},
             body: message.message
           }
         );
@@ -133,7 +146,7 @@ describe('MessageClient', () => {
           },
           {
             headers: { 'x-auth-token': token },
-            pathVariables: { query: 'unitId=' + '&filter=' + messageNoUnitId.filter},
+            pathVariables: { query: 'unitId=' + '&filter=' + messageNoUnitId.filter + '&retained=' + message.retained},
             body: messageNoUnitId.message
           }
         );
@@ -142,6 +155,34 @@ describe('MessageClient', () => {
         done(err);
       });
     });
+
+    it('should return the message sent when request succeeds and should use false instead of undefined when no retained provided', done => {
+      // Given
+      const response = { body: messageNoRetained.message };
+      messageClient.httpClient.sendEndpointRequest = sinon.stub().returns(Promise.resolve(response));
+
+      // When / Then
+      messageClient.sendMessage(token, messageNoRetained).then(result => {
+        expect(result).to.be.equals(messageNoRetained.message);
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledOnce;
+        expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
+          {
+            method: 'POST',
+            path: '/api/messaging/messages?:query'
+          },
+          {
+            headers: { 'x-auth-token': token },
+            pathVariables: { query: 'unitId=' + messageNoRetained.unitId + '&filter=' + messageNoRetained.filter + '&retained=false'},
+            body: messageNoRetained.message
+          }
+        );
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+
   });
 
   describe('#sendMessageToAll()', () => {
@@ -165,10 +206,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
+            pathVariables: { query: 'retained=' + (message.retained || 'false')},
             body: message.message
           }
         );
@@ -188,10 +230,11 @@ describe('MessageClient', () => {
         expect(messageClient.httpClient.sendEndpointRequest).to.have.been.calledWithExactly(
           {
             method: 'POST',
-            path: '/api/messaging/messages'
+            path: '/api/messaging/messages?:query'
           },
           {
             headers: { 'x-auth-token': token },
+            pathVariables: { query: 'retained=' + (message.retained || 'false')},
             body: message.message
           }
         );

@@ -19,6 +19,9 @@ function getEventType(program) {
   if (program.enrollment) {
     return 'ENROLLMENT';
   }
+  if(program.deviceDataChange) {
+    return 'DEVICE_DATA_CHANGE';
+  }
 }
 
 function getGoogleClientSecret(program) {
@@ -26,13 +29,15 @@ function getGoogleClientSecret(program) {
 }
 
 function hasValidEventType(program) {
-  return (!program.ping && program.enrollment || program.ping && !program.enrollment);
+  return (!program.ping && program.enrollment && !program.deviceDataChange ||
+        program.ping && !program.enrollment && !program.deviceDataChange ||
+        !program.ping && !program.enrollment && program.deviceDataChange);
 }
 
 function hasValidHookTypeAndArguments(program) {
   return (program.web && !program.googleAnalytics && !program.bigquery && program.url && program.url !== true ||
         !program.web && program.googleAnalytics && !program.bigquery && program.gaTrackingId && program.gaTrackingId !== true ||
-        !program.web && !program.googleAnalytics && program.bigquery && program.googleClientSecret && Validator.fileExists(program.googleClientSecret))
+        !program.web && !program.googleAnalytics && program.bigquery && program.googleClientSecret && Validator.fileExists(program.googleClientSecret));
 }
 
 class CreateHookCommand extends BarracksCommand {
@@ -40,7 +45,8 @@ class CreateHookCommand extends BarracksCommand {
   configureCommand(program) {
     return program
       .option('--ping', 'To create a hook triggered by the ping of a device.')
-      .option('--enrollment', 'To create a hook for the first ping of a device')
+      .option('--enrollment', 'To create a hook for the first ping of a device.')
+      .option('--deviceDataChange', 'To create a hook triggered when a device pings with new custom client data.')
       .option('--web', 'To create a web hook')
       .option('--googleAnalytics', 'To create a Google Analytics hook')
       .option('--bigquery', 'To create a BigQuery hook')
@@ -51,9 +57,8 @@ class CreateHookCommand extends BarracksCommand {
   }
 
   validateCommand(program) {
-    return !!(
-      hasValidEventType(program) &&
-      (hasValidHookTypeAndArguments(program)) &&
+    return !!(hasValidEventType(program) &&
+      hasValidHookTypeAndArguments(program) &&
       program.name && program.name !== true
     );
   }

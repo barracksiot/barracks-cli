@@ -118,6 +118,15 @@ describe('CreateHookCommand', () => {
       expect(result).to.be.true;
     });
 
+    it('should return true when event type is enrollment', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
     it('should return false when event type is missing', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { ping: undefined });
@@ -127,9 +136,27 @@ describe('CreateHookCommand', () => {
       expect(result).to.be.false;
     });
 
-    it('should return false when multiple event types', () => {
+    it('should return false when ping and enrollment', () => {
       // Given
       const program = Object.assign({}, programWithValidOptions, { ping: true, enrollment:true });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when ping and deviceDataChange', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { ping: true, deviceDataChange:true });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('should return false when enrollment and deviceDataChange', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { ping:false, enrollment: true, deviceDataChange:true });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -281,6 +308,40 @@ describe('CreateHookCommand', () => {
         expect(createHookCommand.barracks.createHook).to.have.been.calledOnce;
         expect(createHookCommand.barracks.createHook).to.have.been.calledWithExactly(token, {
           eventType: 'ENROLLMENT',
+          type: 'web',
+          name: program.name,
+          url: program.url,
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the created hook when the request was successful and event type is deviceDataChange', done => {
+      // Given
+      const spyReadObjectFromStdin = sinon.spy();
+      proxyReadObjectFromStdin = () => {
+        spyReadObjectFromStdin();
+        return undefined;
+      };
+
+      const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
+      createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createHookCommand.barracks = {
+        createHook: sinon.stub().returns(Promise.resolve(createdHook))
+      };
+
+      // When / Then
+      createHookCommand.execute(program).then(result => {
+        expect(result).to.be.equals(createdHook);
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createHookCommand.barracks.createHook).to.have.been.calledOnce;
+        expect(createHookCommand.barracks.createHook).to.have.been.calledWithExactly(token, {
+          eventType: 'DEVICE_DATA_CHANGE',
           type: 'web',
           name: program.name,
           url: program.url,
