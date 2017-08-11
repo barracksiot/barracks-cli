@@ -2,49 +2,46 @@ const BarracksCommand = require('../BarracksCommand');
 const Validator = require('../../utils/Validator');
 const ObjectReader = require('../../utils/ObjectReader');
 
-function getHookType(program) {
-  if (program.hookType === 'web') {
-    return 'web';
-  } else if (program.hookType === 'googleAnalytics') {
-    return 'google_analytics';
-  } else if (program.hookType === 'bigQuery') {
-    return 'bigquery';
-  }
-}
+const eventType = {
+  ping: 'PING',
+  enrollment: 'ENROLLMENT',
+  deviceDataChange: 'DEVICE_DATA_CHANGE',
+  devicePackageChange: 'DEVICE_PACKAGE_CHANGE'
+};
 
-function getEventType(program) {
-  if (program.event === 'ping') {
-    return 'PING';
-  }
-  if (program.event === 'enrollment') {
-    return 'ENROLLMENT';
-  }
-  if(program.event === 'deviceDataChange') {
-    return 'DEVICE_DATA_CHANGE';
-  }
-  if(program.event === 'devicePackageChange') {
-    return 'DEVICE_PACKAGE_CHANGE';
-  }
-}
+const hookType = {
+  web: 'web',
+  googleAnalytics: 'google_analytics',
+  bigQuery: 'bigquery'
+};
+
+const hookTypeValidator = { 
+  web: (program) => program.url && program.url !== true,
+  googleAnalytics: (program) => program.gaTrackingId && program.gaTrackingId !== true,
+  bigQuery: (program) => program.googleClientSecret && program.googleClientSecret !== true && Validator.fileExists(program.googleClientSecret)
+};
 
 function getGoogleClientSecret(program) {
   return ObjectReader.readObjectFromFile(program.googleClientSecret);
 }
 
 function hasValidEventType(program) {
-  return (program.event && program.event !== true && 
-    ['ping', 'enrollment', 'deviceDataChange', 'devicePackageChange'].indexOf(program.event) > -1);
+  return (program.event && program.event !== true && !!eventType[program.event]);
 }
 
 function hasValidHookTypeAndArguments(program) {
+  return !!hookTypeValidator[program.hookType] && hookTypeValidator[program.hookType](program);
+}
 
-  var handlers = { 
-    web: (program) => program.url && program.url !== true,
-    googleAnalytics: (program) => program.gaTrackingId && program.gaTrackingId !== true,
-    bigQuery: (program) => program.googleClientSecret && program.googleClientSecret !== true && Validator.fileExists(program.googleClientSecret)
-  } 
-
-  return (['web', 'googleAnalytics', 'bigQuery'].indexOf(program.hookType) > -1) && handlers[program.hookType](program)
+function buildHook(program, secret) {
+  return {
+    type: hookType[program.hookType],
+    name: program.name,
+    eventType: eventType[program.event],
+    url: program.url,
+    gaTrackingId: program.gaTrackingId,
+    googleClientSecret: secret
+  };
 }
 
 class CreateHookCommand extends BarracksCommand {
@@ -74,14 +71,7 @@ class CreateHookCommand extends BarracksCommand {
         return getGoogleClientSecret(program);
       }
     }).then(secret => {
-      return this.barracks.createHook(token, {
-        type: getHookType(program),
-        name: program.name,
-        eventType: getEventType(program),
-        url: program.url,
-        gaTrackingId: program.gaTrackingId,
-        googleClientSecret: secret
-      });
+      return this.barracks.createHook(token, buildHook(program, secret));
     });
   }
 }
