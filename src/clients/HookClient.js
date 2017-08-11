@@ -71,7 +71,7 @@ class HookClient {
         resolve(response.body);
       }).catch(errResponse => {
         if (errResponse.statusCode === 404) {
-          reject('This is not the hook you are looking for.');
+          reject(`Hook "${name}" could not be found`);
         }
         else {
           reject(errResponse.message);
@@ -115,7 +115,7 @@ class HookClient {
         resolve(response.body);
       }).catch(errResponse => {
         if (errResponse.statusCode === 404) {
-          reject('The hook you want to update does not exist.');
+          reject(`Hook "${name}" does not exists.`);
         }
         else if (errResponse.statusCode === 409){
           reject('A hook with this name already exists.');
