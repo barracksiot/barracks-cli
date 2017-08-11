@@ -29,9 +29,6 @@ describe('CreateHookCommand', () => {
     '../../utils/ObjectReader': {
       readObjectFromFile: (file) => {
         return proxyReadObjectFromFile(file);
-      },
-      readObjectFromStdin: () => {
-        return proxyReadObjectFromStdin();
       }
     }
   });
@@ -39,8 +36,8 @@ describe('CreateHookCommand', () => {
   const file = 'path/to/file.json';
   const token = 'i8uhkj.token.65ryft';
   const programWithValidOptions = {
-    ping: true,
-    web: true,
+    event: 'ping',
+    hookType: 'web',
     name: 'HookName',
     url: 'https://not.barracks.io'
   };
@@ -84,7 +81,7 @@ describe('CreateHookCommand', () => {
 
     it('should return false when type is missing', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { web: false });
+      const program = Object.assign({}, programWithValidOptions, { event: false });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -102,7 +99,7 @@ describe('CreateHookCommand', () => {
 
     it('should return true when event type is ping', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'ping' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -111,52 +108,44 @@ describe('CreateHookCommand', () => {
 
     it('should return true when event type is enrollment', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: false, enrollment: true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'enrollment' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
     });
 
-    it('should return true when event type is enrollment', () => {
+    it('should return true when event type is deviceDataChange', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'deviceDataChange' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
       expect(result).to.be.true;
     });
+
+    it('should return true when event type is devicePackageChange', () => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { event: 'devicePackageChange' });
+      // When
+      const result = createHookCommand.validateCommand(program);
+      // Then
+      expect(result).to.be.true;
+    });
+
 
     it('should return false when event type is missing', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: undefined });
+      const program = Object.assign({}, programWithValidOptions, { event: undefined });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
       expect(result).to.be.false;
     });
 
-    it('should return false when ping and enrollment', () => {
+    it('should return false when event type is not recognised', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: true, enrollment:true });
-      // When
-      const result = createHookCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when ping and deviceDataChange', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { ping: true, deviceDataChange:true });
-      // When
-      const result = createHookCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when enrollment and deviceDataChange', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { ping:false, enrollment: true, deviceDataChange:true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'wrongEvent' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -165,25 +154,7 @@ describe('CreateHookCommand', () => {
 
     it('should return false when web and GA', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { web:true, googleAnalytics: true });
-      // When
-      const result = createHookCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when web and BQ', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { web:true, bigquery: true });
-      // When
-      const result = createHookCommand.validateCommand(program);
-      // Then
-      expect(result).to.be.false;
-    });
-
-    it('should return false when GA and BQ', () => {
-      // Given
-      const program = Object.assign({}, programWithValidOptions, { web:false, googleAnalytics:true, bigquery: true });
+      const program = Object.assign({}, programWithValidOptions, { hookType: 'wrongType' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -192,7 +163,7 @@ describe('CreateHookCommand', () => {
 
     it('should return true when googleAnalytics hook with all arguments', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { web:false, url:undefined, googleAnalytics:true, gaTrackingId:'UA-12453453-23' });
+      const program = Object.assign({}, programWithValidOptions, { url:undefined, hookType: 'googleAnalytics', gaTrackingId:'UA-12453453-23' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -201,7 +172,7 @@ describe('CreateHookCommand', () => {
 
     it('should return false when googleAnalytics without trackingId', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { web:false, url:undefined, googleAnalytics:true });
+      const program = Object.assign({}, programWithValidOptions, { url:undefined, hookType: 'googleAnalytics' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -215,7 +186,7 @@ describe('CreateHookCommand', () => {
         spyFileExists(file);
         return true;
       };
-      const program = Object.assign({}, programWithValidOptions, { web:false, url:undefined, bigquery:true, googleClientSecret: file });
+      const program = Object.assign({}, programWithValidOptions, { url:undefined, hookType: 'bigQuery', googleClientSecret: file });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -231,7 +202,7 @@ describe('CreateHookCommand', () => {
         spyFileExists(file);
         return false;
       };
-      const program = Object.assign({}, programWithValidOptions, { web:false, url:undefined, bigquery:true, googleClientSecret: file });
+      const program = Object.assign({}, programWithValidOptions, { url:undefined, hookType: 'bigQuery', googleClientSecret: file });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -242,7 +213,7 @@ describe('CreateHookCommand', () => {
 
     it('should return false when bigquery without googleClientSecret', () => {
       // Given
-      const program = Object.assign({}, programWithValidOptions, { web:false, url:undefined, bigquery:true });
+      const program = Object.assign({}, programWithValidOptions, { url:undefined, hookType: 'bigQuery' });
       // When
       const result = createHookCommand.validateCommand(program);
       // Then
@@ -255,12 +226,6 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is ping', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
-      };
-
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
@@ -288,13 +253,7 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is enrollment', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
-      };
-
-      const program = Object.assign({}, programWithValidOptions, { ping: false, enrollment:true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'enrollment' });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
@@ -322,13 +281,7 @@ describe('CreateHookCommand', () => {
 
     it('should return the created hook when the request was successful and event type is deviceDataChange', done => {
       // Given
-      const spyReadObjectFromStdin = sinon.spy();
-      proxyReadObjectFromStdin = () => {
-        spyReadObjectFromStdin();
-        return undefined;
-      };
-
-      const program = Object.assign({}, programWithValidOptions, { ping: false, deviceDataChange:true });
+      const program = Object.assign({}, programWithValidOptions, { event: 'deviceDataChange' });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
@@ -354,15 +307,37 @@ describe('CreateHookCommand', () => {
       });
     });
 
-    it('should return the created hook when the request was successful and hook type is google analytics', done => {
+    it('should return the created hook when the request was successful and event type is devicePackageChange', done => {
       // Given
-      const spyReadObjectFromFile = sinon.spy();
-      proxyReadObjectFromFile = (file) => {
-        spyReadObjectFromFile(file);
-        return undefined;
+      const program = Object.assign({}, programWithValidOptions, { event: 'devicePackageChange' });
+      createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
+      createHookCommand.barracks = {
+        createHook: sinon.stub().returns(Promise.resolve(createdHook))
       };
 
-      const program = Object.assign({}, programWithValidOptions, { web: false, googleAnalytics: true, gaTrackingId: 'UA-12453453-23' });
+      // When / Then
+      createHookCommand.execute(program).then(result => {
+        expect(result).to.be.equals(createdHook);
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledOnce;
+        expect(createHookCommand.getAuthenticationToken).to.have.been.calledWithExactly();
+        expect(createHookCommand.barracks.createHook).to.have.been.calledOnce;
+        expect(createHookCommand.barracks.createHook).to.have.been.calledWithExactly(token, {
+          eventType: 'DEVICE_PACKAGE_CHANGE',
+          type: 'web',
+          name: program.name,
+          url: program.url,
+          gaTrackingId: undefined,
+          googleClientSecret: undefined
+        });
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it('should return the created hook when the request was successful and hook type is google analytics', done => {
+      // Given
+      const program = Object.assign({}, programWithValidOptions, { hookType: 'googleAnalytics', gaTrackingId: 'UA-12453453-23' });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
@@ -396,7 +371,7 @@ describe('CreateHookCommand', () => {
         return validSecret;
       };
 
-      const program = Object.assign({}, programWithValidOptions, { web: false, bigquery: true, googleClientSecret: file });
+      const program = Object.assign({}, programWithValidOptions, { hookType: 'bigQuery', googleClientSecret: file });
       createHookCommand.getAuthenticationToken = sinon.stub().returns(Promise.resolve(token));
       createHookCommand.barracks = {
         createHook: sinon.stub().returns(Promise.resolve(createdHook))
