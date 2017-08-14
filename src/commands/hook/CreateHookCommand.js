@@ -48,8 +48,8 @@ class CreateHookCommand extends BarracksCommand {
 
   configureCommand(program) {
     return program
-      .option('--event', 'To specify the type of event that triggers the hook (ping, enrollment, deviceDataChange or devicePackageChange).')
-      .option('--hookType', 'To specify the type of hook we want to create (web, googleAnalytics or bigQuery)')
+      .option('--event [value]', 'To specify the type of event that triggers the hook (ping, enrollment, deviceDataChange or devicePackageChange).')
+      .option('--hookType [value]', 'To specify the type of hook we want to create (web, googleAnalytics or bigQuery)')
       .option('--name [value]', 'The unique name of the webhook')
       .option('--gaTrackingId [value]', 'The trackingId for the Google Analytics account')
       .option('--googleClientSecret [path/to/file]', 'The path to the file with the Google client secret json used to authenticate to BigQuery.')
